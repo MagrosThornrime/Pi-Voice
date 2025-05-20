@@ -2,11 +2,11 @@
 
 all: backend frontend
 
-setup:
-	npx electron-rebuild
+setup: *
+	$(MAKE) -C frontend setup
 
-backend:
+backend: backend/*
 	$(MAKE) -C backend
 
-frontend:
+frontend: frontend/*
 	$(MAKE) -C frontend
