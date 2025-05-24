@@ -16,7 +16,9 @@ function writeLog(message) {
 
 let addon;
 try {
-    addon = require('./lib/MIDIReader');
+    const modulePath = path.resolve(__dirname, './lib/MIDIReader.node');
+    writeLog(`Attempting to load module from: ${modulePath}`);
+    addon = require(modulePath);
 } 
 catch (e) {
     writeLog("Failed to load the MIDIReader module. Ensure it is built correctly.");
