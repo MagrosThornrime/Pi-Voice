@@ -10,11 +10,16 @@ MIDIReader::MIDIReader() noexcept {
 }
 
 void MIDIReader::setupGetter() noexcept {
-    getterThread = std::jthread([this](std::stop_token stopToken){
+    getterThread = std::jthread([this](std::stop_token stopToken) {
         RtMidiIn midiIn;
-        if(midiIn.getPortCount() == 0){
-            hasMIDI = false;
+        if (midiIn.getPortCount() == 0) {
+            auto lock = std::lock_guard(mutex);
+            messages.emplace("No devices found");
             return;
+        }
+        else {
+            auto lock = std::lock_guard(mutex);
+            messages.emplace(std::format("MIDI device found: '{}'", midiIn.getPortName()));
         }
 
         midiIn.openPort();

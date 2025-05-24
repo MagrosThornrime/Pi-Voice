@@ -1,7 +1,7 @@
 const addon = require('./lib/MIDIReader');
 
-const midiGetterID = setInterval(() => {
-    const messages = addon.getMIDI();
+const getMIDIMessages = () => {
+const messages = addon.getMIDI();
     const container = document.getElementById('toPrint');
     messages.forEach(msg => {
         const newP = document.createElement('p');
@@ -11,8 +11,9 @@ const midiGetterID = setInterval(() => {
             clearInterval(midiGetterID);
         }
     });
+}
 
-}, 100);
+const midiGetterID = setInterval(getMIDIMessages, 100);
 
 function cleanup() {
     midiModule.cleanup();
