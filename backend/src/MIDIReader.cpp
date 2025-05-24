@@ -13,6 +13,7 @@ void MIDIReader::setupGetter() noexcept {
     getterThread = std::jthread([this](std::stop_token stopToken){
         RtMidiIn midiIn;
         if(midiIn.getPortCount() == 0){
+            hasMIDI = false;
             return;
         }
 
@@ -57,7 +58,13 @@ Napi::Array getMIDI(const Napi::CallbackInfo& info) {
     auto env = info.Env();
     auto lock = std::lock_guard(MIDIReader::get().mutex);
 
-    Napi::Array result = Napi::Array::New(env, MIDIReader::get().messages.size());
+    if(not MIDIReader::get().hasMIDI) {
+        auto result = Napi::Array::New(env);
+        result.Set(result.Length(), Napi::String::New(env, "<NO-DEVICE>"));
+        return result;
+    }
+
+    auto result = Napi::Array::New(env, MIDIReader::get().messages.size());
     for (auto i = 0u; not MIDIReader::get().messages.empty(); ++i) {
         result[i] = Napi::String::New(env, MIDIReader::get().messages.front());
         MIDIReader::get().messages.pop();

@@ -10,6 +10,7 @@ struct MIDIReader {
     std::mutex mutex;
     std::jthread getterThread;
     std::queue<std::string> messages;
+    bool hasMIDI = true;
 
     MIDIReader() noexcept;
 

@@ -1,13 +1,17 @@
 const addon = require('./lib/MIDIReader');
 
-setInterval(() => {
+const midiGetterID = setInterval(() => {
     const messages = addon.getMIDI();
     const container = document.getElementById('toPrint');
     messages.forEach(msg => {
         const newP = document.createElement('p');
         newP.textContent = msg;
         container.appendChild(newP);
+        if (msg == "<NO-DEVICE>") {
+            clearInterval(midiGetterID);
+        }
     });
+
 }, 100);
 
 function cleanup() {
