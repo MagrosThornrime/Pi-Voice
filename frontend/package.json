@@ -8,6 +8,7 @@
   "description": "",
   "dependencies": {
     "cmake-js": "^7.3.1",
+    "electron-rebuild": "^3.2.9",
     "node-addon-api": "^8.3.1",
     "node-gyp": "^11.2.0"
   },
