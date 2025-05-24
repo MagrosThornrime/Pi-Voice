@@ -14,6 +14,7 @@ pack: *
 	npx electron-packager . MIDIApp --out="../app" --platform=win32 --arch=x64 --overwrite
 else 
 copy_module: *
+	rm -rf lib
 	mkdir lib
 	cp -f -r ../backend/build/Release ./lib
 
