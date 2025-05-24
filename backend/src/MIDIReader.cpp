@@ -19,7 +19,9 @@ void MIDIReader::setupGetter() noexcept {
         }
         else {
             auto lock = std::lock_guard(mutex);
-            messages.emplace(std::format("MIDI device found: '{}'", midiIn.getPortName()));
+            for(auto i = 0u; i != midiIn.getPortCount(); ++i) {
+                messages.emplace(std::format("MIDI device {}: '{}'", i, midiIn.getPortName(i)));
+            }
         }
 
         midiIn.openPort();
