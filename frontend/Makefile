@@ -16,7 +16,7 @@ else
 copy_module: *
 	rm -rf lib
 	mkdir lib
-	cp -f -r ../backend/build/Release ./lib
+	cp -f -r ../backend/build/Release/* ./lib
 
 pack: *
 	npx electron-packager . MIDIApp --out="../app" --platform=linux --arch=$$(node -p "process.arch") --overwrite

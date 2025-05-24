@@ -16,8 +16,8 @@ function writeLog(message) {
 
 let addon;
 try {
-    addon = require('./lib/MIDIReader');
-} 
+    addon = require('./lib/MIDIReader.node');
+}
 catch (e) {
     writeLog("Failed to load the MIDIReader module. Ensure it is built correctly.");
     writeLog(e);
