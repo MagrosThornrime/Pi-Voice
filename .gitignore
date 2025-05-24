@@ -1,2 +1,5 @@
 app/
 .vscode/
+.cmake/
+.idea/
+bin/
