@@ -7,7 +7,7 @@ CPMAddPackage(
     URL http://www.music.mcgill.ca/~gary/rtmidi/release/rtmidi-6.0.0.tar.gz
     VERSION 6.0.0
     OPTIONS
-    "BUILD_SHARED_LIBS OFF"
+    "BUILD_SHARED_LIBS ON"
     "RTMIDI_BUILD_TESTING OFF"
 )
 
