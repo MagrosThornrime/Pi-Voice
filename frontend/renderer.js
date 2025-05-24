@@ -1,7 +1,9 @@
 const addon = require('./lib/MIDIReader');
 
 const getMIDIMessages = () => {
-const messages = addon.getMIDI();
+    console.log("Fetching MIDI messages...");
+    const messages = addon.getMIDI();
+    console.log("got messages");
     const container = document.getElementById('toPrint');
     messages.forEach(msg => {
         const newP = document.createElement('p');
