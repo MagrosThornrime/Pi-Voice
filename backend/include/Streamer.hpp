@@ -15,7 +15,7 @@ static int patestCallback( const void *inputBuffer, void *outputBuffer,
 class Streamer {
     int _sampleRate;
     PaStream* _stream;
-    SawtoothOscillator _saw = {-5.0f, 5.0f, 0.0001f};
+    SawtoothOscillator _saw = SawtoothOscillator(-5.0f, 5.0f, 0.01f);
 
     void _initializeStream();
 

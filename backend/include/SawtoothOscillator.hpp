@@ -5,7 +5,7 @@ class SawtoothOscillator {
     float _currentPhase = 0.0f;
 
 public:
-    SawtoothOscillator(float maxPhase, float minPhase, float phaseIncrement)
+    SawtoothOscillator(float minPhase, float maxPhase, float phaseIncrement)
     : _minPhase(minPhase), _maxPhase(maxPhase), _phaseIncrement(phaseIncrement) {};
     float getNextPhase();
 };
