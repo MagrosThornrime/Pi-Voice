@@ -1,5 +1,6 @@
 #pragma once
 #include <portaudio.h>
+#include <SawtoothOscillator.hpp>
 
 /* This routine will be called by the PortAudio engine when audio is needed.
  * It may called at interrupt level on some machines so don't do anything
@@ -12,13 +13,14 @@ static int patestCallback( const void *inputBuffer, void *outputBuffer,
                            void *userData );
 
 class Streamer {
+    int _sampleRate;
     PaStream* _stream;
-    SawtoothOscillator _saw(-5.0f, 5.0f, 0.01f);
+    SawtoothOscillator _saw = {-5.0f, 5.0f, 0.0001f};
 
     void _initializeStream();
 
 public:
-    Streamer();
+    Streamer(int sampleRate);
     Streamer( const Streamer& ) = delete;
     ~Streamer();
     void run();

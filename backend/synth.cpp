@@ -1,6 +1,6 @@
-#include <include/Streamer.h>
+#include <Streamer.hpp>
 
 int main() {
-    Streamer streamer;
+    Streamer streamer(44100);
     streamer.run();
 }

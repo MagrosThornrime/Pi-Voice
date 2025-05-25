@@ -1,4 +1,5 @@
-#include <Streamer.h>
+#include <Streamer.hpp>
+#include <iostream>
 
 static int patestCallback( const void *inputBuffer, void *outputBuffer,
                            unsigned long framesPerBuffer,
@@ -17,19 +18,18 @@ static int patestCallback( const void *inputBuffer, void *outputBuffer,
         float phase = oscillator->getNextPhase();
         *out = phase;
         out++;
-        *out = phase
+        *out = phase;
         out++;
     }
     return 0;
 }
 
 void Streamer::_initializeStream(){
-    PaError err;
-    err = Pa_OpenDefaultStream( &stream,
+    PaError err = Pa_OpenDefaultStream( &_stream,
                                0,          /* no input channels */
                                2,          /* stereo output */
                                paFloat32,  /* 32 bit floating point output */
-                               SAMPLE_RATE,
+                               _sampleRate,
                                256,        /* frames per buffer, i.e. the number
                                                   of sample frames that PortAudio will
                                                   request from the callback. Many apps
@@ -45,24 +45,24 @@ void Streamer::_initializeStream(){
     }
 }
 
-Streamer::Streamer(){
-    PaError err;
-    err = Pa_Initialize();
+Streamer::Streamer(int sampleRate) : _sampleRate(sampleRate) {
+    PaError err = Pa_Initialize();
     if( err != paNoError )
     {
         std::cerr << "Pa_Initialize failed: " << Pa_GetErrorText( err );
     }
+    _initializeStream();
 }
 
 Streamer::~Streamer(){
-    err = Pa_Terminate();
+    PaError err = Pa_Terminate();
     if( err != paNoError ){
         printf(  "PortAudio error: %s\n", Pa_GetErrorText( err ) );
     }
 }
 
 void Streamer::run(){
-    err = Pa_StartStream( stream );
+    PaError err = Pa_StartStream( _stream );
     if( err != paNoError ){
         std::cerr << "Error starting stream." << std::endl;
     }
@@ -70,7 +70,7 @@ void Streamer::run(){
     /* Sleep for several seconds. */
     Pa_Sleep(10*1000);
 
-    err = Pa_StopStream( stream );
+    err = Pa_StopStream( _stream );
     if( err != paNoError ){
         std::cerr << "Error stopping stream." << std::endl;
     }

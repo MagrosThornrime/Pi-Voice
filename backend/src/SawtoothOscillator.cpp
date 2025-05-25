@@ -1,6 +1,6 @@
-#include <SawtoothOscillator.h>
+#include <SawtoothOscillator.hpp>
 
-float SawtoothOscillator::getNextPhase() const {
+float SawtoothOscillator::getNextPhase() {
     float current = _currentPhase;
     _currentPhase += _phaseIncrement;
     if (_currentPhase > _maxPhase) {

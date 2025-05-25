@@ -2,16 +2,12 @@ include_guard()
 
 include("cmake/libs/portaudio.cmake")
 
-set(HEADERS
-        include/SawtoothOscillator.hpp
-        include/Streamer.hpp
-)
 
 set(SOURCES
         src/SawtoothOscillator.cpp
         src/Streamer.cpp
 )
 
-add_executable(synth synth.cpp ${HEADERS} ${SOURCES})
-target_link_directories(synth PRIVATE include)
+add_executable(synth synth.cpp ${SOURCES})
+target_include_directories(synth PUBLIC include ${portaudio_SOURCE_DIR}/include)
 target_link_libraries(synth portaudio)
