@@ -1,8 +1,8 @@
 #include <MIDIReader.hpp>
-#include <ranges>
 #include <napi.h>
 #include <chrono>
 #include <fmt/core.h>
+#include <range/v3/all.hpp>
 
 using namespace std::chrono_literals;
 
@@ -38,7 +38,7 @@ void MIDIReader::setupGetter() noexcept {
             
             std::string out;
             out += fmt::format("t = {}", stamp);
-            for (auto&& [i, byte] : std::views::enumerate(msg)) {
+            for (auto&& [i, byte] : ranges::views::enumerate(msg)) {
                 out += fmt::format("; msg[{}] = {}", i, int(byte));
             }
             
