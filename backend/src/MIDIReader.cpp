@@ -2,6 +2,7 @@
 #include <ranges>
 #include <napi.h>
 #include <chrono>
+#include <fmt/core.h>
 
 using namespace std::chrono_literals;
 
@@ -20,7 +21,7 @@ void MIDIReader::setupGetter() noexcept {
         else {
             auto lock = std::lock_guard(mutex);
             for(auto i = 0u; i != midiIn.getPortCount(); ++i) {
-                messages.emplace(std::format("MIDI device {}: '{}'", i, midiIn.getPortName(i)));
+                messages.emplace(fmt::format("MIDI device {}: '{}'", i, midiIn.getPortName(i)));
             }
         }
 
@@ -36,9 +37,9 @@ void MIDIReader::setupGetter() noexcept {
             }
             
             std::string out;
-            out += std::format("t = {}", stamp);
+            out += fmt::format("t = {}", stamp);
             for (auto&& [i, byte] : std::views::enumerate(msg)) {
-                out += std::format("; msg[{}] = {}", i, int(byte));
+                out += fmt::format("; msg[{}] = {}", i, int(byte));
             }
             
             {
