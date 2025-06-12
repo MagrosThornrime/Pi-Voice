@@ -1,4 +1,4 @@
-#include <print>
+#include <fmt/core.h>
 #include <RtMidi.h>
 
 int main() {
@@ -10,7 +10,7 @@ int main() {
 
     n = midiIn.getPortCount();
     if (n == 0) {
-        std::println("No ports");
+        fmt::println("No ports");
         return 1;
     }
 
