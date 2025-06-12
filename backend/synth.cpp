@@ -18,7 +18,7 @@ int main() {
             outputDevice,
             2,                      // 2 channels (stereo)
             portaudio::FLOAT32,     // sample format
-            false,                  // interleaved
+            true,                  // interleaved
             outputDevice.defaultLowOutputLatency(),
             nullptr
         );

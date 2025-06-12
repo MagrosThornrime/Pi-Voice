@@ -4,7 +4,10 @@ include("cmake/libs/rtmidi.cmake")
 include("cmake/libs/portaudio.cmake")
 
 
-file(GLOB_RECURSE SOURCES src/*.cpp)
+set(SOURCES
+    src/oscillators/Oscillator.cpp
+    src/oscillators/SawtoothOscillator.cpp
+)
 
 add_executable(synth synth.cpp ${SOURCES})
 
