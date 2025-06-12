@@ -1,4 +1,4 @@
-#include <SawtoothOscillator.hpp>
+#include <oscillators/SawtoothOscillator.hpp>
 
 float SawtoothOscillator::getNextPhase() {
     float current = _currentPhase;

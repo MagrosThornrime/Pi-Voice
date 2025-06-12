@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 
 project(audio_platform_backend)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_BUILD_TYPE "Release")
 
@@ -14,6 +14,8 @@ endif()
 
 include_directories("../frontend/node_modules/node-addon-api")
 include_directories("../frontend/node_modules/node-api-headers/include")
+
+include_directories("include")
 
 include("cmake/test_exe.cmake")
 include("cmake/synth_exe.cmake")

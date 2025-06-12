@@ -37,8 +37,8 @@ void MIDIReader::setupGetter() noexcept {
             
             std::string out;
             out += std::format("t = {}", stamp);
-            for (auto&& [i, byte] : std::views::enumerate(msg)) {
-                out += std::format("; msg[{}] = {}", i, int(byte));
+            for (size_t i = 0; i < msg.size(); ++i) {
+                out += std::format("; msg[{}] = {}", i, int(msg[i]));
             }
             
             {

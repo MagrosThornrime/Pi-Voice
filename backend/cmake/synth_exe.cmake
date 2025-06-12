@@ -1,13 +1,12 @@
 include_guard()
 
+include("cmake/libs/rtmidi.cmake")
 include("cmake/libs/portaudio.cmake")
 
 
-set(SOURCES
-        src/SawtoothOscillator.cpp
-        src/Streamer.cpp
-)
+file(GLOB_RECURSE SOURCES src/*.cpp)
 
 add_executable(synth synth.cpp ${SOURCES})
+
 target_include_directories(synth PUBLIC include ${portaudio_SOURCE_DIR}/include)
-target_link_libraries(synth portaudio)
+target_link_libraries(synth rtmidi portaudio portaudiocpp)
