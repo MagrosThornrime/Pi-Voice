@@ -15,6 +15,8 @@ endif()
 include_directories("../frontend/node_modules/node-addon-api")
 include_directories("../frontend/node_modules/node-api-headers/include")
 
+include_directories("include")
+
 include("cmake/test_exe.cmake")
 include("cmake/synth_exe.cmake")
 include("cmake/MIDIReader.cmake")
