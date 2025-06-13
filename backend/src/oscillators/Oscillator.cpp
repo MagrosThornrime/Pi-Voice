@@ -20,7 +20,7 @@ int Oscillator::paCallback(const void *input, void *output,
 Oscillator::Oscillator(float sampleRate) : _sampleRate(sampleRate) {}
 
 float Oscillator::getNextSample()  {
-    return 0.5f * _amplitude;
+    return 0.0f;
 }
 
 void Oscillator::setFrequency(int octave, int seminote) {
@@ -29,5 +29,8 @@ void Oscillator::setFrequency(int octave, int seminote) {
 }
 
 void Oscillator::setAmplitude(float amplitude) {
+	if(amplitude < 0.0f || amplitude > 1.0f) {
+		throw std::invalid_argument("Amplitude must be between 0.0 and 1.0");
+	}
     _amplitude = amplitude;
 }

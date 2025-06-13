@@ -11,5 +11,5 @@ float SineOscillator::getNextSample() {
     while(_phase < 0.0) {
         _phase += 2.0 * std::numbers::pi;
     }
-    return (1.0f + std::sin(_phase)) / 2.0f;
+    return std::sin(_phase));
 }
