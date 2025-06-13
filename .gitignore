@@ -3,3 +3,5 @@ app/
 .cmake/
 .idea/
 bin/
+CMakeFiles/
+_deps/

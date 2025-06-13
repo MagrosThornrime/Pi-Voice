@@ -6,7 +6,7 @@ include("cmake/libs/portaudio.cmake")
 
 set(SOURCES
     src/oscillators/Oscillator.cpp
-    src/oscillators/SawtoothOscillator.cpp
+    src/oscillators/SineOscillator.cpp
 )
 
 add_executable(synth synth.cpp ${SOURCES})

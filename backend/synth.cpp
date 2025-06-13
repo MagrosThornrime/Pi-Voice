@@ -2,7 +2,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <oscillators/SawtoothOscillator.hpp>
+#include <oscillators/SineOscillator.hpp>
 
 int main() {
     try {
@@ -31,19 +31,21 @@ int main() {
             paClipOff
         );
 
-        SawtoothOscillator oscillator(-5.0f, 5.0f, 0.01f);
+        SineOscillator oscillator(44100.0f);
+        oscillator.setFrequency(0, 3);
+        oscillator.setAmplitude(0.05f);
 
         // Use BlockingStream instead of MemFunCallbackStream
-        portaudio::MemFunCallbackStream<SawtoothOscillator> stream(
+        portaudio::MemFunCallbackStream<SineOscillator> stream(
             streamParams,
             oscillator,
-            &SawtoothOscillator::paCallback
+            &SineOscillator::paCallback
         );
 
         stream.start();
         std::cout << "Stream started." << std::endl;
 
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::this_thread::sleep_for(std::chrono::seconds(10));
 
         stream.stop();
         stream.close();

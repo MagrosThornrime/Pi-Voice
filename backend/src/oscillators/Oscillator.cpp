@@ -1,4 +1,7 @@
 #include <oscillators/Oscillator.hpp>
+#include <stdexcept>
+#include <cmath>
+#include <iostream>
 
 int Oscillator::paCallback(const void *input, void *output,
                unsigned long frameCount,
@@ -7,13 +10,24 @@ int Oscillator::paCallback(const void *input, void *output,
 {
     float *out = (float*)output;
     for (int i = 0; i < frameCount; i++) {
-        float phase = getNextPhase();
-        *out++ = phase;
-        *out++ = phase;
+        float sample = _amplitude * getNextSample();
+        *out++ = sample;
+        *out++ = sample;
     }
     return 0;
 }
 
-float Oscillator::getNextPhase()  {
-    return _currentPhase++;
+Oscillator::Oscillator(float sampleRate) : _sampleRate(sampleRate) {}
+
+float Oscillator::getNextSample()  {
+    return 0.5f * _amplitude;
+}
+
+void Oscillator::setFrequency(int octave, int seminote) {
+    float distance = octave * 12 + seminote;
+    _currentFrequency = _REFERENCE_FREQUENCY * std::pow(2.0f, distance / 12.0f);
+}
+
+void Oscillator::setAmplitude(float amplitude) {
+    _amplitude = amplitude;
 }
