@@ -2,7 +2,7 @@
 
 #include <exception>
 #include <string>
-#include <format>
+#include <fmt/core.h>
 
 class AssertionFailed : std::exception {
 public:
@@ -15,5 +15,5 @@ private:
     std::string _what;
 };
 
-#define ASSERT(what) if(not(what)) { throw AssertionFailed(std::format("Assertion failed ({}) {}@{}", #what, __FILE__, __LINE__)); }
-#define ASSERT_FMT(what, ...) if(not(what)) { throw AssertionFailed(std::format("Assertion failed ({}) {}@{}: {}", #what,, __FILE__, __LINE__, std::format(__VA_ARGS__))); }
+#define ASSERT(what) if(not(what)) { throw AssertionFailed(fmt::format("Assertion failed ({}) {}@{}", #what, __FILE__, __LINE__)); }
+#define ASSERT_FMT(what, ...) if(not(what)) { throw AssertionFailed(fmt::format("Assertion failed ({}) {}@{}: {}", #what,, __FILE__, __LINE__, fmt::format(__VA_ARGS__))); }
