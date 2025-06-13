@@ -10,7 +10,7 @@ TEST(Oscillators, SineInRange) {
     for(int i = 0; i < 1000; i++) {
         oscillator.advance();
         float sample = oscillator.getNextSample();
-        ASSERT_TRUE(sample > -1.0f && sample < 1.0f);
+        ASSERT_TRUE(sample > -1.0f && sample < 1.0f) << "Sample out of range: " << sample;
     }
 }
 
@@ -19,7 +19,7 @@ TEST(Oscillators, TriangleInRange) {
     for(int i = 0; i < 1000; i++) {
         oscillator.advance();
         float sample = oscillator.getNextSample();
-        ASSERT_TRUE(sample > -1.0f && sample < 1.0f);
+        ASSERT_TRUE(sample > -1.0f && sample < 1.0f) << "Sample out of range: " << sample;
     }
 }
 
@@ -28,7 +28,7 @@ TEST(Oscillators, SquareInRange) {
     for(int i = 0; i < 1000; i++) {
         oscillator.advance();
         float sample = oscillator.getNextSample();
-        ASSERT_TRUE(sample > -1.0f && sample < 1.0f);
+        ASSERT_TRUE(sample > -1.0f && sample < 1.0f) << "Sample out of range: " << sample;
     }
 }
 
@@ -37,7 +37,7 @@ TEST(Oscillators, SawtoothInRange) {
     for(int i = 0; i < 1000; i++) {
         oscillator.advance();
         float sample = oscillator.getNextSample();
-        ASSERT_TRUE(sample > -1.0f && sample < 1.0f);
+        ASSERT_TRUE(sample > -1.0f && sample < 1.0f) << "Sample out of range: " << sample;
     }
 }
 
@@ -46,6 +46,6 @@ TEST(Oscillators, NoiseInRange) {
     for(int i = 0; i < 1000; i++) {
         oscillator.advance();
         float sample = oscillator.getNextSample();
-        ASSERT_TRUE(sample > -1.0f && sample < 1.0f);
+        ASSERT_TRUE(sample > -1.0f && sample < 1.0f) << "Sample out of range: " << sample;
     }
 }
