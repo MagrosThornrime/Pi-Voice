@@ -17,4 +17,4 @@ include_directories("../frontend/node_modules/node-api-headers/include")
 
 include("cmake/test_exe.cmake")
 include("cmake/synth_exe.cmake")
-include("cmake/MIDIReader.cmake")
+include("cmake/SimpleMIDIReaderExample.cmake")
