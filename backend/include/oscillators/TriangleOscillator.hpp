@@ -1,7 +1,7 @@
 #pragma once
 #include <oscillators/PhaseOscillator.hpp>
 
-class SineOscillator : public PhaseOscillator {
+class TriangleOscillator : public PhaseOscillator {
 public:
     using PhaseOscillator::PhaseOscillator;
     float getNextSample() override;

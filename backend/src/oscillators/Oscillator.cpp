@@ -1,7 +1,6 @@
 #include <oscillators/Oscillator.hpp>
 #include <stdexcept>
 #include <cmath>
-#include <iostream>
 
 int Oscillator::paCallback(const void *input, void *output,
                unsigned long frameCount,
@@ -10,6 +9,7 @@ int Oscillator::paCallback(const void *input, void *output,
 {
     float *out = (float*)output;
     for (int i = 0; i < frameCount; i++) {
+		_advance();
         float sample = _amplitude * getNextSample();
         *out++ = sample;
         *out++ = sample;

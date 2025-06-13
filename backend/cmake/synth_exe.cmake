@@ -3,11 +3,7 @@ include_guard()
 include("cmake/libs/rtmidi.cmake")
 include("cmake/libs/portaudio.cmake")
 
-
-set(SOURCES
-    src/oscillators/Oscillator.cpp
-    src/oscillators/SineOscillator.cpp
-)
+file(GLOB_RECURSE SOURCES src/oscillators/*.cpp)
 
 add_executable(synth synth.cpp ${SOURCES})
 

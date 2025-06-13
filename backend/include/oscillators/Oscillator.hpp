@@ -9,6 +9,8 @@ protected:
     const float _REFERENCE_FREQUENCY = 220.0f;
     float _currentFrequency = _REFERENCE_FREQUENCY;
 
+    virtual void _advance() {};
+
 public:
     int paCallback(const void *input, void *output,
                    unsigned long frameCount,
