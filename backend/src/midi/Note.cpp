@@ -1,5 +1,5 @@
 #include <midi/Note.hpp>
-#include <format>
+#include <fmt/core.h>
 #include <cmath>
 
 namespace midi {
@@ -18,7 +18,7 @@ NotesInitializer::NotesInitializer() noexcept {
 
     for(i32 i = 0; i != 128; ++i) {
         note[i].num = i;
-        std::format_to_n(note[i].name, sizeof(note[i].name), "{}_{}", names[i % namesSize], i / namesSize - 1);
+        fmt::format_to_n(note[i].name, sizeof(note[i].name), "{}_{}", names[i % namesSize], i / namesSize - 1);
         note[i].freq = 440.f * std::powf(2.f, (i - 69.f) / float(namesSize));
     }
 }

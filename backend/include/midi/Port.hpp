@@ -2,7 +2,7 @@
 
 #include <string>
 #include <stdexcept>
-#include <format>
+#include <fmt/core.h>
 #include <Types.hpp>
 
 namespace midi {
@@ -17,10 +17,10 @@ struct Port {
 
     constexpr void assure() const {
         if(num == (u32)-1) {
-            throw std::invalid_argument(std::format("Port '{}' not found", name));
+            throw std::invalid_argument(fmt::format("Port '{}' not found", name));
         }
         else if(name == std::string_view()) {
-            throw std::invalid_argument(std::format("Port {} not found", num));
+            throw std::invalid_argument(fmt::format("Port {} not found", num));
         }
     }
 };
