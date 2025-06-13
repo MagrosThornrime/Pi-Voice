@@ -6,7 +6,7 @@ NoiseOscillator::NoiseOscillator(float sampleRate) : Oscillator(sampleRate) {
 	_dist = std::uniform_real_distribution<float>(-1.0f, 1.0f);
 }
 
-void NoiseOscillator::_advance(){
+void NoiseOscillator::advance(){
     _lastSeed = _phase;
     _phase += _currentFrequency / _sampleRate;
     while(_phase > 2.0f){

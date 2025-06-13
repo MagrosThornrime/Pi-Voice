@@ -9,7 +9,7 @@ int Oscillator::paCallback(const void *input, void *output,
 {
     float *out = (float*)output;
     for (int i = 0; i < frameCount; i++) {
-		_advance();
+		advance();
         float sample = _amplitude * getNextSample();
         *out++ = sample;
         *out++ = sample;

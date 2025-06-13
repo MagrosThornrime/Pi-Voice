@@ -11,9 +11,8 @@ protected:
     std::mt19937 _rng;
     std::uniform_real_distribution<float> _dist;
 
-    void _advance() override;
-
 public:
     explicit NoiseOscillator(float sampleRate);
     float getNextSample() override;
+    void advance() override;
 };

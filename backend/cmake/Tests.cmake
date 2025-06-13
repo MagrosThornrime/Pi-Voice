@@ -7,11 +7,13 @@ include("cmake/libs/googletest.cmake")
 enable_testing()
 
 file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
+file(GLOB_RECURSE SOURCES src/oscillators/*.cpp)
+
 
 foreach(TEST_SRC ${TEST_SOURCES})
     get_filename_component(TEST_NAME ${TEST_SRC} NAME_WE)
 
-    add_executable(${TEST_NAME} ${TEST_SRC})
+    add_executable(${TEST_NAME} ${TEST_SRC} ${SOURCES})
 
     target_include_directories(${TEST_NAME} PUBLIC include ${portaudio_SOURCE_DIR}/include)
     target_link_libraries(${TEST_NAME}
