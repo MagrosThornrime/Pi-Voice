@@ -19,11 +19,16 @@ NotesInitializer::NotesInitializer() noexcept {
     for(i32 i = 0; i != 128; ++i) {
         note[i].num = i;
         fmt::format_to_n(note[i].name, sizeof(note[i].name), "{}_{}", names[i % namesSize], i / namesSize - 1);
-        note[i].freq = 440.f * std::pow(2.f, (i - 69.f) / float(namesSize));
+        note[i].freq = Note::baseFreq * std::pow(2.f, (i - 69.f) / float(namesSize));
     }
 }
 NotesInitializer notes;
 
+}
+
+
+float Note::freqWithBase(float baseFreq) const noexcept {
+	return freq * baseFreq / Note::baseFreq;
 }
 
 }

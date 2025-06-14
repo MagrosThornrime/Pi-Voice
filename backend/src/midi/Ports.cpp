@@ -16,6 +16,7 @@ void Ports::refresh() noexcept {
     const u32 portCount = rtMidiIn.getPortCount();
 
     _names.clear();
+	_numbers.clear();
     for(u32 i = 0; i != portCount; ++i) {
         _names.push_back(rtMidiIn.getPortName(i));
         _numbers[_names.back()] = i;

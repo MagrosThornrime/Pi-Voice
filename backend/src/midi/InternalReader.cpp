@@ -31,6 +31,7 @@ void InternalReader::receive(double timestamp, std::vector<u8>* msg, void* myDat
 
 void InternalReader::open(const Port port) {
     port.assure();
+	// close if opened
 	close();
 
     _in.openPort(port.num);
