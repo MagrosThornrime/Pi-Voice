@@ -2,7 +2,11 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <oscillators/SawtoothOscillator.hpp>
 #include <oscillators/SineOscillator.hpp>
+#include <oscillators/SquareOscillator.hpp>
+#include <oscillators/TriangleOscillator.hpp>
+#include <oscillators/NoiseOscillator.hpp>
 
 int main() {
     try {
@@ -31,15 +35,15 @@ int main() {
             paClipOff
         );
 
-        SineOscillator oscillator(44100.0f);
-        oscillator.setFrequency(0, 3);
-        oscillator.setAmplitude(0.05f);
+        TriangleOscillator oscillator(44100.0f);
+        oscillator.setFrequency(1, 3);
+        //oscillator.setAmplitude(0.05f);
 
         // Use BlockingStream instead of MemFunCallbackStream
-        portaudio::MemFunCallbackStream<SineOscillator> stream(
+        portaudio::MemFunCallbackStream<Oscillator> stream(
             streamParams,
             oscillator,
-            &SineOscillator::paCallback
+            &TriangleOscillator::paCallback
         );
 
         stream.start();

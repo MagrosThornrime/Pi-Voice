@@ -21,4 +21,6 @@ public:
     void setAmplitude(float amplitude);
 
     virtual float getNextSample();
+    virtual void advance() {};
+
 };
