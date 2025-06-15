@@ -32,17 +32,30 @@ public:
 	/// @brief Clears event queue
 	void clear() noexcept;
 
-	/// @brief Sets event callback
-	/// @param callback non-returning callable with InternalReader reference as only parameter
-	void setCallback(std::function<void(InternalReader&)> callback) noexcept;
-	/// @brief Resets callback
-	void resetCallback() noexcept;
+	/// @brief Sets event callback for given event
+	/// @details Callback has lock on reader while executing
+	/// @param event status type
+	/// @param callback non-returning callable with midi::Data as only parameter
+	void setEventCallback(const Data::Status event, std::function<void(Data)> callback) noexcept;
+	/// @brief Sets callback for all events
+	/// @details Callback has lock on reader while executing
+	/// @param callback non-returning callable with midi::Data as only parameter
+	void setGeneralCallback(std::function<void(Data)> callback) noexcept;
+
+	/// @brief Resets callback for given event
+	void resetEventCallback(const Data::Status event) noexcept;
+	/// @brief Resets callback for all events
+	void resetEventCallbacks() noexcept;
+	/// @brief Resets general callback
+	void resetGeneralCallback() noexcept;
+	/// @brief Resets all callbacks
+	void resetCallbacks() noexcept;
 
 	/// @brief Checks if port was opened
 	bool opened() const noexcept;
 	/// @brief Checks if port was opened
 	operator bool() const noexcept;
-	
+
 	/// @brief Returns tuple with lock of InternalReader and reference to InternalReader
 	std::tuple<std::unique_lock<std::mutex>, InternalReader&> locked() noexcept;
 	/// @brief Returns tuple with lock of InternalReader and const reference to InternalReader

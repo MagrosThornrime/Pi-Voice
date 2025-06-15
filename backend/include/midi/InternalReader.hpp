@@ -18,7 +18,7 @@ public:
 
 	/// @brief Destructor, closes internal midi handler.
 	~InternalReader() noexcept;
-	
+
 	/// @brief Midi event handler
 	/// @param timestamp time since last event, in seconds
 	/// @param msg vector with received data
@@ -42,18 +42,30 @@ public:
 	/// @brief Clears event queue
 	void clear() noexcept;
 
-	/// @brief Sets event callback
+	/// @brief Sets event callback for given event
 	/// @details Callback has lock on reader while executing
-	/// @param callback non-returning callable with InternalReader reference as only parameter
-	void setCallback(std::function<void(InternalReader&)> callback) noexcept;
-	/// @brief Resets callback
-	void resetCallback() noexcept;
+	/// @param event status type
+	/// @param callback non-returning callable with midi::Data as only parameter
+	void setEventCallback(const Data::Status event, std::function<void(Data)> callback) noexcept;
+	/// @brief Sets callback for all events
+	/// @details Callback has lock on reader while executing
+	/// @param callback non-returning callable with midi::Data as only parameter
+	void setGeneralCallback(std::function<void(Data)> callback) noexcept;
+
+	/// @brief Resets callback for given event
+	void resetEventCallback(const Data::Status event) noexcept;
+	/// @brief Resets callback for all events
+	void resetEventCallbacks() noexcept;
+	/// @brief Resets general callback
+	void resetGeneralCallback() noexcept;
+	/// @brief Resets all callbacks
+	void resetCallbacks() noexcept;
 
 	/// @brief Checks if port was opened
 	bool opened() const noexcept;
 	/// @brief Checks if port was opened
 	operator bool() const noexcept;
-	
+
 private:
 
 	// expects to be opened
@@ -62,7 +74,7 @@ private:
 	InternalReader(const Port port);
 
 	friend class Reader;
-	
+
 	// returns tuple with lock to InternalReader and its reference
 	std::tuple<std::unique_lock<std::mutex>, InternalReader&> _locked() noexcept;
 	std::tuple<std::unique_lock<std::mutex>, const InternalReader&> _locked() const noexcept;
@@ -70,10 +82,14 @@ private:
 	// throws if preconditions are not met
 	void _assure() const;
 
+	// obtains index of callback to given event
+	static u32 _eventIdx(const Data::Status event) noexcept;
+
 	mutable std::mutex _mutex;
 	RtMidiIn _in;
 	std::deque<Data> _data;
-	std::function<void(InternalReader&)> _callback;
+	std::function<void(Data)> _callbacks[7]{};
+	std::function<void(Data)> _generalCallback;
 };
 
 }

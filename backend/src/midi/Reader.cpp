@@ -40,16 +40,35 @@ void Reader::clear() noexcept {
 	reader.clear();
 }
 
-void Reader::setCallback(std::function<void(InternalReader&)> callback) noexcept {
+void Reader::setEventCallback(const Data::Status event, std::function<void(Data)> callback) noexcept {
 	auto&& [lock, reader] = locked();
-	reader.setCallback(std::move(callback));
+	reader.setEventCallback(event, callback);
 }
 
-void Reader::resetCallback() noexcept {
+void Reader::setGeneralCallback(std::function<void(Data)> callback) noexcept {
 	auto&& [lock, reader] = locked();
-	reader.resetCallback();
+	reader.setGeneralCallback(callback);
 }
 
+void Reader::resetEventCallback(const Data::Status event) noexcept {
+	auto&& [lock, reader] = locked();
+	reader.resetEventCallback(event);
+}
+
+void Reader::resetEventCallbacks() noexcept {
+	auto&& [lock, reader] = locked();
+	reader.resetEventCallbacks();
+}
+
+void Reader::resetGeneralCallback() noexcept {
+	auto&& [lock, reader] = locked();
+	reader.resetGeneralCallback();
+}
+
+void Reader::resetCallbacks() noexcept {
+	auto&& [lock, reader] = locked();
+	reader.resetCallbacks();
+}
 
 bool Reader::opened() const noexcept {
 	auto&& [lock, reader] = locked();

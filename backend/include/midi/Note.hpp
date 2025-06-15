@@ -9,7 +9,7 @@ namespace _details {
 
 // initializer for note
 struct NotesInitializer {
-    NotesInitializer() noexcept;
+	NotesInitializer() noexcept;
 };
 extern NotesInitializer notes;
 
@@ -22,11 +22,11 @@ struct Note {
 	static constexpr float baseFreq = 440.f;
 
 	/// @brief Note midi key number
-    i32 num;
+	i32 num;
 	/// @brief Note name
-    char name[8];
+	char name[8];
 	/// @brief Note frequency
-    float freq;
+	float freq;
 
 	/// @brief Returns note frequency with base frequency different than 440Hz
 	/// @param baseFreq base frequency

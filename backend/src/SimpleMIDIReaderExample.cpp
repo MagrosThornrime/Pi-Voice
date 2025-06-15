@@ -18,7 +18,7 @@ std::mutex dataMutex;
 // JS function opening reader of given number
 void openReader(const Napi::CallbackInfo& info) noexcept;
 // callback to set in reader
-void midiCallback(midi::InternalReader& reader) noexcept;
+void midiCallback(const midi::Data reader) noexcept;
 // JS function reading midi data (human readable)
 Napi::Array readMidi(const Napi::CallbackInfo& info) noexcept;
 // JS function reading available midi ports
@@ -49,7 +49,7 @@ void openReader(const Napi::CallbackInfo& info) noexcept {
 		// opening n-th port on reader
 		reader.open(midi::Ports::locked(midi::Ports::getByNum, n));
 		// setting midiCallback as event handler
-		reader.setCallback(midiCallback);
+		reader.setGeneralCallback(midiCallback);
 	} catch (std::exception& e) {
 		reader.close();
 		fmt::println("{}", e.what());
@@ -58,27 +58,36 @@ void openReader(const Napi::CallbackInfo& info) noexcept {
 	}
 }
 
-void midiCallback(midi::InternalReader& reader) noexcept {
+void midiCallback(const midi::Data reader) noexcept {
 	auto lock = std::lock_guard(dataMutex);
 	// read event to data
-	data.push_back(reader.read());
+	data.push_back(reader);
 }
 
 Napi::Array readMidi(const Napi::CallbackInfo& info) noexcept {
 	auto env = info.Env();
 	auto lock = std::lock_guard(dataMutex);
 
-	auto notes = data
-		| std::views::filter(std::mem_fn(&midi::Data::hasNote))
-		| std::views::transform(std::mem_fn(&midi::Data::note))
+	std::vector<midi::Data> notes = data
+		| std::views::filter(std::mem_fn(&midi::Data::hasVelocity))
+		| std::views::transform(std::identity{})
 		| ranges::to<std::vector>;
 	data.clear();
 
 	auto result = Napi::Array::New(env);
-	for (auto&& [i, note] : notes | ranges::views::enumerate) {
+	for (auto&& [i, data] : notes | ranges::views::enumerate) {
+		auto note = data.note();
 		result.Set(i, Napi::String::New(env,
 			// example: "C#_5 <num> <freq>"
-			fmt::format("{}\t{}\t{}Hz", note.name, note.num, note.freq)));
+			fmt::format(
+				"{} name: '{}'\tmidi number: {}\tfrequency: {}Hz\tvelocity: {}",
+				data.status() == midi::Data::noteOn ? "Pressed" : "Released",
+				note.name,
+				note.num,
+				note.freq,
+				data.velocity()
+			)
+		));
 	}
 
 	return result;
