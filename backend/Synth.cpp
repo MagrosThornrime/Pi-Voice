@@ -7,61 +7,81 @@
 #include <oscillators/SquareOscillator.hpp>
 #include <oscillators/TriangleOscillator.hpp>
 #include <oscillators/NoiseOscillator.hpp>
+#include <Midi.hpp>
+#include <fmt/core.h>
 
 int main() {
-    try {
-        portaudio::AutoSystem autoSys;
+	try {
+		portaudio::AutoSystem autoSys;
 
-        portaudio::System &sys = portaudio::System::instance();
+		portaudio::System& sys = portaudio::System::instance();
 
-        portaudio::Device &outputDevice = sys.defaultOutputDevice();
+		portaudio::Device& outputDevice = sys.defaultOutputDevice();
 
-        std::cout << "Using output device: " << outputDevice.name() << std::endl;
+		std::cout << "Using output device: " << outputDevice.name() << std::endl;
 
-        portaudio::DirectionSpecificStreamParameters outParams(
-            outputDevice,
-            2,                      // 2 channels (stereo)
-            portaudio::FLOAT32,     // sample format
-            true,                  // interleaved
-            outputDevice.defaultLowOutputLatency(),
-            nullptr
-        );
+		portaudio::DirectionSpecificStreamParameters outParams(
+			outputDevice,
+			2,                      // 2 channels (stereo)
+			portaudio::FLOAT32,     // sample format
+			true,                  // interleaved
+			outputDevice.defaultLowOutputLatency(),
+			nullptr
+		);
 
-        portaudio::StreamParameters streamParams(
-            portaudio::DirectionSpecificStreamParameters::null(), // input
-            outParams,
-            44100,
-            256,
-            paClipOff
-        );
+		portaudio::StreamParameters streamParams(
+			portaudio::DirectionSpecificStreamParameters::null(), // input
+			outParams,
+			44100,
+			256,
+			paClipOff
+		);
 
-        TriangleOscillator oscillator(44100.0f);
-        oscillator.setFrequency(1, 3);
-        //oscillator.setAmplitude(0.05f);
+		SineOscillator oscillator(44100.0f);
+		oscillator.setFrequency(1, 3);
+		//oscillator.setAmplitude(0.05f);
 
-        // Use BlockingStream instead of MemFunCallbackStream
-        portaudio::MemFunCallbackStream<Oscillator> stream(
-            streamParams,
-            oscillator,
-            &TriangleOscillator::paCallback
-        );
+		// Use BlockingStream instead of MemFunCallbackStream
+		portaudio::MemFunCallbackStream<Oscillator> stream(
+			streamParams,
+			oscillator,
+			&SineOscillator::paCallback
+		);
 
-        stream.start();
-        std::cout << "Stream started." << std::endl;
+		stream.start();
+		std::cout << "Stream started." << std::endl;
 
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+		{
+			auto midiThread = std::jthread([&oscillator](std::stop_token stopToken) {
+				try {
+					midi::Reader reader;
+					reader.open(midi::Ports::getByNum(0));
 
-        stream.stop();
-        stream.close();
-        std::cout << "Stream stopped and closed." << std::endl;
+					for (; not stopToken.stop_requested();) {
+						auto data = reader.read();
+						if (data.hasNote() and data.status() == midi::Data::noteOn) {
+							oscillator.setFrequency(data.note().freq);
+						}
+					}
+				} catch (std::exception& e) {
+					fmt::println("{}", e.what());
+				}
+			});
 
-    } catch (const portaudio::PaException &e) {
-        std::cerr << "PortAudio exception: " << e.paErrorText() << std::endl;
-        return 1;
-    } catch (const std::exception &e) {
-        std::cerr << "Standard exception: " << e.what() << std::endl;
-        return 1;
-    }
+			(void)getchar();
+		}
 
-    return 0;
+		stream.stop();
+		stream.close();
+		std::cout << "Stream stopped and closed." << std::endl;
+
+	} catch (const portaudio::PaException& e) {
+		std::cerr << "PortAudio exception: " << e.paErrorText() << std::endl;
+		return 1;
+	} catch (const std::exception& e) {
+		std::cerr << "Standard exception: " << e.what() << std::endl;
+		return 1;
+	}
+
+	return 0;
 }

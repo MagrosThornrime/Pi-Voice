@@ -3,5 +3,6 @@ app/
 .cmake/
 .idea/
 bin/
+backend/CMakeSettings.json
 CMakeFiles/
 _deps/
