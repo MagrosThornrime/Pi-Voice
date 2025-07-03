@@ -4,5 +4,5 @@
 class SquareOscillator : public PhaseOscillator {
 public:
     using PhaseOscillator::PhaseOscillator;
-    float getNextSample() override;
+    f32 getNextSample() override;
 };

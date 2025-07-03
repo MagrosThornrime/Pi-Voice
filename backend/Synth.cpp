@@ -1,5 +1,4 @@
 #include <portaudiocpp/PortAudioCpp.hxx>
-#include <iostream>
 #include <thread>
 #include <chrono>
 #include <oscillators/SawtoothOscillator.hpp>
@@ -10,6 +9,7 @@
 #include <Midi.hpp>
 #include <fmt/core.h>
 
+
 int main() {
 	try {
 		portaudio::AutoSystem autoSys;
@@ -18,7 +18,7 @@ int main() {
 
 		portaudio::Device& outputDevice = sys.defaultOutputDevice();
 
-		std::cout << "Using output device: " << outputDevice.name() << std::endl;
+		fmt::println("Using output device: {}", outputDevice.name());
 
 		portaudio::DirectionSpecificStreamParameters outParams(
 			outputDevice,
@@ -49,13 +49,13 @@ int main() {
 		);
 
 		stream.start();
-		std::cout << "Stream started." << std::endl;
+		fmt::println("Stream started");
 
 		{
 			auto midiThread = std::jthread([&oscillator](std::stop_token stopToken) {
 				try {
 					midi::Reader reader;
-					reader.open(midi::Ports::getByNum(0));
+					reader.open(midi::Ports::getByNum(1));
 
 					for (; not stopToken.stop_requested();) {
 						auto data = reader.read();
@@ -73,13 +73,13 @@ int main() {
 
 		stream.stop();
 		stream.close();
-		std::cout << "Stream stopped and closed." << std::endl;
+		fmt::println("Stream stopped and closed");
 
 	} catch (const portaudio::PaException& e) {
-		std::cerr << "PortAudio exception: " << e.paErrorText() << std::endl;
+		fmt::println("{}", e.paErrorText());
 		return 1;
 	} catch (const std::exception& e) {
-		std::cerr << "Standard exception: " << e.what() << std::endl;
+		fmt::println("{}", e.what());
 		return 1;
 	}
 

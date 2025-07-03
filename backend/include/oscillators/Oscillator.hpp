@@ -1,27 +1,28 @@
 #pragma once
 #include <portaudio.h>
+#include <Types.hpp>
 
 class Oscillator {
 protected:
-	float _amplitude = 1.0f;
-	float _sampleRate;
+	f32 _amplitude = 1.0f;
+	f32 _sampleRate;
 
-	const float _REFERENCE_FREQUENCY = 220.0f;
-	float _currentFrequency = _REFERENCE_FREQUENCY;
+	const f32 _REFERENCE_FREQUENCY = 220.0f;
+	f32 _currentFrequency = _REFERENCE_FREQUENCY;
 
 public:
-	int paCallback(const void* input, void* output,
-		unsigned long frameCount,
+	i32 paCallback(const void* input, void* output,
+		u64 frameCount,
 		const PaStreamCallbackTimeInfo* timeInfo,
 		PaStreamCallbackFlags statusFlags);
 
-	explicit Oscillator(float sampleRate);
+	explicit Oscillator(f32 sampleRate);
 
-	void setFrequency(int octave, int seminote);
-	void setFrequency(float freq);
-	void setAmplitude(float amplitude);
+	void setFrequency(i32 octave, i32 seminote);
+	void setFrequency(f32 freq);
+	void setAmplitude(f32 amplitude);
 
-	virtual float getNextSample();
+	virtual f32 getNextSample();
 	virtual void advance() {};
 
 };

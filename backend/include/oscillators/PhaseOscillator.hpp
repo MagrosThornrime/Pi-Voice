@@ -3,7 +3,7 @@
 
 class PhaseOscillator : public Oscillator {
 protected:
-    float _phase = 0.0f;
+    f32 _phase = 0.0f;
 
 public:
     using Oscillator::Oscillator;
