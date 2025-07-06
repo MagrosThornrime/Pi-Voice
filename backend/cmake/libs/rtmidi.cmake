@@ -4,8 +4,7 @@ include("cmake/CPM.cmake")
 
 CPMAddPackage(
     NAME rtmidi
-    URL http://www.music.mcgill.ca/~gary/rtmidi/release/rtmidi-6.0.0.tar.gz
-    VERSION 6.0.0
+    URL https://github.com/thestk/rtmidi/archive/refs/tags/6.0.0.tar.gz    VERSION 6.0.0
     OPTIONS
     "BUILD_SHARED_LIBS ON"
     "RTMIDI_BUILD_TESTING OFF"
