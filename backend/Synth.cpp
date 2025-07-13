@@ -60,37 +60,26 @@ int main() {
 			std::cin >> which;
 			std::cin.ignore();
 
-			auto midiThread = std::jthread([&](std::stop_token stopToken) {
-				try {
-					midi::Reader reader;
-					auto port = midi::Ports::getByNum(which);
-					fmt::println("selected {}: {}", port.num, port.name);
-					reader.open(port);
-					reader.open(port);
-					reader.readAll();
+			midi::Reader reader;
+			auto port = midi::Ports::getByNum(which);
+			fmt::println("selected {}: {}", port.num, port.name);
+			reader.open(port);
+			reader.readAll();
 
-					for (; not stopToken.stop_requested();) {
-						auto data = reader.read();
-						if (data.hasVelocity()) {
-							auto note = data.note();
-							fmt::print("{}{}", note.name, data.status() == midi::Data::noteOn ? 'v' : '^');
-							if (data.status() == midi::Data::noteOn) {
-								oscillator.setAmplitude(1);
-								oscillator.setFrequency(note.freq);
-								fmt::println(" {}", data.velocity());
-							}
-							if (data.status() == midi::Data::noteOff) {
-								oscillator.setAmplitude(0);
-								fmt::println("");
-							}
-						}
-					}
-				} catch (std::exception& e) {
-					fmt::println("{}", e.what());
-				}
+			reader.setEventCallback(midi::Data::noteOn, [&](const midi::Data data) {
+				auto note = data.note();
+
+				oscillator.setAmplitude(1);
+				oscillator.setFrequency(note.freq);
+				fmt::print("{}v {}", note.name, data.velocity());
+			});
+			reader.setEventCallback(midi::Data::noteOn, [&](const midi::Data data) {
+				oscillator.setAmplitude(0);
+				fmt::print("{}^", data.note().name);
 			});
 
 			(void)getchar();
+			reader.close();
 		}
 
 		stream.stop();
