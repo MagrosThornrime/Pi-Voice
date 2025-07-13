@@ -12,9 +12,6 @@ protected:
     /// @brief Sample rate of generated sound
     f32 _sampleRate;
 
-    /// @brief A base frequency used for calculating semitones' frequencies
-    const f32 _REFERENCE_FREQUENCY = 220.0f;
-
     /// @brief Frequency of generated sound
     f32 _currentFrequency = _REFERENCE_FREQUENCY;
 
@@ -27,9 +24,6 @@ public:
 
     /// @brief Constructor
     explicit Oscillator(f32 sampleRate);
-
-    /// @brief Sets the frequency to one assigned to given note
-    void setFrequency(i32 octave, i32 seminote);
 
     /// @brief Explicitly sets the frequency
     void setFrequency(f32 freq);

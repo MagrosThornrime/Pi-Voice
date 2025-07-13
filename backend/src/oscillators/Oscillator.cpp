@@ -23,11 +23,6 @@ f32 Oscillator::getNextSample() {
 	return 0.0f;
 }
 
-void Oscillator::setFrequency(i32 octave, i32 seminote) {
-	f32 distance = octave * 12 + seminote;
-	_currentFrequency = _REFERENCE_FREQUENCY * std::pow(2.0f, distance / 12.0f);
-}
-
 void Oscillator::setFrequency(f32 freq) {
 	_currentFrequency = freq;
 }
