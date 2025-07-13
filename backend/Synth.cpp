@@ -63,7 +63,9 @@ int main() {
 			auto midiThread = std::jthread([&](std::stop_token stopToken) {
 				try {
 					midi::Reader reader;
-					reader.open(midi::Ports::getByNum(which));
+					auto port = midi::Ports::getByNum(which);
+					fmt::println("selected {}: {}", port.num, port.name);
+					reader.open(port);
 					reader.readAll();
 
 					for (; not stopToken.stop_requested();) {
