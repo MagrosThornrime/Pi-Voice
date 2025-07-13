@@ -1,11 +1,7 @@
 #include <portaudiocpp/PortAudioCpp.hxx>
 #include <thread>
 #include <chrono>
-#include <oscillators/SawtoothOscillator.hpp>
-#include <oscillators/SineOscillator.hpp>
-#include <oscillators/SquareOscillator.hpp>
-#include <oscillators/TriangleOscillator.hpp>
-#include <oscillators/NoiseOscillator.hpp>
+#include <Oscillators.hpp>
 #include <Midi.hpp>
 #include <fmt/core.h>
 

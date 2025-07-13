@@ -1,9 +1,5 @@
 #include <gtest/gtest.h>
-#include <oscillators/SineOscillator.hpp>
-#include <oscillators/TriangleOscillator.hpp>
-#include <oscillators/SquareOscillator.hpp>
-#include <oscillators/NoiseOscillator.hpp>
-#include <oscillators/SawtoothOscillator.hpp>
+#include <Oscillators.hpp>
 
 TEST(Oscillators, SineInRange) {
     oscillators::SineOscillator oscillator(44100.0f);
