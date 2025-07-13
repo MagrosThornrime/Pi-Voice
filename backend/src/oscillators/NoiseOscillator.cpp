@@ -1,6 +1,6 @@
 #include <oscillators/NoiseOscillator.hpp>
 
-
+namespace oscillators {
 NoiseOscillator::NoiseOscillator(f32 sampleRate) : Oscillator(sampleRate) {
 	_rng = std::mt19937(std::random_device{}());
 	_dist = std::uniform_real_distribution<f32>(-1.0f, 1.0f);
@@ -22,4 +22,5 @@ f32 NoiseOscillator::getNextSample() {
         return value;
     }
     return _lastValue;
+}
 }

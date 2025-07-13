@@ -2,6 +2,7 @@
 #include <oscillators/Oscillator.hpp>
 #include <random>
 
+namespace oscillators {
 /// @brief Generates noise-like sound (like in old TVs')
 class NoiseOscillator : public Oscillator {
 protected:
@@ -31,3 +32,5 @@ public:
     void advance() override;
 
 };
+}
+

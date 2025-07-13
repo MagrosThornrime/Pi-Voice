@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <cmath>
 
+namespace oscillators {
 i32 Oscillator::paCallback(const void* input, void* output,
 	u64 frameCount,
 	const PaStreamCallbackTimeInfo* timeInfo,
@@ -36,4 +37,5 @@ void Oscillator::setAmplitude(f32 amplitude) {
 		throw std::invalid_argument("Amplitude must be between 0.0 and 1.0");
 	}
 	_amplitude = amplitude;
+}
 }

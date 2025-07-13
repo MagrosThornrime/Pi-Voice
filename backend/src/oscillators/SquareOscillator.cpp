@@ -2,6 +2,7 @@
 #include <cmath>
 #include <numbers>
 
+namespace oscillators {
 f32 SquareOscillator::getNextSample() {
     i32 harmonics = 0;
     while(_currentFrequency * (f32) (harmonics * 2 - 1) < _sampleRate / 2.0f) {
@@ -14,4 +15,5 @@ f32 SquareOscillator::getNextSample() {
         sample += std::sin(_phase * factor) / factor;
     }
     return sample * 4.0f / std::numbers::pi;
+}
 }

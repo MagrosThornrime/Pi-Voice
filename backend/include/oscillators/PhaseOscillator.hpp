@@ -1,6 +1,7 @@
 #pragma once
 #include <oscillators/Oscillator.hpp>
 
+namespace oscillators{
 /// @brief An interface for all oscillators based on sinusoides
 class PhaseOscillator : public Oscillator {
 protected:
@@ -15,3 +16,4 @@ public:
     void advance() override;
 
 };
+}

@@ -1,6 +1,7 @@
 #pragma once
 #include <oscillators/PhaseOscillator.hpp>
 
+namespace oscillators {
 /// @brief Generates triangle-like waves
 class TriangleOscillator : public PhaseOscillator {
 public:
@@ -10,3 +11,4 @@ public:
     /// @brief Calculates next sample's value
     f32 getNextSample() override;
 };
+}

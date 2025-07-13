@@ -37,15 +37,15 @@ int main() {
 			paClipOff
 		);
 
-		SineOscillator oscillator(44100.0f);
+		oscillators::SineOscillator oscillator(44100.0f);
 		oscillator.setFrequency(1, 3);
 		//oscillator.setAmplitude(0.05f);
 
 		// Use BlockingStream instead of MemFunCallbackStream
-		portaudio::MemFunCallbackStream<Oscillator> stream(
+		portaudio::MemFunCallbackStream<oscillators::Oscillator> stream(
 			streamParams,
 			oscillator,
-			&SineOscillator::paCallback
+			&oscillators::SineOscillator::paCallback
 		);
 
 		stream.start();

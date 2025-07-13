@@ -2,6 +2,7 @@
 #include <cmath>
 #include <numbers>
 
+namespace oscillators {
 f32 SawtoothOscillator::getNextSample() {
     i32 harmonics = 0;
     f32 partialFrequency = _currentFrequency;
@@ -14,4 +15,5 @@ f32 SawtoothOscillator::getNextSample() {
         sample += std::sin(_phase * (f32) i) / (f32) i;
     }
     return sample * 2.0f / std::numbers::pi;
+}
 }

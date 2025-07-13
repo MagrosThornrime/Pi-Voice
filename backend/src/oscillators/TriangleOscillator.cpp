@@ -2,7 +2,7 @@
 #include <cmath>
 #include <numbers>
 
-
+namespace oscillators {
 f32 TriangleOscillator::getNextSample() {
     i32 harmonics = 0;
     while(_currentFrequency * (f32) (harmonics * 2 - 1) < _sampleRate / 2.0f) {
@@ -23,4 +23,5 @@ f32 TriangleOscillator::getNextSample() {
         subtract = not subtract;
     }
     return sample * 8.0f / std::pow(std::numbers::pi, 2);
+}
 }
