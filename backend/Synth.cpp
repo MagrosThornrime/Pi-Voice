@@ -66,6 +66,7 @@ int main() {
 					auto port = midi::Ports::getByNum(which);
 					fmt::println("selected {}: {}", port.num, port.name);
 					reader.open(port);
+					reader.open(port);
 					reader.readAll();
 
 					for (; not stopToken.stop_requested();) {
