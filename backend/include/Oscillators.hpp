@@ -5,3 +5,7 @@
 #include <oscillators/SawtoothOscillator.hpp>
 #include <oscillators/SquareOscillator.hpp>
 #include <oscillators/TriangleOscillator.hpp>
+
+enum OscillatorType {
+    noise, sine, sawtooth, square, triangle
+}
