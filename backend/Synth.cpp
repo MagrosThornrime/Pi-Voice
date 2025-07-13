@@ -73,7 +73,7 @@ int main() {
 				oscillator.setFrequency(note.freq);
 				fmt::print("{}v {}", note.name, data.velocity());
 			});
-			reader.setEventCallback(midi::Data::noteOn, [&](const midi::Data data) {
+			reader.setEventCallback(midi::Data::noteOff, [&](const midi::Data data) {
 				oscillator.setAmplitude(0);
 				fmt::print("{}^", data.note().name);
 			});
