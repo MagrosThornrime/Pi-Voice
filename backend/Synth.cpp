@@ -38,7 +38,7 @@ int main() {
 		);
 
 		SineOscillator oscillator(44100.0f);
-		oscillator.setFrequency(1, 3);
+		oscillator.setFrequency(0);
 		//oscillator.setAmplitude(0.05f);
 
 		// Use BlockingStream instead of MemFunCallbackStream
@@ -52,15 +52,34 @@ int main() {
 		std::cout << "Stream started." << std::endl;
 
 		{
-			auto midiThread = std::jthread([&oscillator](std::stop_token stopToken) {
+			for (auto&& port : midi::Ports::list()) {
+				fmt::println("{}: {}", port.num, port.name);
+			}
+			fmt::print("> ");
+			u32 which{};
+			std::cin >> which;
+			std::cin.ignore();
+
+			auto midiThread = std::jthread([&](std::stop_token stopToken) {
 				try {
 					midi::Reader reader;
-					reader.open(midi::Ports::getByNum(0));
+					reader.open(midi::Ports::getByNum(which));
+					reader.readAll();
 
 					for (; not stopToken.stop_requested();) {
 						auto data = reader.read();
-						if (data.hasNote() and data.status() == midi::Data::noteOn) {
-							oscillator.setFrequency(data.note().freq);
+						if (data.hasVelocity()) {
+							auto note = data.note();
+							fmt::print("{}{}", note.name, data.status() == midi::Data::noteOn ? 'v' : '^');
+							if (data.status() == midi::Data::noteOn) {
+								oscillator.setAmplitude(1);
+								oscillator.setFrequency(note.freq);
+								fmt::println(" {}", data.velocity());
+							}
+							if (data.status() == midi::Data::noteOff) {
+								oscillator.setAmplitude(0);
+								fmt::println("");
+							}
 						}
 					}
 				} catch (std::exception& e) {
