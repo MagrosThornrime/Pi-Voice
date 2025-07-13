@@ -61,7 +61,7 @@ int main() {
 			std::cin.ignore();
 
 			midi::Reader reader;
-			auto port = midi::Ports::getByNum(which);
+			auto port = midi::Ports::locked(midi::Ports::getByNum, which);
 			fmt::println("selected {}: {}", port.num, port.name);
 			reader.open(port);
 			reader.readAll();
@@ -71,11 +71,11 @@ int main() {
 
 				oscillator.setAmplitude(1);
 				oscillator.setFrequency(note.freq);
-				fmt::print("{}v {}", note.name, data.velocity());
+				fmt::println("{}v {}", note.name, data.velocity());
 			});
 			reader.setEventCallback(midi::Data::noteOff, [&](const midi::Data data) {
 				oscillator.setAmplitude(0);
-				fmt::print("{}^", data.note().name);
+				fmt::println("{}^", data.note().name);
 			});
 
 			(void)getchar();
