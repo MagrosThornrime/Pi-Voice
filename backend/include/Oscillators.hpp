@@ -6,6 +6,8 @@
 #include <oscillators/SquareOscillator.hpp>
 #include <oscillators/TriangleOscillator.hpp>
 
+namespace oscillators {
 enum OscillatorType {
     noise, sine, sawtooth, square, triangle
+};
 }

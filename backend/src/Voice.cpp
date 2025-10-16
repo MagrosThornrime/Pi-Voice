@@ -1,27 +1,23 @@
 #include <Voice.hpp>
 
-Voice::setOscillatorType(OscillatorType oscillatorType) {
+void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType) {
     switch (oscillatorType) {
-        case noise:
-            _oscillator = std::make_shared<Noise>();
+        case oscillators::noise:
+            _oscillator = std::make_shared<oscillators::NoiseOscillator>(_sampleRate);
             break;
-        case sine:
-            _oscillator = std::make_shared<Sine>();
+        case oscillators::sine:
+            _oscillator = std::make_shared<oscillators::SineOscillator>(_sampleRate);
             break;
-        case sawtooth:
-            _oscillator = std::make_shared<Sawtooth>();
+        case oscillators::sawtooth:
+            _oscillator = std::make_shared<oscillators::SawtoothOscillator>(_sampleRate);
             break;
-        case square:
-            _oscillator = std::make_shared<Square>();
+        case oscillators::square:
+            _oscillator = std::make_shared<oscillators::SquareOscillator>(_sampleRate);
             break;
-        case triangle:
-            _oscillator = std::make_shared<Triangle>();
+        case oscillators::triangle:
+            _oscillator = std::make_shared<oscillators::TriangleOscillator>(_sampleRate);
             break;
     }
-}
-
-void Voice::setAmplitude(amplitude){
-	_oscillator->setAmplitude(amplitude);
 }
 
 f32 Voice::getNextSample(){
@@ -37,8 +33,8 @@ void Voice::update(){
 	}
 }
 
-Voice::Voice(i32 voiceNumber) : _voiceNumber(voiceNumber) {
-    setOscillatorType(sine);
-	f32 frequency = 440.f * std::pow(2.f, (voiceNumber - 69.f) / 12.f;
+Voice::Voice(i32 voiceNumber, f32 sampleRate) : _voiceNumber(voiceNumber), _sampleRate(sampleRate) {
+    setOscillatorType(oscillators::sine);
+	f32 frequency = 440.f * std::pow(2.f, (voiceNumber - 69.f) / 12.f);
     _oscillator->setFrequency(frequency);
 }

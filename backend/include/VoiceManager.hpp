@@ -3,12 +3,19 @@
 
 class VoiceManager {
     std::vector<Voice> _voices;
+    f32 _getNextSample();
 
 public:
-    explicit VoiceManager(i32 voicesNumber);
+    VoiceManager(i32 voicesNumber, f32 sampleRate);
+	f32 amplitude = 0.1f;
 
-    void setAmplitude(f32 amplitude);
-    void setOscillatorType(OscillatorType type);
-    f32 getNextSample();
+    /// @brief PortAudio callback used for streaming the audio
+    i32 paCallback(const void* input, void* output,
+        u64 frameCount,
+        const PaStreamCallbackTimeInfo* timeInfo,
+        PaStreamCallbackFlags statusFlags);
+
+    void setOscillatorType(oscillators::OscillatorType type);
     void update();
+	void setActive(i32 voiceNumber, bool isActive);
 };

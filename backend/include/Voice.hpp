@@ -4,16 +4,16 @@
 #include <memory>
 
 class Voice {
-    std::shared_ptr<Oscillator> _oscillator;
+    std::shared_ptr<oscillators::Oscillator> _oscillator;
     i32 _voiceNumber;
+	f32 _sampleRate;
 
 public:
 	bool isActive = false;
 
-    explicit Voice(i32 voiceNumber);
-    void setOscillatorType(OscillatorType oscillatorType);
-    void setAmplitude(f32 amplitude);
+    Voice(i32 voiceNumber, f32 sampleRate);
+    void setOscillatorType(oscillators::OscillatorType oscillatorType);
     f32 getNextSample();
     void update();
 	void setActive(i32 voiceNumber, bool isActive);
-}
+};

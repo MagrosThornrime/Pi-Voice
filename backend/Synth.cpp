@@ -1,9 +1,9 @@
 #include <portaudiocpp/PortAudioCpp.hxx>
 #include <thread>
 #include <chrono>
-#include <Oscillators.hpp>
 #include <Midi.hpp>
 #include <fmt/core.h>
+#include <VoiceManager.hpp>
 
 
 int main() {
@@ -33,30 +33,34 @@ int main() {
 			paClipOff
 		);
 
-		oscillators::SineOscillator oscillator(44100.0f);
-		oscillator.setFrequency(1, 3);
-		//oscillator.setAmplitude(0.05f);
+		VoiceManager voiceManager(128, 44100.0f);
 
 		// Use BlockingStream instead of MemFunCallbackStream
-		portaudio::MemFunCallbackStream<oscillators::Oscillator> stream(
+		portaudio::MemFunCallbackStream<VoiceManager> stream(
 			streamParams,
-			oscillator,
-			&oscillators::SineOscillator::paCallback
+			voiceManager,
+			&VoiceManager::paCallback
 		);
 
 		stream.start();
 		fmt::println("Stream started");
 
 		{
-			auto midiThread = std::jthread([&oscillator](std::stop_token stopToken) {
+			auto midiThread = std::jthread([&voiceManager](std::stop_token stopToken) {
 				try {
 					midi::Reader reader;
 					reader.open(midi::Ports::getByNum(1));
 
 					for (; not stopToken.stop_requested();) {
 						auto data = reader.read();
-						if (data.hasNote() and data.status() == midi::Data::noteOn) {
-							oscillator.setFrequency(data.note().freq);
+						if (!data.hasNote()){
+							continue;
+						}
+						if(data.status() == midi::Data::noteOn){
+							voiceManager.setActive(data.note().num, true);
+						}
+						else if(data.status() == midi::Data::noteOff){
+							voiceManager.setActive(data.note().num, false);
 						}
 					}
 				} catch (std::exception& e) {
