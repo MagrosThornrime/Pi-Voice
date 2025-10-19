@@ -9,8 +9,48 @@
 #include <oscillators/NoiseOscillator.hpp>
 #include <Midi.hpp>
 #include <fmt/core.h>
+#include <pipeline/Pipeline.hpp>
+
+class LowPassFilter: public portaudio::CallbackInterface {
+public:
+	LowPassFilter(float cutoffFreq, float sampleRate, int channels) {
+		const float RC = 1.0f / (2.0f * 3.14159265f * cutoffFreq);
+		const float dt = 1.0f / sampleRate;
+		_alpha = dt / (RC + dt);
+
+		_channels = channels;
+
+		_prevOutputs.resize(channels, 0);
+	}
+
+	int paCallbackFun(const void* input, void* output,
+		unsigned long frameCount,
+		const PaStreamCallbackTimeInfo* timeInfo,
+		PaStreamCallbackFlags statusFlags) override {
+
+		const float* in = (const float*)input;
+		float* out = (float*)output;
+
+		u32 idx = 0;
+		for (u32 i = 0; i != frameCount; ++i) {
+			for (u32 ch = 0; ch != _channels; ++ch, ++idx) {
+				float y = _prevOutputs[ch] + _alpha * (in[idx] - _prevOutputs[ch]);
+				_prevOutputs[ch] = y;
+				out[idx] = y;
+			}
+		}
+
+		return paContinue;
+	}
+
+private:
+	std::vector<float> _prevOutputs;
+	float _alpha{};
+	int _channels{};
+};
 
 int main() {
+
 	try {
 		portaudio::AutoSystem autoSys;
 
@@ -37,21 +77,45 @@ int main() {
 			paClipOff
 		);
 
-		SineOscillator oscillator(44100.0f);
-		oscillator.setFrequency(0);
+		auto oscillator = std::make_shared<SineOscillator>(44100.0f);
+		oscillator->setFrequency(0);
+
+		Pipeline pipeline;
+		pipeline
+			.setSource(oscillator)
+			.addLayer(std::make_shared<LowPassFilter>(
+				1000,
+				streamParams.sampleRate(),
+				streamParams.outputParameters().numChannels()
+			));
+
 		//oscillator.setAmplitude(0.05f);
 
-		// Use BlockingStream instead of MemFunCallbackStream
-		portaudio::MemFunCallbackStream<Oscillator> stream(
+		portaudio::CallbackInterface& pipelineInt = pipeline;
+		portaudio::InterfaceCallbackStream stream(
 			streamParams,
-			oscillator,
-			&SineOscillator::paCallback
+			pipeline
 		);
 
 		stream.start();
 		std::cout << "Stream started." << std::endl;
 
 		{
+			//oscillator->setFrequency(4000);
+			auto sineThread = std::jthread([&](std::stop_token stopToken) {
+				try {
+					for (u32 i = 0; not stopToken.stop_requested(); ++i, std::this_thread::sleep_for(std::chrono::milliseconds(10))) {
+						oscillator->setFrequency(200.0f + 2800.0f * (0.5f + 0.5f * std::sin(3.14159265f * i / 100.f)));
+					}
+				} catch (std::exception& e) {
+					fmt::println("{}", e.what());
+				}
+			});
+
+			(void)getchar();
+		}
+
+		/*{
 			for (auto&& port : midi::Ports::list()) {
 				fmt::println("{}: {}", port.num, port.name);
 			}
@@ -88,7 +152,7 @@ int main() {
 			});
 
 			(void)getchar();
-		}
+		}*/
 
 		stream.stop();
 		stream.close();
