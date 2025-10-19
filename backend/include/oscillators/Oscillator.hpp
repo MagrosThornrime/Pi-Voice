@@ -1,7 +1,8 @@
 #pragma once
 #include <portaudio.h>
+#include <portaudiocpp/PortAudioCpp.hxx>
 
-class Oscillator {
+class Oscillator: public portaudio::CallbackInterface {
 protected:
 	float _amplitude = 1.0f;
 	float _sampleRate;
@@ -10,10 +11,10 @@ protected:
 	float _currentFrequency = _REFERENCE_FREQUENCY;
 
 public:
-	int paCallback(const void* input, void* output,
+	int paCallbackFun(const void* input, void* output,
 		unsigned long frameCount,
 		const PaStreamCallbackTimeInfo* timeInfo,
-		PaStreamCallbackFlags statusFlags);
+		PaStreamCallbackFlags statusFlags) override;
 
 	explicit Oscillator(float sampleRate);
 
