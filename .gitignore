@@ -1,4 +1,4 @@
-app/
+/app
 .vscode/
 .cmake/
 .idea/
