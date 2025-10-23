@@ -34,11 +34,11 @@ int main() {
 		);
 
 		VoiceManager voiceManager(128, 44100.0f);
-		voiceManager.setOscillatorType(oscillators::sine);
-		voiceManager.setADSRAttack(0.04f);
-		voiceManager.setADSRDecay(0.02f);
-		voiceManager.setADSRSustain(1.0f);
-		voiceManager.setADSRRelease(0.04f);
+		voiceManager.setOscillatorType(oscillators::square);
+		voiceManager.setADSRAttack(0.00004f);
+		voiceManager.setADSRDecay(0.0002f);
+		voiceManager.setADSRSustain(0.4f);
+		voiceManager.setADSRRelease(0.00001f);
 
 		// Use BlockingStream instead of MemFunCallbackStream
 		portaudio::MemFunCallbackStream<VoiceManager> stream(

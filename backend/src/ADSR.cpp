@@ -14,21 +14,21 @@ f32 ADSR::getAmplitude(bool isActive) {
 				_amplitude = 1.0f;
 				_stage = decay;
 			}
+			return _amplitude;
         }
-        else if (_stage == decay) {
+        if (_stage == decay) {
             _amplitude -= decayFactor;
         	if (_amplitude <= sustainAmplitude) {
  				_amplitude = sustainAmplitude;
 				_stage = sustain;
 			}
+			return _amplitude;
         }
     }
-	else {
-        _stage = release;
-        _amplitude -= releaseFactor;
-        if (_amplitude <= 0.0f){
-			_amplitude = 0.0f;
-		}
-    }
+    _stage = release;
+    _amplitude -= releaseFactor;
+    if (_amplitude <= 0.0f){
+		_amplitude = 0.0f;
+	}
     return _amplitude;
 }

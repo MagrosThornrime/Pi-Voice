@@ -24,10 +24,6 @@ void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType) {
 
 f32 Voice::getNextSample(){
 	return _adsr.getAmplitude(isActive) * _oscillator->getNextSample();
-	//if(isActive){
-		//return _oscillator->getNextSample();
-	//}
-	//return 0.0f;
 }
 
 void Voice::update(){
@@ -35,7 +31,7 @@ void Voice::update(){
 }
 
 Voice::Voice(i32 voiceNumber, f32 sampleRate) : _sampleRate(sampleRate) {
-    setOscillatorType(oscillators::sine);
+    setOscillatorType(oscillators::triangle);
 	_frequency = 440.f * std::pow(2.f, (voiceNumber - 69.f) / 12.f);
     _oscillator->setFrequency(_frequency);
 }
