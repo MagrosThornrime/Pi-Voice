@@ -10,8 +10,8 @@ public:
 	f32 amplitude = 0.1f;
 
     /// @brief PortAudio callback used for streaming the audio
-    i32 paCallback(const void* input, void* output,
-        u64 frameCount,
+    int paCallback(const void* input, void* output,
+        unsigned long frameCount,
         const PaStreamCallbackTimeInfo* timeInfo,
         PaStreamCallbackFlags statusFlags);
 

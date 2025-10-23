@@ -54,7 +54,7 @@ int main() {
 			auto midiThread = std::jthread([&voiceManager](std::stop_token stopToken) {
 				try {
 					midi::Reader reader;
-					reader.open(midi::Ports::getByNum(1));
+					reader.open(midi::Ports::getByNum(0));
 
 					for (; not stopToken.stop_requested();) {
 						auto data = reader.read();
