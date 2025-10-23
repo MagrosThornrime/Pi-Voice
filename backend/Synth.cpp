@@ -57,10 +57,10 @@ int main() {
 							continue;
 						}
 						if(data.status() == midi::Data::noteOn){
-							voiceManager.setActive(data.note().num, true);
+							voiceManager.turnOn(data.note().num);
 						}
 						else if(data.status() == midi::Data::noteOff){
-							voiceManager.setActive(data.note().num, false);
+							voiceManager.turnOff(data.note().num);
 						}
 					}
 				} catch (std::exception& e) {

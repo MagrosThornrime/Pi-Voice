@@ -5,7 +5,7 @@ include("cmake/libs/portaudio.cmake")
 include("cmake/libs/fmt.cmake")
 include("cmake/midi.cmake")
 
-file(GLOB_RECURSE SOURCES src/oscillators/*.cpp src/Voice.cpp src/VoiceManager.cpp)
+file(GLOB_RECURSE SOURCES src/oscillators/*.cpp src/Voice.cpp src/VoiceManager.cpp src/ADSR.cpp)
 
 add_executable(synth Synth.cpp ${SOURCES})
 

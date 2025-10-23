@@ -40,6 +40,10 @@ void VoiceManager::update(){
 	}
 }
 
-void VoiceManager::setActive(i32 voiceNumber, bool isActive){
-	_voices[voiceNumber].isActive = isActive;
+void VoiceManager::turnOn(i32 voiceNumber){
+	_voices[voiceNumber].turnOn();
+}
+
+void VoiceManager::turnOff(i32 voiceNumber){
+    _voices[voiceNumber].turnOff();
 }

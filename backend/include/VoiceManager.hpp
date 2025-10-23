@@ -17,5 +17,6 @@ public:
 
     void setOscillatorType(oscillators::OscillatorType type);
     void update();
-	void setActive(i32 voiceNumber, bool isActive);
+	void turnOn(i32 voiceNumber);
+    void turnOff(i32 voiceNumber);
 };
