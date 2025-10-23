@@ -42,3 +42,19 @@ void Voice::turnOn(){
 void Voice::turnOff(){
     isActive = false;
 }
+
+void Voice::setADSRAttack(i32 attack){
+	_adsr.attack = attack;
+}
+
+void Voice::setADSRDecay(i32 decay){
+	_adsr.decay = decay;
+}
+
+void Voice::setADSRSustain(f32 sustain){
+	_adsr.sustain = sustain;
+}
+
+void Voice::setADSRRelease(i32 release){
+	_adsr.release = release;
+}

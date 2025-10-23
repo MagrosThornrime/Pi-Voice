@@ -20,4 +20,9 @@ public:
 
 	void turnOn();
     void turnOff();
+
+	void setADSRAttack(i32 attack);
+	void setADSRDecay(i32 decay);
+	void setADSRSustain(f32 sustain);
+	void setADSRRelease(i32 release);
 };

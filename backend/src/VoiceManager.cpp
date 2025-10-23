@@ -47,3 +47,27 @@ void VoiceManager::turnOn(i32 voiceNumber){
 void VoiceManager::turnOff(i32 voiceNumber){
     _voices[voiceNumber].turnOff();
 }
+
+void VoiceManager::setADSRAttack(i32 attack){
+	for(auto& voice : _voices){
+		voice.setADSRAttack(attack);
+	}
+}
+
+void VoiceManager::setADSRDecay(i32 decay){
+	for(auto& voice : _voices){
+		voice.setADSRDecay(decay);
+	}
+}
+
+void VoiceManager::setADSRSustain(f32 sustain){
+	for(auto& voice : _voices){
+		voice.setADSRSustain(sustain);
+	}
+}
+
+void VoiceManager::setADSRRelease(i32 release){
+	for(auto& voice : _voices){
+		voice.setADSRRelease(release);
+	}
+}
