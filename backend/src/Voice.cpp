@@ -1,5 +1,6 @@
 #include <Voice.hpp>
 
+
 void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType) {
     switch (oscillatorType) {
         case oscillators::noise:
@@ -18,20 +19,25 @@ void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType) {
             _oscillator = std::make_shared<oscillators::TriangleOscillator>(_sampleRate);
             break;
     }
+	_oscillator->setFrequency(_frequency);
 }
 
 f32 Voice::getNextSample(){
 	return _adsr.getAmplitude(isActive) * _oscillator->getNextSample();
+	//if(isActive){
+		//return _oscillator->getNextSample();
+	//}
+	//return 0.0f;
 }
 
 void Voice::update(){
 	_oscillator->advance();
 }
 
-Voice::Voice(i32 voiceNumber, f32 sampleRate) : _voiceNumber(voiceNumber), _sampleRate(sampleRate) {
+Voice::Voice(i32 voiceNumber, f32 sampleRate) : _sampleRate(sampleRate) {
     setOscillatorType(oscillators::sine);
-	f32 frequency = 440.f * std::pow(2.f, (voiceNumber - 69.f) / 12.f);
-    _oscillator->setFrequency(frequency);
+	_frequency = 440.f * std::pow(2.f, (voiceNumber - 69.f) / 12.f);
+    _oscillator->setFrequency(_frequency);
 }
 
 void Voice::turnOn(){
@@ -43,18 +49,18 @@ void Voice::turnOff(){
     isActive = false;
 }
 
-void Voice::setADSRAttack(i32 attack){
-	_adsr.attack = attack;
+void Voice::setADSRAttack(f32 attack){
+	_adsr.attackFactor = attack;
 }
 
-void Voice::setADSRDecay(i32 decay){
-	_adsr.decay = decay;
+void Voice::setADSRDecay(f32 decay){
+	_adsr.decayFactor = decay;
 }
 
 void Voice::setADSRSustain(f32 sustain){
-	_adsr.sustain = sustain;
+	_adsr.sustainAmplitude = sustain;
 }
 
-void Voice::setADSRRelease(i32 release){
-	_adsr.release = release;
+void Voice::setADSRRelease(f32 release){
+	_adsr.releaseFactor = release;
 }

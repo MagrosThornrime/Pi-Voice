@@ -20,8 +20,8 @@ public:
 	void turnOn(i32 voiceNumber);
     void turnOff(i32 voiceNumber);
 
-	void setADSRAttack(i32 attack);
-	void setADSRDecay(i32 decay);
+	void setADSRAttack(f32 attack);
+	void setADSRDecay(f32 decay);
 	void setADSRSustain(f32 sustain);
-	void setADSRRelease(i32 release);
+	void setADSRRelease(f32 release);
 };

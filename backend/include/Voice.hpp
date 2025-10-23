@@ -6,8 +6,9 @@
 
 class Voice {
     std::shared_ptr<oscillators::Oscillator> _oscillator;
-    i32 _voiceNumber;
+	f32 _frequency;
 	f32 _sampleRate;
+
     ADSR _adsr;
 
 public:
@@ -21,8 +22,8 @@ public:
 	void turnOn();
     void turnOff();
 
-	void setADSRAttack(i32 attack);
-	void setADSRDecay(i32 decay);
+	void setADSRAttack(f32 attack);
+	void setADSRDecay(f32 decay);
 	void setADSRSustain(f32 sustain);
-	void setADSRRelease(i32 release);
+	void setADSRRelease(f32 release);
 };

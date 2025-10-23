@@ -1,28 +1,34 @@
 #include <ADSR.hpp>
+#include <iostream>
 
 void ADSR::reset(){
-    _remainingAttack = attack;
-    _remainingDecay = decay;
-    _remainingRelease = release;
+	_amplitude = 0.0f;
+	_stage = attack;
 }
 
-f32 ADSR::getAmplitude(bool isActive){
-    f32 amplitude = 0.0f;
-    if (_remainingAttack > 0){
-        amplitude = 1.0f - (f32) _remainingAttack / (f32) attack;
-        _remainingAttack--;
+f32 ADSR::getAmplitude(bool isActive) {
+    if (isActive) {
+        if (_stage == attack) {
+            _amplitude += attackFactor;
+            if (_amplitude >= 1.0f) { 
+				_amplitude = 1.0f;
+				_stage = decay;
+			}
+        }
+        else if (_stage == decay) {
+            _amplitude -= decayFactor;
+        	if (_amplitude <= sustainAmplitude) {
+ 				_amplitude = sustainAmplitude;
+				_stage = sustain;
+			}
+        }
     }
-    else if (_remainingDecay > 0){
-        f32 decayFactor = 1.0f - (f32) _remainingDecay / (f32) decay;
-        amplitude = 1.0f - (1.0f - sustain) * decayFactor;
-        _remainingDecay--;
+	else {
+        _stage = release;
+        _amplitude -= releaseFactor;
+        if (_amplitude <= 0.0f){
+			_amplitude = 0.0f;
+		}
     }
-    else if (isActive){
-        amplitude = sustain;
-    }
-    else if (_remainingRelease > 0){
-        amplitude = sustain * (f32) _remainingRelease / (f32) release;
-        _remainingRelease--;
-    }
-    return amplitude;
+    return _amplitude;
 }

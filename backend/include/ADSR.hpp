@@ -1,18 +1,20 @@
 #pragma once
 #include <Types.hpp>
 
+enum ADSRStage{
+	attack, decay, sustain, release
+};
 
 class ADSR {
 
-    i32 _remainingAttack{};
-    i32 _remainingDecay{};
-    i32 _remainingRelease{};
+    f32 _amplitude{};
+	ADSRStage _stage = release;
 
 public:
-    i32 attack = 10000;
-    i32 decay = 1000;
-    f32 sustain = 0.8f;
-    i32 release = 100000;
+    f32 attackFactor = 0.01f;
+    f32 decayFactor = 0.01f;
+    f32 sustainAmplitude = 0.8f;
+    f32 releaseFactor = 0.02f;
 
     void reset();
     f32 getAmplitude(bool isActive);
