@@ -6,3 +6,4 @@ bin/
 backend/CMakeSettings.json
 CMakeFiles/
 _deps/
+/frontend/lib
