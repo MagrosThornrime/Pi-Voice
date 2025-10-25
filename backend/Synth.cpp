@@ -10,10 +10,263 @@
 #include <Midi.hpp>
 #include <fmt/core.h>
 #include <pipeline/Pipeline.hpp>
+#include <Filters.hpp>
 
-class LowPassFilter: public portaudio::CallbackInterface {
+#include <atomic>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <string>
+#include <thread>
+#include <vector>
+#include <condition_variable>
+#include <mutex>
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <iostream>
+
+class FileRecorderCallback: public portaudio::CallbackInterface {
 public:
-	LowPassFilter(float cutoffFreq, float sampleRate, int channels) {
+	// capacityFrames: how many frames the internal ring can hold (will be rounded up to power-of-two)
+	FileRecorderCallback(const std::string& filename, unsigned channels, unsigned sampleRate, size_t capacityFrames = 1 << 18)
+		: _filename(filename),
+		_channels(channels),
+		_sampleRate(sampleRate),
+		_capacityFrames(nextPowerOfTwo(std::max<size_t>(capacityFrames, 256))),
+		_capacitySamples(_capacityFrames* channels),
+		_mask(_capacitySamples - 1),
+		_buffer(_capacitySamples) {}
+
+	~FileRecorderCallback() override {
+		stop(); // ensure writer stopped and file patched
+	}
+
+	// Start background writer thread and open file for writing
+	bool start() {
+		if (_running.load(std::memory_order_acquire)) return false;
+		_f = std::fopen(_filename.c_str(), "wb+");
+		if (!_f) {
+			std::perror("FileRecorderCallback: open failed");
+			return false;
+		}
+		if (!writeWavHeaderPlaceholder()) {
+			std::fclose(_f); _f = nullptr;
+			return false;
+		}
+		_running.store(true, std::memory_order_release);
+		_writerThread = std::thread(&FileRecorderCallback::writerThreadFunc, this);
+		return true;
+	}
+
+	// Stop background writer, finalize header
+	void stop() {
+		if (!_running.load(std::memory_order_acquire)) {
+			if (_f) { std::fclose(_f); _f = nullptr; }
+			return;
+		}
+		_running.store(false, std::memory_order_release);
+		_cv.notify_one();
+		if (_writerThread.joinable()) _writerThread.join();
+		patchWavHeader();
+		if (_f) { std::fclose(_f); _f = nullptr; }
+	}
+
+	// number of dropped samples (floats) due to ring overflow
+	uint64_t droppedSamples() const { return _droppedSamples.load(std::memory_order_relaxed); }
+
+	// -------------------------
+	// Real-time safe callback: copies inputBuffer (float*) into ring buffer.
+	// If inputBuffer == nullptr, writes zeros for the block.
+	// NOTE: this callback should be installed in your PortAudio pipeline as the stream callback
+	// (or called from your pipeline). It ignores outputBuffer.
+	int paCallbackFun(const void* inputBuffer, void* /*outputBuffer*/, unsigned long numFrames,
+		const PaStreamCallbackTimeInfo* /*timeInfo*/, PaStreamCallbackFlags statusFlags) override {
+// Optionally track statusFlags (non-blocking update)
+		if (statusFlags & paInputOverflow) {
+			_statusInputOverflow.fetch_add(1, std::memory_order_relaxed);
+		}
+		if (statusFlags & paOutputUnderflow) {
+			_statusOutputUnderflow.fetch_add(1, std::memory_order_relaxed);
+		}
+
+		const float* in = static_cast<const float*>(inputBuffer);
+		const bool haveInput = (in != nullptr);
+
+		const size_t samplesToPush = static_cast<size_t>(numFrames) * _channels;
+		if (samplesToPush == 0) return paContinue;
+
+		uint64_t w = _writeIndex.load(std::memory_order_relaxed);
+		uint64_t r = _readIndex.load(std::memory_order_acquire);
+		uint64_t available = w - r;
+		uint64_t freeSpace = _capacitySamples - available;
+
+		if (freeSpace == 0) {
+			// ring full: drop full block
+			_droppedSamples.fetch_add(samplesToPush, std::memory_order_relaxed);
+			return paContinue;
+		}
+		const size_t toWrite = static_cast<size_t>(std::min<uint64_t>(samplesToPush, freeSpace));
+		const size_t pos = static_cast<size_t>(w & _mask);
+
+		// write in one or two memcpy calls to handle wrap
+		const size_t first = std::min(toWrite, _capacitySamples - pos);
+		if (haveInput) {
+			std::memcpy(&_buffer[pos], in, first * sizeof(float));
+			if (first < toWrite) {
+				std::memcpy(&_buffer[0], in + first, (toWrite - first) * sizeof(float));
+			}
+		} else {
+			// inputBuffer == nullptr -> write zeros
+			std::memset(&_buffer[pos], 0, first * sizeof(float));
+			if (first < toWrite) {
+				std::memset(&_buffer[0], 0, (toWrite - first) * sizeof(float));
+			}
+		}
+
+		_writeIndex.store(w + toWrite, std::memory_order_release);
+
+		// cheap notify for writer thread; allowed in callback
+		_cv.notify_one();
+
+		return paContinue;
+	}
+
+	// Optional: start recording filename (replace file). Thread-safe only when stopped.
+	void setFilename(const std::string& filename) {
+		if (_running.load(std::memory_order_acquire)) return;
+		_filename = filename;
+	}
+
+	// Diagnostics
+	uint64_t statusInputOverflowCount() const { return _statusInputOverflow.load(); }
+	uint64_t statusOutputUnderflowCount() const { return _statusOutputUnderflow.load(); }
+	unsigned channels() const { return _channels; }
+	unsigned sampleRate() const { return _sampleRate; }
+
+private:
+	// ring helpers
+	static size_t nextPowerOfTwo(size_t v) {
+		size_t p = 1;
+		while (p < v) p <<= 1;
+		return p;
+	}
+
+	void writerThreadFunc() {
+		const size_t maxChunkSamples = 4096 * _channels;
+		std::vector<float> tmp;
+		tmp.reserve(maxChunkSamples);
+
+		while (_running.load(std::memory_order_acquire) || (_readIndex.load(std::memory_order_relaxed) != _writeIndex.load(std::memory_order_acquire))) {
+			uint64_t w = _writeIndex.load(std::memory_order_acquire);
+			uint64_t r = _readIndex.load(std::memory_order_relaxed);
+			uint64_t avail = w - r;
+			if (avail == 0) {
+				std::unique_lock<std::mutex> lk(_cvMutex);
+				_cv.wait_for(lk, std::chrono::milliseconds(50));
+				continue;
+			}
+
+			size_t chunk = static_cast<size_t>(std::min<uint64_t>(avail, maxChunkSamples));
+			tmp.resize(chunk);
+
+			size_t pos = static_cast<size_t>(r & _mask);
+			size_t first = std::min(chunk, _capacitySamples - pos);
+			std::memcpy(tmp.data(), &_buffer[pos], first * sizeof(float));
+			if (first < chunk) {
+				std::memcpy(tmp.data() + first, &_buffer[0], (chunk - first) * sizeof(float));
+			}
+
+			size_t written = std::fwrite(tmp.data(), sizeof(float), chunk, _f);
+			if (written != chunk) {
+				// log and continue; keep read index in sync for data we consumed
+				std::perror("FileRecorderCallback: fwrite failed");
+			}
+			_dataBytesWritten += written * sizeof(float);
+			_readIndex.store(r + written, std::memory_order_release);
+		}
+
+		std::fflush(_f);
+	}
+
+	// WAV header helpers
+	void writeLE_u32(FILE* f, uint32_t v) {
+		uint8_t buf[4];
+		buf[0] = (uint8_t)(v & 0xff);
+		buf[1] = (uint8_t)((v >> 8) & 0xff);
+		buf[2] = (uint8_t)((v >> 16) & 0xff);
+		buf[3] = (uint8_t)((v >> 24) & 0xff);
+		std::fwrite(buf, 1, 4, f);
+	}
+	void writeLE_u16(FILE* f, uint16_t v) {
+		uint8_t buf[2];
+		buf[0] = (uint8_t)(v & 0xff);
+		buf[1] = (uint8_t)((v >> 8) & 0xff);
+		std::fwrite(buf, 1, 2, f);
+	}
+
+	bool writeWavHeaderPlaceholder() {
+		// 32-bit float WAV (audioFormat = 3)
+		std::fwrite("RIFF", 1, 4, _f);
+		writeLE_u32(_f, 0); // placeholder chunk size
+		std::fwrite("WAVE", 1, 4, _f);
+
+		std::fwrite("fmt ", 1, 4, _f);
+		writeLE_u32(_f, 16); // fmt chunk size
+		writeLE_u16(_f, 3); // format = IEEE float
+		writeLE_u16(_f, static_cast<uint16_t>(_channels));
+		writeLE_u32(_f, static_cast<uint32_t>(_sampleRate));
+		uint32_t byteRate = _sampleRate * _channels * sizeof(float);
+		writeLE_u32(_f, byteRate);
+		uint16_t blockAlign = static_cast<uint16_t>(_channels * sizeof(float));
+		writeLE_u16(_f, blockAlign);
+		writeLE_u16(_f, static_cast<uint16_t>(8 * sizeof(float)));
+
+		std::fwrite("data", 1, 4, _f);
+		writeLE_u32(_f, 0); // placeholder data size
+		return true;
+	}
+
+	void patchWavHeader() {
+		if (!_f) return;
+		uint64_t dataSize = _dataBytesWritten;
+		uint64_t riffSize = 36 + dataSize;
+
+		std::fseek(_f, 4, SEEK_SET);
+		writeLE_u32(_f, static_cast<uint32_t>(riffSize));
+		std::fseek(_f, 40, SEEK_SET);
+		writeLE_u32(_f, static_cast<uint32_t>(dataSize));
+		std::fflush(_f);
+	}
+
+	// members
+	std::string _filename;
+	const unsigned _channels;
+	const unsigned _sampleRate;
+
+	const size_t _capacityFrames;
+	const size_t _capacitySamples;
+	const size_t _mask;
+	std::vector<float> _buffer;
+
+	std::atomic<uint64_t> _writeIndex{0};
+	std::atomic<uint64_t> _readIndex{0};
+
+	std::atomic<bool> _running{false};
+	std::thread _writerThread;
+	std::condition_variable _cv;
+	std::mutex _cvMutex;
+
+	FILE* _f{nullptr};
+	std::atomic<uint64_t> _droppedSamples{0};
+	std::atomic<uint64_t> _statusInputOverflow{0};
+	std::atomic<uint64_t> _statusOutputUnderflow{0};
+	uint64_t _dataBytesWritten{0};
+};
+
+class LowPassFilter2: public portaudio::CallbackInterface {
+public:
+	LowPassFilter2(float cutoffFreq, float sampleRate, int channels) {
 		const float RC = 1.0f / (2.0f * 3.14159265f * cutoffFreq);
 		const float dt = 1.0f / sampleRate;
 		_alpha = dt / (RC + dt);
@@ -21,6 +274,9 @@ public:
 		_channels = channels;
 
 		_prevOutputs.resize(channels, 0);
+
+		fmt::println("a = {}", _alpha);
+		fmt::println("b = {}", 1 - _alpha);
 	}
 
 	int paCallbackFun(const void* input, void* output,
@@ -48,6 +304,114 @@ private:
 	float _alpha{};
 	int _channels{};
 };
+//
+//class HighPassFilter: public portaudio::CallbackInterface {
+//public:
+//	HighPassFilter(float cutoffFreq, float sampleRate, int channels) {
+//		const float RC = 1.0f / (2.0f * 3.14159265f * cutoffFreq);
+//		const float dt = 1.0f / sampleRate;
+//		_alpha = RC / (RC + dt);
+//
+//		_channels = channels;
+//		_prevOutputs.resize(channels, 0);
+//		_prevInputs.resize(channels, 0);
+//	}
+//
+//	int paCallbackFun(const void* input, void* output,
+//		unsigned long frameCount,
+//		const PaStreamCallbackTimeInfo* timeInfo,
+//		PaStreamCallbackFlags statusFlags) override {
+//
+//		const float* in = (const float*)input;
+//		float* out = (float*)output;
+//
+//		u32 idx = 0;
+//		for (u32 i = 0; i != frameCount; ++i) {
+//			for (u32 ch = 0; ch != _channels; ++ch, ++idx) {
+//				float y = _alpha * (_prevOutputs[ch] + in[idx] - _prevInputs[ch]);
+//				_prevOutputs[ch] = y;
+//				_prevInputs[ch] = in[idx];
+//				out[idx] = y;
+//			}
+//		}
+//
+//		return paContinue;
+//	}
+//
+//private:
+//	std::vector<float> _prevOutputs;
+//	std::vector<float> _prevInputs;
+//	float _alpha{};
+//	int _channels{};
+//};
+//
+//class BandPassFilter: public portaudio::CallbackInterface {
+//public:
+//	BandPassFilter(float centerFreq, float Q, float sampleRate, int channels)
+//		: _channels(channels) {
+//		// Calculate intermediate variables
+//		const float omega = 2.0f * 3.14159265f * centerFreq / sampleRate;
+//		const float alpha = sin(omega) / (2.0f * Q);
+//
+//		// Biquad band-pass filter coefficients (constant skirt, peak gain = Q)
+//		_b0 = alpha;
+//		_b1 = 0.0f;
+//		_b2 = -alpha;
+//		_a0 = 1.0f + alpha;
+//		_a1 = -2.0f * cos(omega);
+//		_a2 = 1.0f - alpha;
+//
+//		// Normalize coefficients
+//		_b0 /= _a0;
+//		_b1 /= _a0;
+//		_b2 /= _a0;
+//		_a1 /= _a0;
+//		_a2 /= _a0;
+//
+//		// Initialize state buffers
+//		_x1.resize(channels, 0.0f);
+//		_x2.resize(channels, 0.0f);
+//		_y1.resize(channels, 0.0f);
+//		_y2.resize(channels, 0.0f);
+//	}
+//
+//	int paCallbackFun(const void* input, void* output, unsigned long frameCount,
+//		const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) override {
+//		const float* in = (const float*)input;
+//		float* out = (float*)output;
+//		unsigned int idx = 0;
+//
+//		for (unsigned int i = 0; i < frameCount; ++i) {
+//			for (int ch = 0; ch < _channels; ++ch, ++idx) {
+//				float x = in[idx];
+//				// Biquad difference equation
+//				float y = _b0 * x + _b1 * _x1[ch] + _b2 * _x2[ch]
+//					- _a1 * _y1[ch] - _a2 * _y2[ch];
+//
+//		  // Shift delay buffers
+//				_x2[ch] = _x1[ch];
+//				_x1[ch] = x;
+//				_y2[ch] = _y1[ch];
+//				_y1[ch] = y;
+//
+//				out[idx] = y;
+//			}
+//		}
+//
+//		return paContinue;
+//	}
+//
+//private:
+//	int _channels;
+//
+//	// Biquad coefficients
+//	float _b0{}, _b1{}, _b2{};
+//	float _a0{}, _a1{}, _a2{};
+//
+//	// Per-channel state buffers
+//	std::vector<float> _x1, _x2; // previous inputs
+//	std::vector<float> _y1, _y2; // previous outputs
+//};
 
 int main() {
 
@@ -80,15 +444,21 @@ int main() {
 		auto oscillator = std::make_shared<SineOscillator>(44100.0f);
 		oscillator->setFrequency(0);
 
+		auto recorder = std::make_shared<FileRecorderCallback>("capture_in.wav", 2, 44100);
+		if (!recorder->start()) {
+			std::cerr << "Failed to start recorder\n";
+			return 1;
+		}
+
+
 		Pipeline pipeline;
 		pipeline
 			.setSource(oscillator)
-			.addLayer(std::make_shared<LowPassFilter>(
-				1000,
-				streamParams.sampleRate(),
-				streamParams.outputParameters().numChannels()
-			));
-
+			.addLayer(std::make_shared<LowPassFilter>(2, streamParams.outputParameters().numChannels(), 1000, streamParams.sampleRate()))
+			.addLayer(recorder)
+			//.addLayer(std::make_shared<LowPassFilter2>(1000, streamParams.sampleRate(), streamParams.outputParameters().numChannels()))
+			//.addLayer(std::make_shared<BandPassFilter>(1000, 1, streamParams.sampleRate(), streamParams.outputParameters().numChannels()));
+			;
 		//oscillator.setAmplitude(0.05f);
 
 		portaudio::CallbackInterface& pipelineInt = pipeline;
@@ -105,7 +475,7 @@ int main() {
 			auto sineThread = std::jthread([&](std::stop_token stopToken) {
 				try {
 					for (u32 i = 0; not stopToken.stop_requested(); ++i, std::this_thread::sleep_for(std::chrono::milliseconds(10))) {
-						oscillator->setFrequency(200.0f + 2800.0f * (0.5f + 0.5f * std::sin(3.14159265f * i / 100.f)));
+						oscillator->setFrequency(200.0f + 3800.0f * (0.5f + 0.5f * std::sin(3.14159265f * i / 100.f)));
 					}
 				} catch (std::exception& e) {
 					fmt::println("{}", e.what());
@@ -114,6 +484,8 @@ int main() {
 
 			(void)getchar();
 		}
+
+		recorder->stop();
 
 		/*{
 			for (auto&& port : midi::Ports::list()) {

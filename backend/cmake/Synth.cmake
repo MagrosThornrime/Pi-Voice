@@ -5,10 +5,11 @@ include("cmake/libs/portaudio.cmake")
 include("cmake/libs/fmt.cmake")
 include("cmake/midi.cmake")
 include("cmake/pipeline.cmake")
+include("cmake/filters.cmake")
 
 file(GLOB_RECURSE SOURCES src/oscillators/*.cpp)
 
 add_executable(synth Synth.cpp ${SOURCES})
 
 target_include_directories(synth PUBLIC include ${portaudio_SOURCE_DIR}/include)
-target_link_libraries(synth rtmidi portaudio portaudiocpp fmt::fmt midi pipeline)
+target_link_libraries(synth rtmidi portaudio portaudiocpp fmt::fmt midi pipeline filters)
