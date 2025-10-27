@@ -10,16 +10,19 @@ HighShelfFilter::HighShelfFilter(const u32 order, const u32 channels, const f32 
 	constexpr auto pi = std::numbers::pi_v<f32>;
 
 	if (order == 1) {
-		const auto K = std::tan(pi * cutoffFrequency / samplingRate);
-		const auto A = std::pow(10.f, gainDB / 40);
-		const auto a0 = 1 + K;
+		const auto alpha = std::tan(pi * cutoffFrequency / samplingRate);
+		const auto A = std::pow(10.f, gainDB / 20);
+		const auto sqrtA = std::sqrt(A);
+		const auto a0 = 1 + alpha;
 
 		_b = {
-			1 + A * K,
-			-1 + A * K
+			sqrtA + alpha,
+			sqrtA - alpha,
+			0
 		};
 		_a = {
-			1 - K
+			alpha - 1,
+			0
 		};
 
 		for (auto&& a : _a) {
