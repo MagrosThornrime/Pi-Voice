@@ -45,18 +45,26 @@ void Voice::turnOff(){
     isActive = false;
 }
 
-void Voice::setADSRAttack(f32 attack){
-	_adsr.attackFactor = attack;
+void Voice::setAttack(f32 attack){
+    if(attack > 0.0f && attack < 1.0f) {
+        _adsr.attackFactor = attack;
+    }
 }
 
-void Voice::setADSRDecay(f32 decay){
-	_adsr.decayFactor = decay;
+void Voice::setDecay(f32 decay){
+    if(decay > 0.0f && decay < 1.0f) {
+        _adsr.decayFactor = decay;
+    }
 }
 
-void Voice::setADSRSustain(f32 sustain){
-	_adsr.sustainAmplitude = sustain;
+void Voice::setSustain(f32 sustain){
+    if(sustain > 0.0f && sustain < 1.0f) {
+        _adsr.sustainAmplitude = sustain;
+    }
 }
 
-void Voice::setADSRRelease(f32 release){
-	_adsr.releaseFactor = release;
+void Voice::setRelease(f32 release){
+    if(release > 0.0f && release < 1.0f) {
+        _adsr.releaseFactor = release;
+    }
 }

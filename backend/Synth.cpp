@@ -290,10 +290,10 @@ int main() {
 
 		auto voiceManager = std::make_shared<VoiceManager>(128, 44100.0f);
 		voiceManager->setOscillatorType(oscillators::square);
-		voiceManager->setADSRAttack(0.0004f);
-		voiceManager->setADSRDecay(0.000f);
-		voiceManager->setADSRSustain(0.5f);
-		voiceManager->setADSRRelease(0.0001f);
+		voiceManager->setAttack(0.0004f);
+		voiceManager->setDecay(0.000f);
+		voiceManager->setSustain(0.5f);
+		voiceManager->setRelease(0.0001f);
 
 		auto recorder = std::make_shared<FileRecorderCallback>("capture_in.wav", 2, 44100);
 		if (!recorder->start()) {
