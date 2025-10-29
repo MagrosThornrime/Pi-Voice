@@ -1,6 +1,7 @@
 #pragma once
 #include <Voice.hpp>
 #include <portaudiocpp/PortAudioCpp.hxx>
+#include <mutex>
 
 /// @brief Controls all Voices in the synthesiser and mixes their outputs
 class VoiceManager : public portaudio::CallbackInterface {
@@ -9,6 +10,9 @@ class VoiceManager : public portaudio::CallbackInterface {
 
 	/// @brief Gets current sample of the sound
     f32 _getNextSample();
+
+	/// @brief Mutex for changing oscillators
+	std::mutex _oscillatorMutex;
 
 public:
 	/// @brief Constructor
