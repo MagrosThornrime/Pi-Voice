@@ -54,6 +54,7 @@ const museoModerno = MuseoModerno({ subsets: ["latin"] });
 
 export default function WithAction() {
   const [open, setOpen] = useState(false);
+  const [presetNr, setPresetNr] = useState(1);
   return (
     <Box
       as="header"
@@ -114,17 +115,28 @@ export default function WithAction() {
         </Drawer.Root>
 
         <HStack alignItems={"center"}>
-          <Button variant={"solid"} colorScheme={"teal"} size={"sm"}>
+          <Button 
+          variant={"solid"} 
+          colorScheme={"teal"} 
+          size={"sm"}
+          onClick={()=>setPresetNr(presetNr-1)}
+          >
             prev
           </Button>
           <Box>
             <Text
               style={{ fontSize: "1.5rem" }}
             >
-              Preset 1
+              Preset {presetNr}
             </Text>
           </Box>
-          <Button variant={"solid"} colorScheme={"teal"} size={"sm"} mr={4}>
+          <Button 
+          variant={"solid"} 
+          colorScheme={"teal"} 
+          size={"sm"} 
+          mr={4}
+          onClick={()=>setPresetNr(presetNr+1)}
+          >
             next
           </Button>
         </HStack>
