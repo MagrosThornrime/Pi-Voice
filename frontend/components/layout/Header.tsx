@@ -7,12 +7,14 @@ import {
   Text,
   IconButton,
   Button,
-  Menu,
-  Portal
+  Drawer,
+  Portal,
+  VStack
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { LuExternalLink} from "react-icons/lu";
 import { MuseoModerno } from "next/font/google";
+import { start } from "repl";
 
 interface Props {
   children: React.ReactNode;
@@ -60,8 +62,8 @@ export default function WithAction() {
       zIndex="99"
     >
       <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-        <Menu.Root>
-          <Menu.Trigger paddingY="3" as="div">
+        <Drawer.Root placement={"start"}>
+          <Drawer.Trigger paddingY="3" as="div">
             <IconButton
               style={{ fontSize: "1.5rem" }}
               className={museoModerno.className}
@@ -70,22 +72,44 @@ export default function WithAction() {
             >
             Pi-Voice
             </IconButton>
-          </Menu.Trigger>
+          </Drawer.Trigger>
           <Portal>
-            <Menu.Positioner>
-              <Menu.Content>
+            <Drawer.Backdrop />
+            <Drawer.Positioner>
+              <Drawer.Content bg="#004F5D" color="white" p={6}>
+              <VStack padding={4} align="stretch">
                 {Links.map((link) => (
-                  <Menu.Item key={link.href} asChild value={link.name}>
-                    <Link href={link.href} rel="noreferrer">
-                      {link.name}
-                      {link.external ? <LuExternalLink /> : null}
-                    </Link>
-                  </Menu.Item>
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    rel={link.external ? "noreferrer" : undefined}
+                    target={link.external ? "_blank" : "_self"}
+                  >
+                    <Box
+                      as="button"
+                      w="100%"
+                      p={5}
+                      bg="#00B8D9"
+                      _hover={{ bg: "#00D1E0", transform: "scale(1.03)" }}
+                      borderRadius="xl"
+                      transition="all 0.2s"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      className={museoModerno.className}
+                      fontSize="1.25rem"
+                      fontWeight="600"
+                    >
+                      <Text>{link.name}</Text>
+                      {link.external && <LuExternalLink />}
+                    </Box>
+                  </Link>
                 ))}
-              </Menu.Content>
-            </Menu.Positioner>
+              </VStack>
+            </Drawer.Content>
+            </Drawer.Positioner>
           </Portal>
-        </Menu.Root>
+        </Drawer.Root>
 
         <HStack alignItems={"center"}>
           <Button variant={"solid"} colorScheme={"teal"} size={"sm"}>
