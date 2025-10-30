@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <cmath>
 
-int Oscillator::paCallback(const void* input, void* output,
+int Oscillator::paCallbackFun(const void* input, void* output,
 	unsigned long frameCount,
 	const PaStreamCallbackTimeInfo* timeInfo,
 	PaStreamCallbackFlags statusFlags) {
