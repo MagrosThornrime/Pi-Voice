@@ -15,6 +15,7 @@ import Link from "next/link";
 import { LuExternalLink} from "react-icons/lu";
 import { MuseoModerno } from "next/font/google";
 import { start } from "repl";
+import { useState } from "react";
 
 interface Props {
   children: React.ReactNode;
@@ -52,6 +53,7 @@ const Links: readonly SimpleLink[] = [
 const museoModerno = MuseoModerno({ subsets: ["latin"] });
 
 export default function WithAction() {
+  const [open, setOpen] = useState(false);
   return (
     <Box
       as="header"
@@ -62,13 +64,12 @@ export default function WithAction() {
       zIndex="99"
     >
       <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-        <Drawer.Root placement={"start"}>
+        <Drawer.Root placement={"start"} open={open} onOpenChange={(details) => setOpen(details.open)}>
           <Drawer.Trigger paddingY="3" as="div">
             <IconButton
               style={{ fontSize: "1.5rem" }}
               className={museoModerno.className}
               aria-label={"Open Menu"}
-              onClick={() => console.log("Cluecked!")}
             >
             Pi-Voice
             </IconButton>
@@ -84,6 +85,7 @@ export default function WithAction() {
                     href={link.href}
                     rel={link.external ? "noreferrer" : undefined}
                     target={link.external ? "_blank" : "_self"}
+                    onClick={() => setOpen(false)}
                   >
                     <Box
                       as="button"
