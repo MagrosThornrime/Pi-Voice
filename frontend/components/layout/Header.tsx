@@ -65,7 +65,7 @@ export default function WithAction() {
       zIndex="99"
     >
       <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-        <Drawer.Root placement={"start"} open={open} onOpenChange={(details) => setOpen(details.open)}>
+        <Drawer.Root placement={"start"} open={open} onOpenChange={() => setOpen(!open)}>
           <Drawer.Trigger paddingY="3" as="div">
             <IconButton
               style={{ fontSize: "1.5rem" }}
