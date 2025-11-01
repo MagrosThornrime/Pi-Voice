@@ -15,21 +15,20 @@ int VoiceManager::paCallbackFun(const void* input, void* output,
 }
 
 VoiceManager::VoiceManager(i32 voicesNumber, f32 sampleRate){
-	auto lock = std::lock_guard<std::mutex>(_oscillatorMutex);
     for(i32 i = 0; i < voicesNumber; i++){
         _voices.emplace_back(i, sampleRate);
     }
 }
 
 void VoiceManager::setOscillatorType(oscillators::OscillatorType type){
-	auto lock = std::lock_guard<std::mutex>(_oscillatorMutex);
+	auto lock = std::lock_guard(_oscillatorMutex);
 	for(auto& voice : _voices){
 		voice.setOscillatorType(type);
 	}
 }
 
 f32 VoiceManager::_getNextSample(){
-	auto lock = std::lock_guard<std::mutex>(_oscillatorMutex);
+	auto lock = std::lock_guard(_oscillatorMutex);
 	f32 sample = 0.0f;
 	for(auto& voice : _voices){
 		sample += voice.getNextSample();
@@ -38,7 +37,7 @@ f32 VoiceManager::_getNextSample(){
 }
 
 void VoiceManager::update(){
-	auto lock = std::lock_guard<std::mutex>(_oscillatorMutex);
+	auto lock = std::lock_guard(_oscillatorMutex);
 	for(auto& voice : _voices){
 		voice.update();
 	}
