@@ -2,17 +2,35 @@
 #include <oscillators/Oscillator.hpp>
 #include <random>
 
+namespace oscillators {
+/// @brief Generates noise-like sound (like in old TVs')
 class NoiseOscillator : public Oscillator {
 protected:
-    float _phase = 0.0f;
-    unsigned int _lastSeed = 0;
-    float _lastValue = 0.0f;
+    /// @brief Current phase
+    f32 _phase = 0.0f;
 
+    /// @brief Last seed used by random generator
+    u32 _lastSeed = 0;
+
+    /// @brief Last sample generated
+    f32 _lastValue = 0.0f;
+
+    /// @brief Random number generator
     std::mt19937 _rng;
-    std::uniform_real_distribution<float> _dist;
+
+    /// @brief Used for generating numbers from the uniform distribution
+    std::uniform_real_distribution<f32> _dist;
 
 public:
-    explicit NoiseOscillator(float sampleRate);
-    float getNextSample() override;
+    /// @brief Constructor
+    explicit NoiseOscillator(f32 sampleRate);
+
+    /// @brief Calculates next sample's value
+    f32 getNextSample() override;
+
+    /// @brief Updates the oscillator's state for the next frame
     void advance() override;
+
 };
+}
+

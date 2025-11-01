@@ -1,6 +1,7 @@
 #include <oscillators/PhaseOscillator.hpp>
 #include <numbers>
 
+namespace oscillators{
 void PhaseOscillator::advance() {
     _phase += 2.0 * std::numbers::pi * _currentFrequency / _sampleRate;
     while(_phase > 2.0 * std::numbers::pi) {
@@ -9,4 +10,5 @@ void PhaseOscillator::advance() {
     while(_phase < 0.0) {
         _phase += 2.0 * std::numbers::pi;
     }
+}
 }

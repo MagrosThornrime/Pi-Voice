@@ -1,9 +1,9 @@
 #include <oscillators/NoiseOscillator.hpp>
 
-
-NoiseOscillator::NoiseOscillator(float sampleRate) : Oscillator(sampleRate) {
+namespace oscillators {
+NoiseOscillator::NoiseOscillator(f32 sampleRate) : Oscillator(sampleRate) {
 	_rng = std::mt19937(std::random_device{}());
-	_dist = std::uniform_real_distribution<float>(-1.0f, 1.0f);
+	_dist = std::uniform_real_distribution<f32>(-1.0f, 1.0f);
 }
 
 void NoiseOscillator::advance(){
@@ -14,12 +14,13 @@ void NoiseOscillator::advance(){
     }
 }
 
-float NoiseOscillator::getNextSample() {
-    unsigned int seed = _phase;
+f32 NoiseOscillator::getNextSample() {
+    u32 seed = _phase;
     if (seed == _lastSeed) {
-        float value = _dist(_rng);
+        f32 value = _dist(_rng);
         _lastValue = value;
         return value;
     }
     return _lastValue;
+}
 }

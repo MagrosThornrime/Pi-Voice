@@ -1,14 +1,9 @@
 #include <portaudiocpp/PortAudioCpp.hxx>
-#include <iostream>
 #include <thread>
 #include <chrono>
-#include <oscillators/SawtoothOscillator.hpp>
-#include <oscillators/SineOscillator.hpp>
-#include <oscillators/SquareOscillator.hpp>
-#include <oscillators/TriangleOscillator.hpp>
-#include <oscillators/NoiseOscillator.hpp>
 #include <Midi.hpp>
 #include <fmt/core.h>
+#include <polyphonic/VoiceManager.hpp>
 #include <pipeline/Pipeline.hpp>
 #include <Filters.hpp>
 
@@ -293,8 +288,12 @@ int main() {
 			paClipOff
 		);
 
-		auto oscillator = std::make_shared<SineOscillator>(44100.0f);
-		oscillator->setFrequency(0);
+		auto voiceManager = std::make_shared<VoiceManager>(128, 44100.0f);
+		voiceManager->setOscillatorType(oscillators::sawtooth);
+		voiceManager->setAttack(0.0004f);
+		voiceManager->setDecay(0.0001f);
+		voiceManager->setSustain(0.5f);
+		voiceManager->setRelease(0.0001f);
 
 		auto recorder = std::make_shared<FileRecorderCallback>("capture_in.wav", 2, 44100);
 		if (!recorder->start()) {
@@ -302,16 +301,14 @@ int main() {
 			return 1;
 		}
 
-
 		Pipeline pipeline;
 		pipeline
-			.setSource(oscillator)
+			.setSource(voiceManager)
 			.addLayer(std::make_shared<LowPassFilter>(2, streamParams.outputParameters().numChannels(), 1000, streamParams.sampleRate()))
 			.addLayer(recorder)
 			//.addLayer(std::make_shared<LowPassFilter2>(1000, streamParams.sampleRate(), streamParams.outputParameters().numChannels()))
 			//.addLayer(std::make_shared<BandPassFilter>(1000, 1, streamParams.sampleRate(), streamParams.outputParameters().numChannels()));
 			;
-		//oscillator.setAmplitude(0.05f);
 
 		portaudio::CallbackInterface& pipelineInt = pipeline;
 		portaudio::InterfaceCallbackStream stream(
@@ -320,14 +317,26 @@ int main() {
 		);
 
 		stream.start();
-		std::cout << "Stream started." << std::endl;
+		fmt::println("Stream started");
 
 		{
-			//oscillator->setFrequency(4000);
-			auto sineThread = std::jthread([&](std::stop_token stopToken) {
+			auto midiThread = std::jthread([&voiceManager](std::stop_token stopToken) {
 				try {
-					for (u32 i = 0; not stopToken.stop_requested(); ++i, std::this_thread::sleep_for(std::chrono::milliseconds(10))) {
-						oscillator->setFrequency(200.0f + 3800.0f * (0.5f + 0.5f * std::sin(3.14159265f * i / 100.f)));
+					midi::Reader reader;
+					reader.open(midi::Ports::getByNum(1));
+
+					for (; not stopToken.stop_requested();) {
+						std::this_thread::sleep_for(std::chrono::milliseconds(10));
+						auto data = reader.read();
+						if (!data.hasNote()){
+							continue;
+						}
+						if(data.status() == midi::Data::noteOn){
+							voiceManager->turnOn(data.note().num);
+						}
+						else if(data.status() == midi::Data::noteOff){
+							voiceManager->turnOff(data.note().num);
+						}
 					}
 				} catch (std::exception& e) {
 					fmt::println("{}", e.what());
@@ -338,55 +347,15 @@ int main() {
 		}
 
 		recorder->stop();
-
-		/*{
-			for (auto&& port : midi::Ports::list()) {
-				fmt::println("{}: {}", port.num, port.name);
-			}
-			fmt::print("> ");
-			u32 which{};
-			std::cin >> which;
-			std::cin.ignore();
-
-			auto midiThread = std::jthread([&](std::stop_token stopToken) {
-				try {
-					midi::Reader reader;
-					reader.open(midi::Ports::getByNum(which));
-					reader.readAll();
-
-					for (; not stopToken.stop_requested();) {
-						auto data = reader.read();
-						if (data.hasVelocity()) {
-							auto note = data.note();
-							fmt::print("{}{}", note.name, data.status() == midi::Data::noteOn ? 'v' : '^');
-							if (data.status() == midi::Data::noteOn) {
-								oscillator.setAmplitude(1);
-								oscillator.setFrequency(note.freq);
-								fmt::println(" {}", data.velocity());
-							}
-							if (data.status() == midi::Data::noteOff) {
-								oscillator.setAmplitude(0);
-								fmt::println("");
-							}
-						}
-					}
-				} catch (std::exception& e) {
-					fmt::println("{}", e.what());
-				}
-			});
-
-			(void)getchar();
-		}*/
-
 		stream.stop();
 		stream.close();
-		std::cout << "Stream stopped and closed." << std::endl;
+		fmt::println("Stream stopped and closed");
 
 	} catch (const portaudio::PaException& e) {
-		std::cerr << "PortAudio exception: " << e.paErrorText() << std::endl;
+		fmt::println("{}", e.paErrorText());
 		return 1;
 	} catch (const std::exception& e) {
-		std::cerr << "Standard exception: " << e.what() << std::endl;
+		fmt::println("{}", e.what());
 		return 1;
 	}
 

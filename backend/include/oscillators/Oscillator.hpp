@@ -1,28 +1,29 @@
 #pragma once
 #include <portaudio.h>
-#include <portaudiocpp/PortAudioCpp.hxx>
+#include <Types.hpp>
 
-class Oscillator: public portaudio::CallbackInterface {
+namespace oscillators {
+/// @brief An interface for all oscillators
+class Oscillator {
 protected:
-	float _amplitude = 1.0f;
-	float _sampleRate;
+    /// @brief Sample rate of generated sound
+    f32 _sampleRate;
 
-	const float _REFERENCE_FREQUENCY = 220.0f;
-	float _currentFrequency = _REFERENCE_FREQUENCY;
+    /// @brief Frequency of generated sound
+    f32 _currentFrequency = 440.0f;
 
 public:
-	int paCallbackFun(const void* input, void* output,
-		unsigned long frameCount,
-		const PaStreamCallbackTimeInfo* timeInfo,
-		PaStreamCallbackFlags statusFlags) override;
+    /// @brief Constructor
+    explicit Oscillator(f32 sampleRate);
 
-	explicit Oscillator(float sampleRate);
+    /// @brief Explicitly sets the frequency
+    void setFrequency(f32 freq);
 
-	void setFrequency(int octave, int seminote);
-	void setFrequency(float freq);
-	void setAmplitude(float amplitude);
+    /// @brief Updates the oscillator's state for the next frame
+    virtual void advance() {};
 
-	virtual float getNextSample();
-	virtual void advance() {};
+    /// @brief Calculates next sample's value
+    virtual f32 getNextSample();
 
 };
+}
