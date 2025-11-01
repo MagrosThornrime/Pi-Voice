@@ -9,7 +9,7 @@ f32 SquareOscillator::getNextSample() {
     //    harmonics++;
     //}
     //harmonics--;
-    i32 harmonics = 20;
+    const i32 harmonics = 20;
     f32 sample = 0.0f;
     for(i32 i = 1; i <= harmonics; i++) {
         f32 factor = i * 2 - 1;
