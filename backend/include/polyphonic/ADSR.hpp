@@ -35,6 +35,6 @@ public:
     void reset();
 
     /// @brief Get current amplitude
-    /// @param isActive tells if the Voice using this is active
-    f32 getAmplitude(bool isActive);
+    /// @param isPressed tells if the Voice using this is pressed
+    f32 getAmplitude(bool isPressed);
 };

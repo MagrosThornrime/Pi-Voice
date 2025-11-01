@@ -6,8 +6,8 @@ void ADSR::reset(){
 	_stage = attack;
 }
 
-f32 ADSR::getAmplitude(bool isActive) {
-    if (isActive) {
+f32 ADSR::getAmplitude(bool isPressed) {
+    if (isPressed) {
         if (_stage == attack) {
             _amplitude += attackFactor;
             if (_amplitude >= 1.0f) { 

@@ -21,7 +21,7 @@ class Voice {
 public:
 
 	/// @brief Tells if the key is pressed
-	bool isActive = false;
+	bool isPressed = false;
 
 	/// @brief Constructor
 	/// @param voiceNumber ID of the note

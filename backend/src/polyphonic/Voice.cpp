@@ -23,7 +23,7 @@ void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType) {
 }
 
 f32 Voice::getNextSample(){
-	return _adsr.getAmplitude(isActive) * _oscillator->getNextSample();
+	return _adsr.getAmplitude(isPressed) * _oscillator->getNextSample();
 }
 
 void Voice::update(){
@@ -38,11 +38,11 @@ Voice::Voice(i32 voiceNumber, f32 sampleRate) : _sampleRate(sampleRate) {
 
 void Voice::turnOn(){
     _adsr.reset();
-    isActive = true;
+    isPressed = true;
 }
 
 void Voice::turnOff(){
-    isActive = false;
+    isPressed = false;
 }
 
 void Voice::setAttack(f32 attack){
