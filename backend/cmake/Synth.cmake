@@ -9,9 +9,7 @@ include("cmake/filters.cmake")
 include("cmake/polyphonic.cmake")
 include("cmake/oscillators.cmake")
 
-file(GLOB_RECURSE SOURCES src/oscillators/*.cpp src/Voice.cpp src/VoiceManager.cpp src/ADSR.cpp)
-
-add_executable(synth Synth.cpp ${SOURCES})
+add_executable(synth Synth.cpp)
 
 target_include_directories(synth PUBLIC include ${portaudio_SOURCE_DIR}/include)
-target_link_libraries(synth rtmidi portaudio portaudiocpp fmt::fmt midi pipeline filters polyphonic)
+target_link_libraries(synth rtmidi portaudio portaudiocpp fmt::fmt midi pipeline filters polyphonic oscillators)
