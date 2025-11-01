@@ -1,4 +1,4 @@
-#include <Voice.hpp>
+#include <polyphonic/Voice.hpp>
 
 
 void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType) {

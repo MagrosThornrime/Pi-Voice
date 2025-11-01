@@ -3,7 +3,7 @@
 #include <chrono>
 #include <Midi.hpp>
 #include <fmt/core.h>
-#include <VoiceManager.hpp>
+#include <polyphonic/VoiceManager.hpp>
 #include <pipeline/Pipeline.hpp>
 #include <Filters.hpp>
 

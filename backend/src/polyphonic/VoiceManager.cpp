@@ -1,4 +1,4 @@
-#include <VoiceManager.hpp>
+#include <polyphonic/VoiceManager.hpp>
 
 int VoiceManager::paCallbackFun(const void* input, void* output,
 	unsigned long frameCount,
