@@ -21,23 +21,23 @@ VoiceManager::VoiceManager(i32 voicesNumber, f32 sampleRate){
 }
 
 void VoiceManager::setOscillatorType(oscillators::OscillatorType type, i32 index){
-	auto lock = std::lock_guard(_oscillatorMutex);
 	if(index < 0 || index > 2){
 		return;
 	}
+	auto lock = std::lock_guard(_oscillatorMutex);
 	for(auto& voice : _voices){
 		voice.setOscillatorType(type, index);
 	}
 }
 
 void VoiceManager::setOscillatorAmplitude(f32 amplitude, i32 index){
-	auto lock = std::lock_guard(_oscillatorMutex);
 	if(index < 0 || index > 2){
 		return;
 	}
 	if(amplitude < 0.0 || amplitude > 1.0){
 		return;
 	}
+	auto lock = std::lock_guard(_oscillatorMutex);
 	for(auto& voice : _voices){
 		voice.setOscillatorAmplitude(amplitude, index);
 	}
