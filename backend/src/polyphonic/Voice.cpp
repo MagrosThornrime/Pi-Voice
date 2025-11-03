@@ -1,39 +1,63 @@
 #include <polyphonic/Voice.hpp>
 
 
-void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType) {
+void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType, i32 index) {
+    if(index < 0 || index > 2){
+        return;
+    }
     switch (oscillatorType) {
+        case oscillators::empty:
+            _oscillators[index] = std::make_shared<oscillators::Oscillator>(_sampleRate);
+            break;
         case oscillators::noise:
-            _oscillator = std::make_shared<oscillators::NoiseOscillator>(_sampleRate);
+            _oscillators[index] = std::make_shared<oscillators::NoiseOscillator>(_sampleRate);
             break;
         case oscillators::sine:
-            _oscillator = std::make_shared<oscillators::SineOscillator>(_sampleRate);
+            _oscillators[index] = std::make_shared<oscillators::SineOscillator>(_sampleRate);
             break;
         case oscillators::sawtooth:
-            _oscillator = std::make_shared<oscillators::SawtoothOscillator>(_sampleRate);
+            _oscillators[index] = std::make_shared<oscillators::SawtoothOscillator>(_sampleRate);
             break;
         case oscillators::square:
-            _oscillator = std::make_shared<oscillators::SquareOscillator>(_sampleRate);
+            _oscillators[index] = std::make_shared<oscillators::SquareOscillator>(_sampleRate);
             break;
         case oscillators::triangle:
-            _oscillator = std::make_shared<oscillators::TriangleOscillator>(_sampleRate);
+            _oscillators[index] = std::make_shared<oscillators::TriangleOscillator>(_sampleRate);
             break;
     }
-	_oscillator->setFrequency(_frequency);
+	_oscillators[index]->setFrequency(_frequency);
 }
 
 f32 Voice::getNextSample(){
-	return _adsr.getAmplitude(isPressed) * _oscillator->getNextSample();
+    f32 sample = 0.0f;
+    for (i32 i=0; i<3; i++){
+        sample += _amplitudes[i] * _oscillators[i]->getNextSample();
+    }
+	return _adsr.getAmplitude(isPressed) * sample;
 }
 
 void Voice::update(){
-	_oscillator->advance();
+    for (i32 i=0; i<3; i++){
+        _oscillators[i]->advance();
+    }
+}
+
+void Voice::setOscillatorAmplitude(f32 amplitude, i32 index){
+    if(index < 0 || index > 2){
+        return;
+    }
+    if(amplitude < 0.0f || amplitude > 1.0f){
+        return;
+    }
+    _amplitudes[index] = amplitude;
 }
 
 Voice::Voice(i32 voiceNumber, f32 sampleRate) : _sampleRate(sampleRate) {
-    setOscillatorType(oscillators::triangle);
-	_frequency = 440.f * std::pow(2.f, (voiceNumber - 69.f) / 12.f);
-    _oscillator->setFrequency(_frequency);
+    _frequency = 440.f * std::pow(2.f, (voiceNumber - 69.f) / 12.f);
+    for (i32 i=0; i<3; i++){
+        setOscillatorType(oscillators::empty, i);
+        setOscillatorAmplitude(1.0, i);
+    }
 }
 
 void Voice::turnOn(){

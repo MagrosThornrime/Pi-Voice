@@ -14,14 +14,14 @@ class VoiceManager : public portaudio::CallbackInterface {
 	/// @brief Mutex for changing oscillators
 	std::mutex _oscillatorMutex;
 
+	/// @brief Global amplitude
+	f32 _amplitude = 0.1f;
+
 public:
 	/// @brief Constructor
 	/// @param voicesNumber the number of notes used by keyboard
 	/// @param sampleRate sound's sample rate
     VoiceManager(i32 voicesNumber, f32 sampleRate);
-
-	/// @brief Global amplitude
-	f32 amplitude = 0.1f;
 
     /// @brief PortAudio callback used for streaming the audio
     int paCallbackFun(const void* input, void* output,
@@ -29,9 +29,19 @@ public:
         const PaStreamCallbackTimeInfo* timeInfo,
         PaStreamCallbackFlags statusFlags);
 
+	/// @brief Change the global amplitude
+	/// @param amplitude new global amplitude (between 0 and 1)
+	void setAmplitude(f32 amplitude);
+
 	/// @brief Replaces oscillators of all Voices
 	/// @param type type of the new oscillator
-    void setOscillatorType(oscillators::OscillatorType type);
+	/// @param index id of the new oscillator (0, 1 or 2)
+    void setOscillatorType(oscillators::OscillatorType type, i32 index);
+
+	/// @brief Changes amplitude of a given oscillator for all Voices
+	/// @param amplitude amplitude of the oscillator (between 0 and 1)
+	/// @param index id of the new oscillator (0, 1 or 2)
+	void setOscillatorAmplitude(f32 amplitude, i32 index);
 
 	/// @brief Advance all oscillators
     void update();

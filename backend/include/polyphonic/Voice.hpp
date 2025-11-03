@@ -6,8 +6,11 @@
 
 /// @brief A source of sounds played by a particular key
 class Voice {
-	/// @brief Current oscillator
-    std::shared_ptr<oscillators::Oscillator> _oscillator;
+	/// @brief Current oscillators
+    std::shared_ptr<oscillators::Oscillator> _oscillators[3];
+
+	/// @brief Oscillators' amplitudes
+	f32 _amplitudes[3];
 
 	/// @brief The note's frequency
 	f32 _frequency;
@@ -28,14 +31,20 @@ public:
 	/// @param sampleRate sound sample rate
     Voice(i32 voiceNumber, f32 sampleRate);
 
-	/// @brief Replaces the current oscillator
+	/// @brief Replaces a current oscillator
 	/// @param oscillatorType type of the new oscillator
-    void setOscillatorType(oscillators::OscillatorType oscillatorType);
+	/// @param index id of the oscillator (0, 1 or 2)
+    void setOscillatorType(oscillators::OscillatorType oscillatorType, i32 index);
+
+	/// @brief Sets amplitude for a given oscillator
+	/// @param amplitude value of the amplitude (between 0 and 1)
+	/// @param index id of the oscillator (0, 1 or 2)
+	void setOscillatorAmplitude(f32 amplitude, i32 index);
 
 	/// @brief Gets current sample of the sound
     f32 getNextSample();
 
-	/// @brief Advance the oscillator
+	/// @brief Advance the oscillators
     void update();
 
 	/// @brief Signalize that you pressed the key
