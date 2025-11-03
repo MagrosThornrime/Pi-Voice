@@ -1,5 +1,6 @@
 #include <fileio/FileRecorder.hpp>
 
+namespace fileio{
 FileRecorder::FileRecorder(const std::string& filename, unsigned channels, unsigned sampleRate, size_t capacityFrames)
         : _filename(filename),
         _channels(channels),
@@ -210,4 +211,5 @@ void FileRecorder::patchWavHeader() {
     std::fseek(_f, 40, SEEK_SET);
     writeLE_u32(_f, static_cast<uint32_t>(dataSize));
     std::fflush(_f);
+}
 }

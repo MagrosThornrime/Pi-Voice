@@ -46,7 +46,7 @@ int main() {
 		voiceManager->setSustain(0.5f);
 		voiceManager->setRelease(0.0001f);
 
-		auto recorder = std::make_shared<FileRecorder>("capture_in.wav", 2, 44100);
+		auto recorder = std::make_shared<fileio::FileRecorder>("capture_in.wav", 2, 44100);
 		if (!recorder->start()) {
 			std::cerr << "Failed to start recorder\n";
 			return 1;

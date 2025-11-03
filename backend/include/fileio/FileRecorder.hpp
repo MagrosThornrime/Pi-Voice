@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <chrono>
 
-
+namespace fileio{
 class FileRecorder: public portaudio::CallbackInterface {
 public:
 	// capacityFrames: how many frames the internal ring can hold (will be rounded up to power-of-two)
@@ -86,3 +86,4 @@ private:
 	std::atomic<uint64_t> _statusOutputUnderflow{0};
 	uint64_t _dataBytesWritten{0};
 };
+}
