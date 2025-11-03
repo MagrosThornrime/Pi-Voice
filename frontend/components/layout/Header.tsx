@@ -9,8 +9,10 @@ import {
   Button,
   Drawer,
   Portal,
-  VStack
+  VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
+
 import Link from "next/link";
 import { LuExternalLink} from "react-icons/lu";
 import { MuseoModerno } from "next/font/google";
@@ -53,8 +55,10 @@ const Links: readonly SimpleLink[] = [
 const museoModerno = MuseoModerno({ subsets: ["latin"] });
 
 export default function WithAction() {
-  const [open, setOpen] = useState(false);
+  const { open, setOpen } = useDisclosure();
   const [presetNr, setPresetNr] = useState(1);
+  const maxPresets = 5;
+  
   return (
     <Box
       as="header"
@@ -65,7 +69,7 @@ export default function WithAction() {
       zIndex="99"
     >
       <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-        <Drawer.Root placement={"start"} open={open} onOpenChange={() => setOpen(!open)}>
+        <Drawer.Root placement={"start"} open={open} onOpenChange={({ open }) => setOpen(open)} >
           <Drawer.Trigger paddingY="3" as="div">
             <IconButton
               style={{ fontSize: "1.5rem" }}
@@ -75,10 +79,20 @@ export default function WithAction() {
             Pi-Voice
             </IconButton>
           </Drawer.Trigger>
+
           <Portal>
             <Drawer.Backdrop />
             <Drawer.Positioner>
               <Drawer.Content bg="#004F5D" color="white" p={6}>
+
+                <IconButton
+                  style={{ fontSize: "1.5rem" }}
+                  className={museoModerno.className}
+                  aria-label={"Open Menu"}
+                  onClick={() => setOpen(false)} >
+                  Pi-Voice
+                </IconButton>
+
               <VStack padding={4} align="stretch">
                 {Links.map((link) => (
                   <Link
@@ -119,7 +133,7 @@ export default function WithAction() {
           variant={"solid"} 
           colorScheme={"teal"} 
           size={"sm"}
-          onClick={()=>setPresetNr(presetNr-1)}
+          onClick={()=>setPresetNr(Math.max(presetNr-1, 1))}
           >
             prev
           </Button>
@@ -135,7 +149,7 @@ export default function WithAction() {
           colorScheme={"teal"} 
           size={"sm"} 
           mr={4}
-          onClick={()=>setPresetNr(presetNr+1)}
+          onClick={()=>setPresetNr(Math.min(presetNr+1, maxPresets))}
           >
             next
           </Button>
