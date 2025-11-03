@@ -289,7 +289,9 @@ int main() {
 		);
 
 		auto voiceManager = std::make_shared<VoiceManager>(128, 44100.0f);
-		voiceManager->setOscillatorType(oscillators::sawtooth);
+		voiceManager->setOscillatorType(oscillators::square, 0);
+        voiceManager->setOscillatorType(oscillators::triangle, 1);
+        voiceManager->setOscillatorType(oscillators::sawtooth, 2);
 		voiceManager->setAttack(0.0004f);
 		voiceManager->setDecay(0.0001f);
 		voiceManager->setSustain(0.5f);

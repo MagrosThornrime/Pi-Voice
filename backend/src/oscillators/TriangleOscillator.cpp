@@ -9,7 +9,7 @@ f32 TriangleOscillator::getNextSample() {
     //    harmonics++;
     //}
     //harmonics--;
-    const i32 harmonics = 20;
+    const i32 harmonics = 8;
     f32 sample = 0.0f;
     bool subtract = true;
     for(i32 i = 1; i <= harmonics; i++) {
