@@ -7,3 +7,4 @@ backend/CMakeSettings.json
 CMakeFiles/
 _deps/
 /frontend/lib
+capture_in.wav
