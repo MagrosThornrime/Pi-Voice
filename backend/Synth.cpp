@@ -3,10 +3,14 @@
 #include <chrono>
 #include <Midi.hpp>
 #include <fmt/core.h>
-#include <VoiceManager.hpp>
+#include <polyphonic/VoiceManager.hpp>
+#include <pipeline/Pipeline.hpp>
+#include <Filters.hpp>
+#include <fileio/FileRecorder.hpp>
 
 
 int main() {
+
 	try {
 		portaudio::AutoSystem autoSys;
 
@@ -14,7 +18,7 @@ int main() {
 
 		portaudio::Device& outputDevice = sys.defaultOutputDevice();
 
-		fmt::println("Using output device: {}", outputDevice.name());
+		std::cout << "Using output device: " << outputDevice.name() << std::endl;
 
 		portaudio::DirectionSpecificStreamParameters outParams(
 			outputDevice,
@@ -33,18 +37,34 @@ int main() {
 			paClipOff
 		);
 
-		VoiceManager voiceManager(128, 44100.0f);
-		voiceManager.setOscillatorType(oscillators::sine);
-		voiceManager.setADSRAttack(0.04f);
-		voiceManager.setADSRDecay(0.02f);
-		voiceManager.setADSRSustain(1.0f);
-		voiceManager.setADSRRelease(0.04f);
+		auto voiceManager = std::make_shared<VoiceManager>(128, 44100.0f);
+		voiceManager->setOscillatorType(oscillators::square, 0);
+        voiceManager->setOscillatorType(oscillators::triangle, 1);
+        voiceManager->setOscillatorType(oscillators::sawtooth, 2);
+		voiceManager->setAttack(0.0004f);
+		voiceManager->setDecay(0.0001f);
+		voiceManager->setSustain(0.5f);
+		voiceManager->setRelease(0.0001f);
 
-		// Use BlockingStream instead of MemFunCallbackStream
-		portaudio::MemFunCallbackStream<VoiceManager> stream(
+		auto recorder = std::make_shared<fileio::FileRecorder>("capture_in.wav", 2, 44100);
+		if (!recorder->start()) {
+			std::cerr << "Failed to start recorder\n";
+			return 1;
+		}
+
+		Pipeline pipeline;
+		pipeline
+			.setSource(voiceManager)
+			.addLayer(std::make_shared<LowPassFilter>(2, streamParams.outputParameters().numChannels(), 1000, streamParams.sampleRate()))
+			.addLayer(recorder)
+			//.addLayer(std::make_shared<LowPassFilter2>(1000, streamParams.sampleRate(), streamParams.outputParameters().numChannels()))
+			//.addLayer(std::make_shared<BandPassFilter>(1000, 1, streamParams.sampleRate(), streamParams.outputParameters().numChannels()));
+			;
+
+		portaudio::CallbackInterface& pipelineInt = pipeline;
+		portaudio::InterfaceCallbackStream stream(
 			streamParams,
-			voiceManager,
-			&VoiceManager::paCallback
+			pipeline
 		);
 
 		stream.start();
@@ -54,18 +74,19 @@ int main() {
 			auto midiThread = std::jthread([&voiceManager](std::stop_token stopToken) {
 				try {
 					midi::Reader reader;
-					reader.open(midi::Ports::getByNum(0));
+					reader.open(midi::Ports::getByNum(1)); // set to 0 if using Windows
 
 					for (; not stopToken.stop_requested();) {
+						std::this_thread::sleep_for(std::chrono::milliseconds(10));
 						auto data = reader.read();
 						if (!data.hasNote()){
 							continue;
 						}
 						if(data.status() == midi::Data::noteOn){
-							voiceManager.turnOn(data.note().num);
+							voiceManager->turnOn(data.note().num);
 						}
 						else if(data.status() == midi::Data::noteOff){
-							voiceManager.turnOff(data.note().num);
+							voiceManager->turnOff(data.note().num);
 						}
 					}
 				} catch (std::exception& e) {
@@ -76,6 +97,7 @@ int main() {
 			(void)getchar();
 		}
 
+		recorder->stop();
 		stream.stop();
 		stream.close();
 		fmt::println("Stream stopped and closed");

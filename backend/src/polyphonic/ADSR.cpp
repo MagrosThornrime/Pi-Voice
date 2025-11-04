@@ -1,4 +1,4 @@
-#include <ADSR.hpp>
+#include <polyphonic/ADSR.hpp>
 #include <iostream>
 
 void ADSR::reset(){
@@ -6,8 +6,8 @@ void ADSR::reset(){
 	_stage = attack;
 }
 
-f32 ADSR::getAmplitude(bool isActive) {
-    if (isActive) {
+f32 ADSR::getAmplitude(bool isPressed) {
+    if (isPressed) {
         if (_stage == attack) {
             _amplitude += attackFactor;
             if (_amplitude >= 1.0f) { 
@@ -15,7 +15,7 @@ f32 ADSR::getAmplitude(bool isActive) {
 				_stage = decay;
 			}
         }
-        else if (_stage == decay) {
+        if (_stage == decay) {
             _amplitude -= decayFactor;
         	if (_amplitude <= sustainAmplitude) {
  				_amplitude = sustainAmplitude;
@@ -24,11 +24,11 @@ f32 ADSR::getAmplitude(bool isActive) {
         }
     }
 	else {
-        _stage = release;
-        _amplitude -= releaseFactor;
-        if (_amplitude <= 0.0f){
+	    _stage = release;
+	    _amplitude -= releaseFactor;
+	    if (_amplitude <= 0.0f){
 			_amplitude = 0.0f;
 		}
-    }
+	}
     return _amplitude;
 }

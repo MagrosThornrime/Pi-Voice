@@ -7,7 +7,8 @@
 #include <oscillators/TriangleOscillator.hpp>
 
 namespace oscillators {
+// @brief Oscillator types
 enum OscillatorType {
-    noise, sine, sawtooth, square, triangle
+    noise, sine, sawtooth, square, triangle, empty
 };
 }

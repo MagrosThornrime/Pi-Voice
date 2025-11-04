@@ -21,6 +21,7 @@ if(portaudio_ADDED)
     )
 
     add_library(portaudiocpp ${portaudiocpp_sources})
+    set_target_properties(portaudiocpp PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
     target_include_directories(portaudiocpp PUBLIC
             ${portaudiocpp_SRC_DIR}/include
