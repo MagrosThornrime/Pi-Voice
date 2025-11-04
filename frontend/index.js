@@ -1,36 +1,39 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('path');
+const path = require("path");
+const { app, BrowserWindow, ipcMain } = require("electron");
 
-let mainWindow;
+let synth;
+try {
+  synth = require(path.join(__dirname, "lib", "SimpleSynthExample.node"));
+  console.log("✅ Loaded synth addon");
+} catch (err) {
+  console.error("❌ Failed to load synth addon:", err);
+  app.quit();
+}
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false // Needed to allow IPC from renderer
-    }
+      preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+    },
   });
 
-  mainWindow.loadURL('http://localhost:3000'); 
+  win.loadURL("http://localhost:3000");
 }
 
-app.whenReady().then(() => {
-  createWindow();
+app.whenReady().then(createWindow);
 
-  // Handle message from renderer and call C++
-//   ipcMain.handle('call-cpp', () => {
-//     return addon.getMIDI(); // this calls your C++ function
-//   });
+// =========================
+// IPC handlers
+// =========================
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-  });
-});
+// MIDI
+ipcMain.handle("synth-ports", () => synth.midiPorts());
+ipcMain.handle("synth-open", (event, port) => synth.openMidi(port));
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
+// Synth control
+ipcMain.handle("synth-start", () => synth.startSynth());
+ipcMain.handle("synth-stop", () => synth.stopSynth());
+ipcMain.handle("synth-cleanup", () => synth.cleanup());

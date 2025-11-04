@@ -1,91 +1,62 @@
-const fs = require('fs');
-const path = require('path');
-const { exit } = require('process');
+// renderer.js
 
+// Logging helper
 function writeLog(message) {
-    const logFilePath = path.join(__dirname, 'log.txt');
+    const logFilePath = 'log.txt'; // adjust path if needed
     const timestamp = new Date().toISOString();
     const logMessage = `${timestamp} - ${message}\n`;
-    
-    fs.appendFileSync(logFilePath, logMessage, (err) => {
-        if (err) {
-            console.error("Failed to write to log file:", err);
-        }
-    });
-}
 
-let addon;
-try {
-    addon = require('./lib/SimpleMIDIReaderExample.node');
-}
-catch (e) {
-    writeLog("Failed to load the SimpleMIDIReaderExample module. Ensure it is built correctly.");
-    writeLog(e);
-    exit(1);
+    try {
+        // Use Node fs only if available (preload provides Node)
+        window.fs?.appendFileSync
+            ? window.fs.appendFileSync(logFilePath, logMessage)
+            : console.log("Log:", logMessage);
+    } catch (err) {
+        console.error("Failed to write log:", err);
+    }
 }
 
 const container = document.getElementById('toPrint');
+let midiGetterID;
 
-addon.midiPorts().forEach(element => {
-	writeLog(`${element}`);
-	const newP = document.createElement('p');
-	newP.textContent = `${element}`
-	container.appendChild(newP);
-});
+// Render messages to DOM
+function appendMessage(msg) {
+    const p = document.createElement('p');
+    p.textContent = msg;
+    container.appendChild(p);
+}
 
-const getMIDIMessages = () => {
-    try{
-        writeLog("Retrieving MIDI messages...");
-        const messages = addon.readMidi();
-        writeLog(`MIDI messages retrieved: ${messages}`);
-        messages.forEach(msg => {
-            const newP = document.createElement('p');
-            newP.textContent = msg;
-            container.appendChild(newP);
-        });
+// Fetch and display MIDI messages
+async function getMIDIMessages() {
+    try {
+        const messages = await window.midi.readMidi();
+        messages.forEach(appendMessage);
     } catch (error) {
         writeLog(`Error retrieving MIDI messages: ${error}`);
-        const container = document.getElementById('toPrint');
-        const newP = document.createElement('p');
-        newP.textContent = "Error retrieving MIDI messages: " + error.message;
-        container.appendChild(newP);
+        appendMessage(`Error retrieving MIDI messages: ${error.message}`);
     }
-};
-var midiGetterID;
-
-document.getElementById("call-cpp0").onclick = () => {
-	try{
-		addon.openReader(0);
-		midiGetterID = setInterval(getMIDIMessages, 100);
-	}
-	catch(err) {
-        writeLog(`Error opening port 0: ${err}`);
-        const newP = document.createElement('p');
-        newP.textContent = `Error opening port 0: ${err.message}`;
-        container.appendChild(newP);
-	}
-}
-document.getElementById("call-cpp1").onclick = () => {
-	try{
-		addon.openReader(1);
-		midiGetterID = setInterval(getMIDIMessages, 100);
-	}
-	catch(err) {
-        writeLog(`Error opening port 1: ${err}`);
-        const newP = document.createElement('p');
-        newP.textContent = `Error opening port 1: ${err.message}`;
-        container.appendChild(newP);
-	}
 }
 
-function cleanup() {
-    addon.cleanup();
-    process.exit(0);
+// Open MIDI port and start polling
+async function openMIDIPort(port) {
+    try {
+        await window.midi.openReader(port);
+        if (midiGetterID) clearInterval(midiGetterID);
+        midiGetterID = setInterval(getMIDIMessages, 100);
+        writeLog(`Opened MIDI port ${port}`);
+    } catch (err) {
+        writeLog(`Error opening port ${port}: ${err}`);
+        appendMessage(`Error opening port ${port}: ${err.message}`);
+    }
 }
 
-process
-    .on('SIGINT', cleanup)
-    .on('SIGTERM', cleanup)
-    .on('exit', () => {
-        addon.cleanup();
-    });
+// Button handlers
+document.getElementById("call-cpp0")?.addEventListener('click', () => openMIDIPort(0));
+document.getElementById("call-cpp1")?.addEventListener('click', () => openMIDIPort(1));
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (midiGetterID) clearInterval(midiGetterID);
+    window.midi.cleanup();
+    writeLog("MIDI cleanup done on page unload");
+});
