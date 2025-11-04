@@ -32,6 +32,7 @@ std::shared_ptr<VoiceManager> g_voiceManager;
 std::shared_ptr<fileio::FileRecorder> g_recorder;
 std::unique_ptr<portaudio::InterfaceCallbackStream> g_stream;
 std::unique_ptr<std::jthread> g_midiThread;
+auto pipeline = Pipeline();
 
 midi::Reader g_reader;
 std::mutex g_midiMutex;
@@ -143,7 +144,6 @@ void startSynth(const Napi::CallbackInfo& info) {
         }
 
         // Setup Pipeline
-        auto pipeline = Pipeline();
         pipeline.setSource(g_voiceManager)
                 .addLayer(std::make_shared<LowPassFilter>(2, 2, 1000, 44100))
                 .addLayer(g_recorder);
