@@ -58,7 +58,7 @@ export default function Home() {
 
       <Box h="40" />
 
-      <Chart.Root width={600} height={300} chart={chart} color="gray.600">
+      <Chart.Root width={600} height={300} chart={chart}>
         <LineChart data={chart.data}>
 
           <CartesianGrid vertical={false} />
@@ -79,25 +79,19 @@ export default function Home() {
             animationDuration={100}
             cursor={false}
             content={({ active, payload, label }) => {
-              if (
-                active &&
-                payload &&
-                payload.length > 0 &&
-                typeof label === "number" &&
-                typeof payload[0].value === "number"
-              ) {
-              const x = Math.round(label * 100) / 100;
-              const y = Math.round(payload[0].value * 100) / 100;
+              if (active && payload && payload.length) 
+              {
+                const x = Math.round(Number(label) * 100) / 100;
+                const y = Math.round(payload[0].value * 100) / 100;
 
-              return (
-                <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
-                  <Text fontSize="sm">x: {x}</Text>
-                  <Text fontSize="sm">y: {y}</Text>
-                </Box>
-                );
+                return (
+                  <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
+                    <Text fontSize="sm" color="gray.600">x: {x}</Text>
+                    <Text fontSize="sm" color="gray.600">y: {y}</Text>
+                  </Box>
+                  );
               }
-              return null;
-            } } 
+            }} 
           />
 
           {
