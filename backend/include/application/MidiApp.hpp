@@ -17,20 +17,19 @@
 using namespace std::chrono_literals;
 
 namespace application {
-class App {
+class MidiApp {
 
     std::shared_ptr<Synthesiser> _synthesiser;
     midi::Reader _midiReader;
-    std::unique_ptr<std::jthread> _midiThread;
-    std::mutex _midiMutex;
+    std::unique_ptr<std::jthread> _thread;
+    std::mutex _mutex;
 
     void _midiHandler(const midi::Data data);
 
 public:
-    App(std::string recordingPath, i32 channels, i32 sampleRate);
+    MidiApp(std::shared_ptr<Synthesiser> synthesiser);
     void openMidiPort(i32 index);
-    void startSynthesiser();
-    void stopSynthesiser();
+    std::vector<midi::Port> listMidiPorts();
 
 };
 
