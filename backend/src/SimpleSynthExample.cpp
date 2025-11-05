@@ -192,6 +192,170 @@ void cleanup(const Napi::CallbackInfo& info) {
 }
 
 // ========================
+// Synth Parameter Controls
+// ========================
+
+// Set global amplitude
+void setAmplitude(const Napi::CallbackInfo& info) {
+    auto env = info.Env();
+    if (info.Length() != 1 || !info[0].IsNumber()) {
+        Napi::TypeError::New(env, "Expected 1 numeric argument (amplitude)").ThrowAsJavaScriptException();
+        return;
+    }
+
+    if (!g_voiceManager) return;
+
+    float amp = info[0].As<Napi::Number>().FloatValue();
+    amp = std::clamp(amp, 0.0f, 1.0f);
+    g_voiceManager->setAmplitude(amp);
+    fmt::println("Amplitude set to {}", amp);
+}
+
+// Set oscillator type (0,1,2)
+void setOscillatorType(const Napi::CallbackInfo& info) {
+    auto env = info.Env();
+    if (info.Length() != 2 || !info[0].IsNumber() || !info[1].IsNumber()) {
+        Napi::TypeError::New(env, "Expected (index:int, type:int)").ThrowAsJavaScriptException();
+        return;
+    }
+
+    if (!g_voiceManager) return;
+
+    int index = info[0].As<Napi::Number>().Int32Value();
+    int typeVal = info[1].As<Napi::Number>().Int32Value();
+    if (index < 0 || index > 2 || typeVal < 0 || typeVal > oscillators::empty) {
+        Napi::RangeError::New(env, "Invalid oscillator index or type").ThrowAsJavaScriptException();
+        return;
+    }
+
+    g_voiceManager->setOscillatorType(static_cast<oscillators::OscillatorType>(typeVal), index);
+    fmt::println("Oscillator {} type set to {}", index, typeVal);
+}
+
+// Set oscillator amplitude (0,1,2)
+void setOscillatorAmplitude(const Napi::CallbackInfo& info) {
+    auto env = info.Env();
+    if (info.Length() != 2 || !info[0].IsNumber() || !info[1].IsNumber()) {
+        Napi::TypeError::New(env, "Expected (index:int, amplitude:float)").ThrowAsJavaScriptException();
+        return;
+    }
+
+    if (!g_voiceManager) return;
+
+    int index = info[0].As<Napi::Number>().Int32Value();
+    float amp = info[1].As<Napi::Number>().FloatValue();
+    if (index < 0 || index > 2) {
+        Napi::RangeError::New(env, "Invalid oscillator index").ThrowAsJavaScriptException();
+        return;
+    }
+
+    amp = std::clamp(amp, 0.0f, 1.0f);
+    g_voiceManager->setOscillatorAmplitude(amp, index);
+    fmt::println("Oscillator {} amplitude set to {}", index, amp);
+}
+
+// ADSR controls
+void setAttack(const Napi::CallbackInfo& info) {
+    auto env = info.Env();
+    if (info.Length() != 1 || !info[0].IsNumber()) {
+        Napi::TypeError::New(env, "Expected attack:float").ThrowAsJavaScriptException();
+        return;
+    }
+    if (g_voiceManager) g_voiceManager->setAttack(info[0].As<Napi::Number>().FloatValue());
+}
+
+void setDecay(const Napi::CallbackInfo& info) {
+    auto env = info.Env();
+    if (info.Length() != 1 || !info[0].IsNumber()) {
+        Napi::TypeError::New(env, "Expected decay:float").ThrowAsJavaScriptException();
+        return;
+    }
+    if (g_voiceManager) g_voiceManager->setDecay(info[0].As<Napi::Number>().FloatValue());
+}
+
+void setSustain(const Napi::CallbackInfo& info) {
+    auto env = info.Env();
+    if (info.Length() != 1 || !info[0].IsNumber()) {
+        Napi::TypeError::New(env, "Expected sustain:float").ThrowAsJavaScriptException();
+        return;
+    }
+    if (g_voiceManager) g_voiceManager->setSustain(info[0].As<Napi::Number>().FloatValue());
+}
+
+void setRelease(const Napi::CallbackInfo& info) {
+    auto env = info.Env();
+    if (info.Length() != 1 || !info[0].IsNumber()) {
+        Napi::TypeError::New(env, "Expected release:float").ThrowAsJavaScriptException();
+        return;
+    }
+    if (g_voiceManager) g_voiceManager->setRelease(info[0].As<Napi::Number>().FloatValue());
+}
+
+// ========================
+// Filter Controls
+// ========================
+
+// ========================
+// Filter Controls (fixed)
+// ========================
+void addFilter(const Napi::CallbackInfo& info) {
+    auto env = info.Env();
+
+    if (info.Length() < 1 || !info[0].IsString()) {
+        Napi::TypeError::New(env, "Expected filter name (string)").ThrowAsJavaScriptException();
+        return;
+    }
+
+    std::string name = info[0].As<Napi::String>();
+    fmt::println("Adding filter: {}", name);
+
+    // Construct the appropriate filter instance
+    std::shared_ptr<portaudio::CallbackInterface> filter;
+
+    if (name == "lowpass") {
+        filter = std::make_shared<LowPassFilter>(2, 2, 1000, 44100);
+    } else if (name == "highpass") {
+        filter = std::make_shared<HighPassFilter>(2, 2, 1000, 44100);
+    } else if (name == "bandpass") {
+        filter = std::make_shared<BandPassFilter>(2, 2, 1000, 44100);
+    } else if (name == "notch") {
+        filter = std::make_shared<NotchFilter>(2, 2, 1000, 44100);
+    } else if (name == "lowshelf") {
+        filter = std::make_shared<LowShelfFilter>(2, 2, 1000, 44100);
+    } else if (name == "highshelf") {
+        filter = std::make_shared<HighShelfFilter>(2, 2, 1000, 44100);
+    } else if (name == "peaking") {
+        filter = std::make_shared<PeakingEQFilter>(2, 2, 1000, 44100);
+    } else if (name == "allpass") {
+        filter = std::make_shared<AllPassFilter>(2, 2, 1000, 44100);
+    } else {
+        Napi::Error::New(env, "Unknown filter name").ThrowAsJavaScriptException();
+        return;
+    }
+
+    pipeline.addLayer(filter);
+    fmt::println("Filter '{}' added successfully", name);
+}
+
+// Remove all filters except recorder
+void clearFilters(const Napi::CallbackInfo& info) {
+    // Preserve source and recorder
+    auto vm = g_voiceManager;
+    auto rec = g_recorder;
+
+    // Rebuild pipeline cleanly
+    Pipeline newPipe;
+    if (vm) newPipe.setSource(vm);
+    if (rec) newPipe.addLayer(rec);
+
+    pipeline = std::move(newPipe);
+
+    fmt::println("All filters cleared and pipeline rebuilt");
+}
+
+
+
+// ========================
 // Module Init
 // ========================
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
@@ -200,6 +364,16 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
     exports.Set("startSynth", Napi::Function::New(env, startSynth));
     exports.Set("stopSynth", Napi::Function::New(env, stopSynth));
     exports.Set("cleanup", Napi::Function::New(env, cleanup));
+
+    exports.Set("setAmplitude", Napi::Function::New(env, setAmplitude));
+    exports.Set("setOscillatorType", Napi::Function::New(env, setOscillatorType));
+    exports.Set("setOscillatorAmplitude", Napi::Function::New(env, setOscillatorAmplitude));
+    exports.Set("setAttack", Napi::Function::New(env, setAttack));
+    exports.Set("setDecay", Napi::Function::New(env, setDecay));
+    exports.Set("setSustain", Napi::Function::New(env, setSustain));
+    exports.Set("setRelease", Napi::Function::New(env, setRelease));
+    exports.Set("addFilter", Napi::Function::New(env, addFilter));
+    exports.Set("clearFilters", Napi::Function::New(env, clearFilters));
 
     fmt::println("SynthModule initialized successfully");
     return exports;

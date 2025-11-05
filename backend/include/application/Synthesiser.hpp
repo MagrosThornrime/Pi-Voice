@@ -17,7 +17,7 @@ class Synthesiser {
 
 public:
     bool isRunning();
-    Synthesiser(std::string recordingPath, i32 channels, i32 sampleRate);
+    Synthesiser(const std::string& recordingPath, i32 channels, i32 sampleRate);
     void pressKey(i32 key);
     void releaseKey(i32 key);
     void start();
