@@ -4,9 +4,9 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 let synth;
 try {
   synth = require(path.join(__dirname, "lib", "SimpleSynthExample.node"));
-  console.log("✅ Loaded synth addon");
+  console.log("Loaded synth addon");
 } catch (err) {
-  console.error("❌ Failed to load synth addon:", err);
+  console.error("Failed to load synth addon:", err);
   app.quit();
 }
 
