@@ -1,6 +1,7 @@
 #include <polyphonic/ADSR.hpp>
 #include <iostream>
 
+namespace polyphonic {
 void ADSR::reset(){
 	_amplitude = 0.0f;
 	_stage = attack;
@@ -31,4 +32,5 @@ f32 ADSR::getAmplitude(bool isPressed) {
 		}
 	}
     return _amplitude;
+}
 }

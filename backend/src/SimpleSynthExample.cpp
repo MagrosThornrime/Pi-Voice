@@ -28,7 +28,7 @@ void ensurePortAudio() {
     }
 }
 
-std::shared_ptr<VoiceManager> g_voiceManager;
+std::shared_ptr<polyphonic::VoiceManager> g_voiceManager;
 std::shared_ptr<fileio::FileRecorder> g_recorder;
 std::unique_ptr<portaudio::InterfaceCallbackStream> g_stream;
 std::unique_ptr<std::jthread> g_midiThread;
@@ -127,7 +127,7 @@ void startSynth(const Napi::CallbackInfo& info) {
         );
 
         // Setup VoiceManager
-        g_voiceManager = std::make_shared<VoiceManager>(128, 44100.0f);
+        g_voiceManager = std::make_shared<polyphonic::VoiceManager>(128, 44100.0f);
         g_voiceManager->setOscillatorType(oscillators::square, 0);
         g_voiceManager->setOscillatorType(oscillators::triangle, 1);
         g_voiceManager->setOscillatorType(oscillators::sawtooth, 2);

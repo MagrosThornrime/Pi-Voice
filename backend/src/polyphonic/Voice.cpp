@@ -1,6 +1,6 @@
 #include <polyphonic/Voice.hpp>
 
-
+namespace polyphonic {
 void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType, i32 index) {
     if(index < 0 || index > 2){
         return;
@@ -91,4 +91,5 @@ void Voice::setRelease(f32 release){
     if(release > 0.0f && release < 1.0f) {
         _adsr.releaseFactor = release;
     }
+}
 }

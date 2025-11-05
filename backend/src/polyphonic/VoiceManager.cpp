@@ -1,5 +1,6 @@
 #include <polyphonic/VoiceManager.hpp>
 
+namespace polyphonic {
 int VoiceManager::paCallbackFun(const void* input, void* output,
 	unsigned long frameCount,
 	const PaStreamCallbackTimeInfo* timeInfo,
@@ -96,4 +97,5 @@ void VoiceManager::setRelease(f32 release){
 	for(auto& voice : _voices){
 		voice.setRelease(release);
 	}
+}
 }

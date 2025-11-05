@@ -4,6 +4,7 @@
 #include <memory>
 #include "ADSR.hpp"
 
+namespace polyphonic {
 /// @brief A source of sounds played by a particular key
 class Voice {
 	/// @brief Current oscillators
@@ -69,3 +70,4 @@ public:
 	/// @param release rate of the amplitude's decrease after releasing the key (between 0.0 and 1.0)
 	void setRelease(f32 release);
 };
+}
