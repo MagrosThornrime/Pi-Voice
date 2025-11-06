@@ -3,6 +3,7 @@
 #include <cmath>
 #include <range/v3/view/concat.hpp>
 
+namespace filters {
 HighPassFilter::HighPassFilter(const u32 order, const u32 channels, const f32 cutoffFrequency, const f32 samplingRate, const f32 quality) {
 	_prev = decltype(_prev)(channels);
 	_channels = channels;
@@ -54,4 +55,5 @@ HighPassFilter::HighPassFilter(const u32 order, const u32 channels, const f32 cu
 			b /= a0;
 		}
 	}
+}
 }

@@ -4,6 +4,7 @@
 #include <range/v3/view/chunk.hpp>
 #include <fmt/core.h>
 
+namespace filters {
 BwFilter::BwFilter(const u32 channels, const std::array<float, 2>& a, const std::array<float, 3>& b) {
 	_set(channels, a, b);
 }
@@ -40,4 +41,5 @@ void BwFilter::_set(const u32 channels, const std::array<float, 2>& a, const std
 	_a = a;
 	_b = b;
 	_prev = decltype(_prev)(channels);
+}
 }

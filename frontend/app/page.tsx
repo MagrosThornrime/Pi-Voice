@@ -61,12 +61,6 @@ export default function Home() {
   const [releaseValue, setReleaseValue] = useState([40])
   const [endReleaseValue, setEndReleaseValue] = useState([40])
 
-  window.synthAPI.setAmplitude(0.4);
-  window.synthAPI.setAttack(0.004);
-  window.synthAPI.setSustain(0.4);
-  window.synthAPI.setDecay(0.04);
-  window.synthAPI.setRelease(0.00004);
-
   return (
     <Box minH="100vh" bg="gray.50" p={10}>
 

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <range/v3/view/concat.hpp>
 
+namespace filters {
 BandPassFilter::BandPassFilter(const u32 channels, const f32 cutoffFrequency, const f32 samplingRate, const f32 quality) {
 	_prev = decltype(_prev)(channels);
 	_channels = channels;
@@ -30,4 +31,5 @@ BandPassFilter::BandPassFilter(const u32 channels, const f32 cutoffFrequency, co
 	for (auto&& b : _b) {
 		b /= a0;
 	}
+}
 }
