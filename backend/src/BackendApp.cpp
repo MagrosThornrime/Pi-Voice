@@ -115,7 +115,9 @@ void setAttack(const Napi::CallbackInfo& info) {\
         Napi::TypeError::New(env, "Expected attack:f32").ThrowAsJavaScriptException();
         return;
     }
-    synthesiser->setAttack(info[0].As<Napi::Number>().FloatValue());
+	f32 attack = info[0].As<Napi::Number>().FloatValue();
+    synthesiser->setAttack(attack);
+    fmt::println("Attack set to {}", attack);
 }
 
 void setDecay(const Napi::CallbackInfo& info) {
@@ -125,7 +127,9 @@ void setDecay(const Napi::CallbackInfo& info) {
         Napi::TypeError::New(env, "Expected decay:f32").ThrowAsJavaScriptException();
         return;
     }
-    synthesiser->setDecay(info[0].As<Napi::Number>().FloatValue());
+	f32 decay = info[0].As<Napi::Number>().FloatValue();
+    synthesiser->setDecay(decay);
+	fmt::println("Decay set to {}", decay);
 }
 
 void setSustain(const Napi::CallbackInfo& info) {
@@ -135,7 +139,9 @@ void setSustain(const Napi::CallbackInfo& info) {
         Napi::TypeError::New(env, "Expected sustain:f32").ThrowAsJavaScriptException();
         return;
     }
-    synthesiser->setSustain(info[0].As<Napi::Number>().FloatValue());
+	f32 sustain = info[0].As<Napi::Number>().FloatValue();
+    synthesiser->setSustain(sustain);
+	fmt::println("Sustain set to {}", sustain);
 }
 
 void setRelease(const Napi::CallbackInfo& info) {
@@ -145,7 +151,9 @@ void setRelease(const Napi::CallbackInfo& info) {
         Napi::TypeError::New(env, "Expected release:f32").ThrowAsJavaScriptException();
         return;
     }
-    synthesiser->setRelease(info[0].As<Napi::Number>().FloatValue());
+	f32 release = info[0].As<Napi::Number>().FloatValue();
+    synthesiser->setRelease(release);
+	fmt::println("Release set to {}", release);
 }
 
 
