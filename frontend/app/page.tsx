@@ -6,7 +6,8 @@ import {
   Heading,
   Text,
   Grid,
-  Slider
+  Slider,
+  Stack
 } from "@chakra-ui/react";
 
 import { Chart, useChart } from "@chakra-ui/charts"
@@ -48,6 +49,17 @@ export default function Home() {
   })
 
   const data = get_example_data(100, 0.1, Math.sin);
+
+  const [volumeValue, setVolumeValue] = useState([40])
+  const [endVolumeValue, setEndVolumeValue] = useState([40])
+  const [attackValue, setAttackValue] = useState([40])
+  const [endAttackValue, setEndAttackValue] = useState([40])
+  const [sustainValue, setSustainValue] = useState([40])
+  const [endSustainValue, setEndSustainValue] = useState([40])
+  const [decayValue, setDecayValue] = useState([40])
+  const [endDecayValue, setEndDecayValue] = useState([40])
+  const [releaseValue, setReleaseValue] = useState([40])
+  const [endReleaseValue, setEndReleaseValue] = useState([40])
 
   return (
     <Box minH="100vh" bg="gray.50" p={10}>
@@ -122,12 +134,18 @@ export default function Home() {
         maxW="800px"
         mx="auto"
       >
-        {["Volume", "Attack", "Sustain", "Decay", "Release", "Filter"].map((i) => (
-          <Box key={i} p={5} bg="grey" rounded="2xl" shadow="md">
+          <Box p={5} bg="grey" rounded="2xl" shadow="md">
             <Text mb={2} fontWeight="medium" textAlign="center">
-              {i}
+              Volume
             </Text>
-            <Slider.Root defaultValue={[40]}>
+            <Slider.Root
+              value={volumeValue}
+              onValueChange={(e) => setVolumeValue(e.value)}
+              onValueChangeEnd={(e) => {
+                setVolumeValue(e.value);
+                window.synthAPI.setAmplitude(e.value);
+              }}
+            >
               <Slider.Control>
                 <Slider.Track>
                   <Slider.Range />
@@ -135,8 +153,100 @@ export default function Home() {
                 <Slider.Thumbs />
               </Slider.Control>
             </Slider.Root>
+            <Stack mt="3" gap="1">
+              <Text>
+                Wartość: <b>{volumeValue}</b>
+              </Text>
+            </Stack>
           </Box>
-        ))}
+          <Box p={5} bg="grey" rounded="2xl" shadow="md">
+            <Text mb={2} fontWeight="medium" textAlign="center">
+              Attack
+            </Text>
+            <Slider.Root
+              value={attackValue}
+              onValueChange={(e) => setAttackValue(e.value)}
+              onValueChangeEnd={(e) => setEndAttackValue(e.value)}
+            >
+              <Slider.Control>
+                <Slider.Track>
+                  <Slider.Range />
+                </Slider.Track>
+                <Slider.Thumbs />
+              </Slider.Control>
+            </Slider.Root>
+            <Stack mt="3" gap="1">
+              <Text>
+                Wartość: <b>{attackValue}</b>
+              </Text>
+            </Stack>
+          </Box>
+          <Box p={5} bg="grey" rounded="2xl" shadow="md">
+            <Text mb={2} fontWeight="medium" textAlign="center">
+              Sustain
+            </Text>
+            <Slider.Root
+              value={sustainValue}
+              onValueChange={(e) => setSustainValue(e.value)}
+              onValueChangeEnd={(e) => setEndSustainValue(e.value)}
+            >
+              <Slider.Control>
+                <Slider.Track>
+                  <Slider.Range />
+                </Slider.Track>
+                <Slider.Thumbs />
+              </Slider.Control>
+            </Slider.Root>
+            <Stack mt="3" gap="1">
+              <Text>
+                Wartość: <b>{sustainValue}</b>
+              </Text>
+            </Stack>
+          </Box>
+          <Box p={5} bg="grey" rounded="2xl" shadow="md">
+            <Text mb={2} fontWeight="medium" textAlign="center">
+              Decay
+            </Text>
+            <Slider.Root
+              value={decayValue}
+              onValueChange={(e) => setDecayValue(e.value)}
+              onValueChangeEnd={(e) => setEndDecayValue(e.value)}
+            >
+              <Slider.Control>
+                <Slider.Track>
+                  <Slider.Range />
+                </Slider.Track>
+                <Slider.Thumbs />
+              </Slider.Control>
+            </Slider.Root>
+            <Stack mt="3" gap="1">
+              <Text>
+                Wartość: <b>{decayValue}</b>
+              </Text>
+            </Stack>
+          </Box>
+          <Box p={5} bg="grey" rounded="2xl" shadow="md">
+            <Text mb={2} fontWeight="medium" textAlign="center">
+              Release
+            </Text>
+            <Slider.Root
+              value={releaseValue}
+              onValueChange={(e) => setReleaseValue(e.value)}
+              onValueChangeEnd={(e) => setEndReleaseValue(e.value)}
+            >
+              <Slider.Control>
+                <Slider.Track>
+                  <Slider.Range />
+                </Slider.Track>
+                <Slider.Thumbs />
+              </Slider.Control>
+            </Slider.Root>
+            <Stack mt="3" gap="1">
+              <Text>
+                Wartość: <b>{releaseValue}</b>
+              </Text>
+            </Stack>
+          </Box>
       </Grid>
 
     </Box>
