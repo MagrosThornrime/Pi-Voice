@@ -33,35 +33,10 @@ export default function PlayPage() {
         setStatus(`Port ${port} opened`);
     };
 
-    const startSynth = async () => {
-        setStatus("Starting synth...");
-        await window.synthAPI.start();
-        setStatus("Synth running");
-    };
-
-    const stopSynth = async () => {
-        setStatus("Stopping synth...");
-        await window.synthAPI.stop();
-        setStatus("Synth stopped");
-    };
-
-    const cleanup = async () => {
-        setStatus("Cleaning up...");
-        await window.synthAPI.cleanup();
-        setStatus("Cleaned up");
-    };
-
     return (
         <main>
             <h1>🎛️ Simple Synth Controller</h1>
             <p>Status: {status}</p>
-
-            <div>
-                <button onClick={startSynth}>Start Synth</button>
-                <button onClick={stopSynth}>Stop Synth</button>
-                <button onClick={cleanup}>Cleanup</button>
-            </div>
-
             <div>
                 <button onClick={listPorts}>List MIDI Ports</button>
                 <ul>

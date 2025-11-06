@@ -5,6 +5,7 @@
 #include <oscillators/Oscillator.hpp>
 #include <portaudiocpp/PortAudioCpp.hxx>
 
+namespace pipeline {
 class Pipeline: public portaudio::CallbackInterface {
 public:
 	Pipeline& setSource(const std::shared_ptr<CallbackInterface>& source);
@@ -16,3 +17,4 @@ public:
 private:
 	std::vector<std::shared_ptr<portaudio::CallbackInterface>> _layers;
 };
+}

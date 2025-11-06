@@ -32,7 +32,7 @@ std::shared_ptr<polyphonic::VoiceManager> g_voiceManager;
 std::shared_ptr<fileio::FileRecorder> g_recorder;
 std::unique_ptr<portaudio::InterfaceCallbackStream> g_stream;
 std::unique_ptr<std::jthread> g_midiThread;
-auto pipeline = Pipeline();
+auto mypipe = pipeline::Pipeline();
 
 midi::Reader g_reader;
 std::mutex g_midiMutex;
@@ -144,11 +144,11 @@ void startSynth(const Napi::CallbackInfo& info) {
         }
 
         // Setup Pipeline
-        pipeline.setSource(g_voiceManager)
+        mypipe.setSource(g_voiceManager)
                 .addLayer(std::make_shared<LowPassFilter>(2, 2, 1000, 44100))
                 .addLayer(g_recorder);
 
-        g_stream = std::make_unique<portaudio::InterfaceCallbackStream>(streamParams, pipeline);
+        g_stream = std::make_unique<portaudio::InterfaceCallbackStream>(streamParams, mypipe);
         g_stream->start();
 
         g_running.store(true);
@@ -333,7 +333,7 @@ void addFilter(const Napi::CallbackInfo& info) {
         return;
     }
 
-    pipeline.addLayer(filter);
+    mypipe.addLayer(filter);
     fmt::println("Filter '{}' added successfully", name);
 }
 
@@ -344,11 +344,11 @@ void clearFilters(const Napi::CallbackInfo& info) {
     auto rec = g_recorder;
 
     // Rebuild pipeline cleanly
-    Pipeline newPipe;
+    pipeline::Pipeline newPipe;
     if (vm) newPipe.setSource(vm);
     if (rec) newPipe.addLayer(rec);
 
-    pipeline = std::move(newPipe);
+    mypipe = std::move(newPipe);
 
     fmt::println("All filters cleared and pipeline rebuilt");
 }

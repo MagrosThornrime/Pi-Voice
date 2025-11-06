@@ -20,5 +20,6 @@ include_directories("include")
 
 include("cmake/MidiTest.cmake")
 include("cmake/SimpleMIDIReaderExample.cmake")
+include("cmake/BackendApp.cmake")
 include("cmake/SimpleSynthExample.cmake")
 include("cmake/Tests.cmake")
