@@ -62,10 +62,10 @@ export default function Home() {
   const [endReleaseValue, setEndReleaseValue] = useState([40])
 
   window.synthAPI.setAmplitude(0.4);
-  window.synthAPI.setAttack(0.4);
+  window.synthAPI.setAttack(0.004);
   window.synthAPI.setSustain(0.4);
-  window.synthAPI.setDecay(0.4);
-  window.synthAPI.setRelease(0.4);
+  window.synthAPI.setDecay(0.04);
+  window.synthAPI.setRelease(0.00004);
 
   return (
     <Box minH="100vh" bg="gray.50" p={10}>
@@ -174,7 +174,7 @@ export default function Home() {
               onValueChange={(e) => setAttackValue(e.value)}
               onValueChangeEnd={(e) => {
                 setEndAttackValue(e.value);
-                window.synthAPI.setAttack(e.value[0] / 100.0);
+                window.synthAPI.setAttack((e.value[0]+1) / 10000.0);
               }}
             >
               <Slider.Control>
@@ -224,7 +224,7 @@ export default function Home() {
               onValueChange={(e) => setDecayValue(e.value)}
               onValueChangeEnd={(e) => {
                 setEndDecayValue(e.value);
-                window.synthAPI.setDecay(e.value[0] / 100.0);
+                window.synthAPI.setDecay((e.value[0]+1) / 1000.0);
               }}
             >
               <Slider.Control>
@@ -249,7 +249,7 @@ export default function Home() {
               onValueChange={(e) => setReleaseValue(e.value)}
               onValueChangeEnd={(e) => {
                 setEndReleaseValue(e.value)
-                window.synthAPI.setRelease(e.value[0] / 100.0);
+                window.synthAPI.setRelease((e.value[0]+1) / 1000000.0);
               }}
             >
               <Slider.Control>
