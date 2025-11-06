@@ -174,7 +174,7 @@ export default function Home() {
               onValueChange={(e) => setAttackValue(e.value)}
               onValueChangeEnd={(e) => {
                 setEndAttackValue(e.value);
-                window.synthAPI.setAttack((e.value[0]+1) / 10000.0);
+                window.synthAPI.setAttack((10**(-e.value[0]/10)));
               }}
             >
               <Slider.Control>
@@ -224,7 +224,7 @@ export default function Home() {
               onValueChange={(e) => setDecayValue(e.value)}
               onValueChangeEnd={(e) => {
                 setEndDecayValue(e.value);
-                window.synthAPI.setDecay((e.value[0]+1) / 1000.0);
+                window.synthAPI.setDecay(10**(-e.value[0]/10));
               }}
             >
               <Slider.Control>
@@ -249,7 +249,7 @@ export default function Home() {
               onValueChange={(e) => setReleaseValue(e.value)}
               onValueChangeEnd={(e) => {
                 setEndReleaseValue(e.value)
-                window.synthAPI.setRelease((e.value[0]+1) / 1000000.0);
+                window.synthAPI.setRelease(10**(-e.value[0]/10));
               }}
             >
               <Slider.Control>
