@@ -166,7 +166,10 @@ export default function Home() {
             <Slider.Root
               value={attackValue}
               onValueChange={(e) => setAttackValue(e.value)}
-              onValueChangeEnd={(e) => setEndAttackValue(e.value)}
+              onValueChangeEnd={(e) => {
+                setEndAttackValue(e.value);
+                window.synthAPI.setAttack(e.value[0] / 100.0);
+              }}
             >
               <Slider.Control>
                 <Slider.Track>
@@ -188,7 +191,10 @@ export default function Home() {
             <Slider.Root
               value={sustainValue}
               onValueChange={(e) => setSustainValue(e.value)}
-              onValueChangeEnd={(e) => setEndSustainValue(e.value)}
+              onValueChangeEnd={(e) => {
+                setEndSustainValue(e.value);
+                window.synthAPI.setSustain(e.value[0] / 100.0);
+              }}
             >
               <Slider.Control>
                 <Slider.Track>
@@ -210,7 +216,10 @@ export default function Home() {
             <Slider.Root
               value={decayValue}
               onValueChange={(e) => setDecayValue(e.value)}
-              onValueChangeEnd={(e) => setEndDecayValue(e.value)}
+              onValueChangeEnd={(e) => {
+                setEndDecayValue(e.value);
+                window.synthAPI.setDecay(e.value[0] / 100.0);
+              }}
             >
               <Slider.Control>
                 <Slider.Track>
@@ -232,7 +241,10 @@ export default function Home() {
             <Slider.Root
               value={releaseValue}
               onValueChange={(e) => setReleaseValue(e.value)}
-              onValueChangeEnd={(e) => setEndReleaseValue(e.value)}
+              onValueChangeEnd={(e) => {
+                setEndReleaseValue(e.value)
+                window.synthAPI.setRelease(e.value[0] / 100.0);
+              }}
             >
               <Slider.Control>
                 <Slider.Track>
