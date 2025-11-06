@@ -62,10 +62,8 @@ void setAmplitude(const Napi::CallbackInfo& info) {
         return;
     }
 
-    if (!synthesiser)
-
     f32 amp = info[0].As<Napi::Number>().FloatValue();
-    f32 amp = std::clamp(amp, 0.0f, 1.0f);
+    amp = std::clamp(amp, 0.0f, 1.0f);
     synthesiser->setAmplitude(amp);
     fmt::println("Amplitude set to {}", amp);
 }

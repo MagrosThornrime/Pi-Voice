@@ -142,8 +142,8 @@ export default function Home() {
               value={volumeValue}
               onValueChange={(e) => setVolumeValue(e.value)}
               onValueChangeEnd={(e) => {
-                setVolumeValue(e.value);
-                window.synthAPI.setAmplitude(e.value);
+                setEndVolumeValue(e.value);
+                window.synthAPI.setAmplitude(e.value[0] / 100.0);
               }}
             >
               <Slider.Control>
