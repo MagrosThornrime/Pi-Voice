@@ -2,7 +2,7 @@
 #include <application/Synthesiser.hpp>
 #include <napi.h>
 #include <Types.hpp>
-#include <pipeline/Pipeline.hpp>
+
 
 std::shared_ptr<application::Synthesiser> synthesiser;
 std::shared_ptr<application::MidiManager> midiApp;
@@ -170,3 +170,5 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
     fmt::println("SynthModule initialized successfully");
     return exports;
 }
+
+NODE_API_MODULE(SynthModule, Init);
