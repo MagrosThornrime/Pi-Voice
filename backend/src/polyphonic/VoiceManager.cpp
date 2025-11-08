@@ -1,5 +1,5 @@
 #include <polyphonic/VoiceManager.hpp>
-#include <string>
+#include <fmt/core.h>
 
 namespace polyphonic {
 int VoiceManager::paCallbackFun(const void* input, void* output,
@@ -38,7 +38,7 @@ void VoiceManager::setOscillatorAmplitude(f32 amplitude, i32 index){
 
 void VoiceManager::setAmplitude(f32 amplitude){
 	if(amplitude < 0.0 || amplitude > 1.0){
-		throw std::runtime_error("Invalid amplitude value of: " + std::to_string(amplitude));
+		throw std::invalid_argument(fmt::format("Invalid amplitude value of: {}", amplitude));
 	}
 	_amplitude = amplitude;
 }
