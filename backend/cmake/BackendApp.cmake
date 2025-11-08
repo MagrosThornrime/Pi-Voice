@@ -15,8 +15,11 @@ add_library(BackendApp SHARED)
 
 target_sources(BackendApp PRIVATE src/BackendApp.cpp "${CMAKE_JS_SRC}")
 target_include_directories(BackendApp PUBLIC include "${CMAKE_JS_INC}" ${portaudio_SOURCE_DIR}/include)
-target_link_libraries(BackendApp
-    PRIVATE
+
+
+if (MSVC)
+    target_link_libraries(BackendApp
+        PRIVATE
         rtmidi
         "${CMAKE_JS_LIB}"
         portaudio
@@ -29,9 +32,7 @@ target_link_libraries(BackendApp
         oscillators
         fileio
         application
-)
-
-if (MSVC)
+    )
     target_link_options(BackendApp PRIVATE
         /WHOLEARCHIVE:midi
         /WHOLEARCHIVE:pipeline
@@ -42,9 +43,21 @@ if (MSVC)
         /WHOLEARCHIVE:application
     )
 else()
-    target_link_options(BackendApp PRIVATE
+    target_link_libraries(BackendApp
+        PRIVATE
+        rtmidi
+        "${CMAKE_JS_LIB}"
+        portaudio
+        fmt::fmt
+        range-v3::range-v3
         -Wl,--whole-archive
-        -lmidi -lpipeline -lfilters -lpolyphonic -loscillators -lfileio -lapplication
+        midi
+        pipeline
+        filters
+        polyphonic
+        oscillators
+        fileio
+        application
         -Wl,--no-whole-archive
     )
 endif()
