@@ -38,7 +38,7 @@ void VoiceManager::setOscillatorAmplitude(f32 amplitude, i32 index){
 
 void VoiceManager::setAmplitude(f32 amplitude){
 	if(amplitude < 0.0 || amplitude > 1.0){
-		throw std::exception("Invalid amplitude value of: " + std::to_string(amplitude));
+		throw std::runtime_error("Invalid amplitude value of: " + std::to_string(amplitude));
 	}
 	_amplitude = amplitude;
 }
