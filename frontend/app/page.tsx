@@ -19,47 +19,82 @@ export interface Point {
 }
 
 
-// function get_example_data(n:number, eps:number){
-//   var i:number; 
-//   var res: Point[] = [];
-
-//   for(i = 0; i < n; i++) {
-//     const p: any = {
-//       x: i * eps,
-//       y: Math.sin(i * eps),
-//     };
-//     res.push(p as Point)
-//   }
-//   return res
-// }
-
-function get_example_data(n: number, eps: number, func : (X:number) => number) {
+function get_example_data(n: number, eps: number, func : (X:number) => number, shift: number = 0): Point[] {
   return Array.from({ length: n }, (_, i) => ({
-    x: i * eps,
-    y: func(i * eps),
+    x: i * eps + shift,
+    y: func(i * eps + shift),
   }));
+}
+
+
+function get_adsr_curve(attack: number, decay: number, sustain: number, release: number, totalTime: number, sampleRate: number): Point[] {
+  
+  const points: Point[] = [];
+
+  // sustain value actually only represents how low should decay drop, release parameter regulates the length of sustain phase
+
+  var T_attack = attack * totalTime;
+  var T_decay = decay * totalTime;
+  var T_release = release * totalTime;
+  const used = T_attack + T_decay + T_release;
+  
+  if (used > totalTime){
+    const scale = totalTime/used;
+    T_attack *= scale;
+    T_decay *= scale;
+    T_release *= scale;
+  }
+
+
+  const attackEnd = T_attack;
+  const decayEnd = attackEnd + T_decay;
+  const releaseStart = totalTime - T_release;
+
+  for (let t = 0; t <= totalTime; t += 1 / sampleRate) {
+    let amplitude: number;
+    if (t < attackEnd) {
+      amplitude = t/T_attack;
+    } else if (t < decayEnd) {
+      amplitude = 1 - ((t - T_attack) / T_decay ) * (1 - sustain);
+    } else if (t < releaseStart) {
+      amplitude = sustain;
+    } else {
+      amplitude = sustain * (1 - (t - releaseStart) / T_release);
+    }
+    points.push({ x: t, y: amplitude });
+  }
+  return points;
 }
 
 
 export default function Home() {
 
-  const chart = useChart({
-    data: get_example_data(100, 0.1, Math.sin),
-    series: [{ name: "y", color: "teal.solid" }]
-  })
+  // const chart = useChart({
+  //   data: get_example_data(100, 0.1, Math.sin),
+  //   series: [{ name: "y", color: "teal.solid" }]
+  // })
 
-  const data = get_example_data(100, 0.1, Math.sin);
+  // const data = get_example_data(100, 0.1, Math.sin);
 
   const [volumeValue, setVolumeValue] = useState([40])
   const [endVolumeValue, setEndVolumeValue] = useState([40])
-  const [attackValue, setAttackValue] = useState([40])
+
+  const [attackValue, setAttackValue] = useState([20])
   const [endAttackValue, setEndAttackValue] = useState([40])
-  const [sustainValue, setSustainValue] = useState([40])
+
+  const [sustainValue, setSustainValue] = useState([20])
   const [endSustainValue, setEndSustainValue] = useState([40])
-  const [decayValue, setDecayValue] = useState([40])
+
+  const [decayValue, setDecayValue] = useState([10])
   const [endDecayValue, setEndDecayValue] = useState([40])
-  const [releaseValue, setReleaseValue] = useState([40])
+
+  const [releaseValue, setReleaseValue] = useState([20])
   const [endReleaseValue, setEndReleaseValue] = useState([40])
+
+  const chart = useChart({
+    data: get_adsr_curve(0.1, 0.2, 0.2, 0.4, 1.0, 100),
+    series: [{ name: "y", color: "teal.solid" }]
+  })
 
   return (
     <Box minH="100vh" bg="gray.50" p={10}>
