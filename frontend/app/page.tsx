@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Box,
   Heading,
@@ -28,7 +28,7 @@ function get_example_data(n: number, eps: number, func : (X:number) => number, s
 
 
 function get_adsr_curve(attack: number, decay: number, sustain: number, release: number, totalTime: number, sampleRate: number): Point[] {
-  
+
   const points: Point[] = [];
 
   // sustain value actually only represents how low should decay drop, release parameter regulates the length of sustain phase
@@ -66,6 +66,10 @@ function get_adsr_curve(attack: number, decay: number, sustain: number, release:
   return points;
 }
 
+function norm(param:number[]){
+  return param[0]/100;
+}
+
 
 export default function Home() {
 
@@ -74,27 +78,42 @@ export default function Home() {
   //   series: [{ name: "y", color: "teal.solid" }]
   // })
 
-  // const data = get_example_data(100, 0.1, Math.sin);
+  // const data_adsr = get_adsr_curve(0.1, 0.2, 0.2, 0.4, 1.0, 100);
 
-  const [volumeValue, setVolumeValue] = useState([40])
+
+  const [volumeValue, setVolumeValue] = useState([10])
   const [endVolumeValue, setEndVolumeValue] = useState([40])
 
-  const [attackValue, setAttackValue] = useState([20])
+  const [attackValue, setAttackValue] = useState([10])
   const [endAttackValue, setEndAttackValue] = useState([40])
+
+  const [decayValue, setDecayValue] = useState([20])
+  const [endDecayValue, setEndDecayValue] = useState([40])
 
   const [sustainValue, setSustainValue] = useState([20])
   const [endSustainValue, setEndSustainValue] = useState([40])
 
-  const [decayValue, setDecayValue] = useState([10])
-  const [endDecayValue, setEndDecayValue] = useState([40])
 
-  const [releaseValue, setReleaseValue] = useState([20])
+  const [releaseValue, setReleaseValue] = useState([40])
   const [endReleaseValue, setEndReleaseValue] = useState([40])
 
-  const chart = useChart({
-    data: get_adsr_curve(0.1, 0.2, 0.2, 0.4, 1.0, 100),
+
+  const data_adsr = useMemo(() => {
+    return get_adsr_curve(norm(attackValue), norm(decayValue), norm(sustainValue), norm(releaseValue), 1.0, 100);
+  }, [attackValue, decayValue, sustainValue, releaseValue]);
+
+
+  const chart_adsr = useChart({
+    data: data_adsr,
     series: [{ name: "y", color: "teal.solid" }]
   })
+
+  const chart_sound = useChart({
+    data: get_example_data(100, 0.1, Math.sin),
+    series: [{ name: "y", color: "teal.solid" }]
+  })
+
+  const charts = [chart_adsr, chart_sound];
 
   return (
     <Box minH="100vh" bg="gray.50" p={10}>
@@ -105,58 +124,71 @@ export default function Home() {
 
       <Box h="40" />
 
-      <Chart.Root width={600} height={300} chart={chart}>
-        <LineChart data={chart.data}>
+      <Grid
+        templateColumns={{
+          base: "1fr",
+          md: "repeat(2, 1fr)",
+          lg: "repeat(2, 1fr)",
+        }}
+        
+        gap={10}
+        maxW="800px"
+        mx="auto"
+      >
 
-          <CartesianGrid vertical={false} />
+        <Chart.Root width={600} height={300} chart={chart_adsr}>
+          <LineChart data={chart_adsr.data}>
 
-          <XAxis dataKey="x"
-            label={{ value: "X", position: "bottom" }}
-            stroke={chart.color("border")}
-            tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
-          />
+            <CartesianGrid vertical={false} />
 
-          <YAxis dataKey="y"
-            label={{ value: "Y", position: "left" }}
-            stroke={chart.color("border")}
-            tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
-          />
+            <XAxis dataKey="x"
+              label={{ value: "X", position: "bottom" }}
+              stroke={chart_adsr.color("border")}
+              tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
+            />
 
-          <Tooltip
-            animationDuration={100}
-            cursor={false}
-            content={({ active, payload, label }) => {
-              if (active && payload && payload.length) 
-              {
-                const x = Math.round(Number(label) * 100) / 100;
-                const y = Math.round(payload[0].value * 100) / 100;
+            <YAxis dataKey="y"
+              label={{ value: "Y", position: "left" }}
+              stroke={chart_adsr.color("border")}
+              tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
+            />
 
-                return (
-                  <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
-                    <Text fontSize="sm" color="gray.600">x: {x}</Text>
-                    <Text fontSize="sm" color="gray.600">y: {y}</Text>
-                  </Box>
-                  );
-              }
-            }} 
-          />
+            <Tooltip
+              animationDuration={100}
+              cursor={false}
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) 
+                {
+                  const x = Math.round(Number(label) * 100) / 100;
+                  const y = Math.round(payload[0].value * 100) / 100;
 
-          {
-            chart.series.map((item) => (
-              <Line key={item.name}
-                isAnimationActive={false}
-                dataKey={chart.key(item.name)}
-                stroke={chart.color(item.color)}
-                strokeWidth={2}
-                dot={false}
-              />
-            )
-            )
-          }
+                  return (
+                    <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
+                      <Text fontSize="sm" color="gray.600">x: {x}</Text>
+                      <Text fontSize="sm" color="gray.600">y: {y}</Text>
+                    </Box>
+                    );
+                }
+              }} 
+            />
 
-        </LineChart>
-      </Chart.Root>
+            {
+              chart_adsr.series.map((item) => (
+                <Line key={item.name}
+                  isAnimationActive={false}
+                  dataKey={chart_adsr.key(item.name)}
+                  stroke={chart_adsr.color(item.color)}
+                  strokeWidth={2}
+                  dot={false}
+                />
+              )
+              )
+            }
 
+          </LineChart>
+        </Chart.Root>
+
+      </Grid>
 
       <Box h="80" />
       <Grid
@@ -165,6 +197,7 @@ export default function Home() {
           md: "repeat(2, 1fr)",
           lg: "repeat(3, 1fr)",
         }}
+
         gap={10}
         maxW="800px"
         mx="auto"
