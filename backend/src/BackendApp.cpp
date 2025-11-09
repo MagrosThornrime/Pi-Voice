@@ -72,13 +72,13 @@ void setAmplitude(const Napi::CallbackInfo& info) {
 void setOscillatorType(const Napi::CallbackInfo& info) {
     auto lock = std::lock_guard(mutex);
     auto env = info.Env();
-    if (info.Length() != 2 || !info[0].IsNumber() || !info[1].IsNumber()) {
-        Napi::TypeError::New(env, "Expected (index:i32, type:i32)").ThrowAsJavaScriptException();
+    if (info.Length() != 2 || !info[0].isString() || !info[1].IsNumber()) {
+        Napi::TypeError::New(env, "Expected (type:string, index:i32)").ThrowAsJavaScriptException();
         return;
     }
 
-    i32 index = info[1].As<Napi::Number>().Int32Value();
     std::string typeName = info[0].As<Napi::String>();
+    i32 index = info[1].As<Napi::Number>().Int32Value();
     if (index < 0 || index > 2) {
         Napi::RangeError::New(env, "Invalid oscillator index").ThrowAsJavaScriptException();
         return;
