@@ -68,7 +68,7 @@ export default function Home() {
         Audio Platform
       </Heading>
 
-      <Box h="40" />
+      <Box h="10" />
 
       <Chart.Root width={600} height={300} chart={chart}>
         <LineChart data={chart.data}>
@@ -123,7 +123,7 @@ export default function Home() {
       </Chart.Root>
 
 
-      <Box h="80" />
+      <Box h="10" />
       <Grid
         templateColumns={{
           base: "1fr",
