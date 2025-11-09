@@ -1,6 +1,8 @@
 const path = require("path");
 const { app, BrowserWindow, ipcMain } = require("electron");
+const { spawn } = require("child_process");
 
+let nextProcess;
 let synth;
 try {
   synth = require(path.join(__dirname, "lib", "BackendApp.node")); // updated name
@@ -23,7 +25,28 @@ function createWindow() {
   win.loadURL("http://localhost:3000");
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(async() => {
+  nextProcess = spawn("npm", ["run", "dev"], {
+    cwd: path.join(process.cwd(), "./frontend"),
+    shell: true,
+    stdio: "inherit",
+  });
+
+  try {
+    setTimeout(() => {
+      createWindow();
+    }, 100);
+  } catch (err) {
+    console.error(err);
+    app.quit();
+  }
+});
+
+app.on("quit", () => {
+  if (nextProcess) {
+    nextProcess.kill();
+  }
+});
 
 // =========================
 // IPC handlers
