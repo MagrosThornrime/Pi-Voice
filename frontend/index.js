@@ -1,6 +1,7 @@
 const path = require("path");
 const { app, BrowserWindow, ipcMain } = require("electron");
 const { spawn } = require("child_process");
+const { exec } = require("child_process");
 
 let nextProcess;
 let synth;
@@ -44,7 +45,11 @@ app.whenReady().then(async() => {
 
 app.on("quit", () => {
   if (nextProcess) {
-    nextProcess.kill();
+    if (process.platform === "win32") {
+      exec(`taskkill /PID ${nextProcess.pid} /T /F`);
+    } else {
+      nextProcess.kill();
+    }
   }
 });
 
