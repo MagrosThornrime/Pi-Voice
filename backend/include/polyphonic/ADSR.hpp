@@ -1,6 +1,7 @@
 #pragma once
 #include <Types.hpp>
 
+namespace polyphonic {
 // @brief Stages on ADSR envelope
 enum ADSRStage{
 	attack, ///< when the key is pressed, the amplitude starts to grow until it reaches 1.0
@@ -38,3 +39,4 @@ public:
     /// @param isPressed tells if the Voice using this is pressed
     f32 getAmplitude(bool isPressed);
 };
+}

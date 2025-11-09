@@ -3,6 +3,7 @@
 #include <cmath>
 #include <range/v3/view/concat.hpp>
 
+namespace filters {
 NotchFilter::NotchFilter(const u32 channels, const f32 cutoffFrequency, const f32 samplingRate, const f32 quality) {
 	_prev = decltype(_prev)(channels);
 	_channels = channels;
@@ -30,4 +31,5 @@ NotchFilter::NotchFilter(const u32 channels, const f32 cutoffFrequency, const f3
 	for (auto&& b : _b) {
 		b /= a0;
 	}
+}
 }

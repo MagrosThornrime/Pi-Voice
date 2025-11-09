@@ -3,6 +3,7 @@
 #include <portaudiocpp/PortAudioCpp.hxx>
 #include <mutex>
 
+namespace polyphonic{
 /// @brief Controls all Voices in the synthesiser and mixes their outputs
 class VoiceManager : public portaudio::CallbackInterface {
 	/// @brief Used Voices
@@ -69,3 +70,4 @@ public:
 	/// @param release rate of the amplitude's decrease after releasing the key (between 0.0 and 1.0)
 	void setRelease(f32 release);
 };
+}

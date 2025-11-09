@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 
+namespace filters {
 // Bw - Butterworth
 class BwFilter: public portaudio::CallbackInterface {
 public:
@@ -25,3 +26,4 @@ protected:
 
 	void _set(const u32 channels, const std::array<float, 2>& a, const std::array<float, 3>& b);
 };
+}

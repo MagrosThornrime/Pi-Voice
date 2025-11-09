@@ -4,6 +4,7 @@
 #include <range/v3/view/concat.hpp>
 #include <fmt/core.h>
 
+namespace filters {
 LowPassFilter::LowPassFilter(const u32 order, const u32 channels, const f32 cutoffFrequency, const f32 samplingRate, const f32 quality) {
 	_prev = decltype(_prev)(channels);
 	_channels = channels;
@@ -54,4 +55,5 @@ LowPassFilter::LowPassFilter(const u32 order, const u32 channels, const f32 cuto
 			b /= a0;
 		}
 	}
+}
 }

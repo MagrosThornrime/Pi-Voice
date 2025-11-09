@@ -2,6 +2,8 @@
 #include <range/v3/view/drop.hpp>
 #include <fmt/core.h>
 
+namespace pipeline {
+
 using InterfaceRef = std::shared_ptr<portaudio::CallbackInterface>;
 
 Pipeline& Pipeline::setSource(const InterfaceRef& source) {
@@ -23,4 +25,5 @@ int Pipeline::paCallbackFun(const void* inputBuffer, void* outputBuffer, unsigne
 		layer->paCallbackFun(outputBuffer, outputBuffer, numFrames, timeInfo, statusFlags);
 	}
 	return paContinue;
+}
 }

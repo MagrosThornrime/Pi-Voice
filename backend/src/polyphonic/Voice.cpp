@@ -1,9 +1,10 @@
 #include <polyphonic/Voice.hpp>
+#include <fmt/core.h>
 
-
+namespace polyphonic {
 void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType, i32 index) {
     if(index < 0 || index > 2){
-        return;
+        throw std::invalid_argument(fmt::format("Invalid index value of: {}", index));
     }
     switch (oscillatorType) {
         case oscillators::empty:
@@ -44,10 +45,10 @@ void Voice::update(){
 
 void Voice::setOscillatorAmplitude(f32 amplitude, i32 index){
     if(index < 0 || index > 2){
-        return;
+        throw std::invalid_argument(fmt::format("Invalid index value of: {}", index));
     }
     if(amplitude < 0.0f || amplitude > 1.0f){
-        return;
+        throw std::invalid_argument(fmt::format("Invalid amplitude value of: {}", amplitude));
     }
     _amplitudes[index] = amplitude;
 }
@@ -70,25 +71,30 @@ void Voice::turnOff(){
 }
 
 void Voice::setAttack(f32 attack){
-    if(attack > 0.0f && attack < 1.0f) {
-        _adsr.attackFactor = attack;
+    if(attack < 0.0f || attack > 1.0f) {
+		throw std::invalid_argument(fmt::format("Invalid attack value of: {}", attack));
     }
+	_adsr.attackFactor = attack;
 }
 
 void Voice::setDecay(f32 decay){
-    if(decay > 0.0f && decay < 1.0f) {
-        _adsr.decayFactor = decay;
-    }
+	if(decay < 0.0f || decay > 1.0f) {
+		throw std::invalid_argument(fmt::format("Invalid decay value of: {}", decay));
+	}
+	_adsr.decayFactor = decay;
 }
 
 void Voice::setSustain(f32 sustain){
-    if(sustain > 0.0f && sustain < 1.0f) {
-        _adsr.sustainAmplitude = sustain;
-    }
+	if(sustain < 0.0f || sustain > 1.0f) {
+		throw std::invalid_argument(fmt::format("Invalid sustain value of: {}", sustain));
+	}
+	_adsr.sustainAmplitude = sustain;
 }
 
 void Voice::setRelease(f32 release){
-    if(release > 0.0f && release < 1.0f) {
-        _adsr.releaseFactor = release;
-    }
+	if(release < 0.0f || release > 1.0f) {
+		throw std::invalid_argument(fmt::format("Invalid release value of: {}", release));
+	}
+	_adsr.releaseFactor = release;
+}
 }

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <range/v3/view/concat.hpp>
 
+namespace filters {
 AllPassFilter::AllPassFilter(const u32 channels, const f32 cutoffFrequency, const f32 samplingRate, const f32 quality) {
 	_prev = decltype(_prev)(channels);
 	_channels = channels;
@@ -31,4 +32,5 @@ AllPassFilter::AllPassFilter(const u32 channels, const f32 cutoffFrequency, cons
 	for (auto&& b : _b) {
 		b /= a0;
 	}
+}
 }

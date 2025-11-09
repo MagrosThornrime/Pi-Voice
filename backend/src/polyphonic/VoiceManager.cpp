@@ -1,5 +1,7 @@
 #include <polyphonic/VoiceManager.hpp>
+#include <fmt/core.h>
 
+namespace polyphonic {
 int VoiceManager::paCallbackFun(const void* input, void* output,
 	unsigned long frameCount,
 	const PaStreamCallbackTimeInfo* timeInfo,
@@ -21,9 +23,6 @@ VoiceManager::VoiceManager(i32 voicesNumber, f32 sampleRate){
 }
 
 void VoiceManager::setOscillatorType(oscillators::OscillatorType type, i32 index){
-	if(index < 0 || index > 2){
-		return;
-	}
 	auto lock = std::lock_guard(_oscillatorMutex);
 	for(auto& voice : _voices){
 		voice.setOscillatorType(type, index);
@@ -31,12 +30,6 @@ void VoiceManager::setOscillatorType(oscillators::OscillatorType type, i32 index
 }
 
 void VoiceManager::setOscillatorAmplitude(f32 amplitude, i32 index){
-	if(index < 0 || index > 2){
-		return;
-	}
-	if(amplitude < 0.0 || amplitude > 1.0){
-		return;
-	}
 	auto lock = std::lock_guard(_oscillatorMutex);
 	for(auto& voice : _voices){
 		voice.setOscillatorAmplitude(amplitude, index);
@@ -45,7 +38,7 @@ void VoiceManager::setOscillatorAmplitude(f32 amplitude, i32 index){
 
 void VoiceManager::setAmplitude(f32 amplitude){
 	if(amplitude < 0.0 || amplitude > 1.0){
-		return;
+		throw std::invalid_argument(fmt::format("Invalid amplitude value of: {}", amplitude));
 	}
 	_amplitude = amplitude;
 }
@@ -96,4 +89,5 @@ void VoiceManager::setRelease(f32 release){
 	for(auto& voice : _voices){
 		voice.setRelease(release);
 	}
+}
 }
