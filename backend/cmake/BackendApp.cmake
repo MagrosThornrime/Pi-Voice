@@ -3,6 +3,7 @@ include_guard()
 include("cmake/libs/rtmidi.cmake")
 include("cmake/libs/portaudio.cmake")
 include("cmake/libs/fmt.cmake")
+include("cmake/libs/libsndfile.cmake")
 include("cmake/midi.cmake")
 include("cmake/pipeline.cmake")
 include("cmake/filters.cmake")
@@ -21,6 +22,7 @@ if (MSVC)
     target_link_libraries(BackendApp
         PRIVATE
         rtmidi
+        sndfile
         "${CMAKE_JS_LIB}"
         portaudio
         fmt::fmt
@@ -46,6 +48,7 @@ else()
     target_link_libraries(BackendApp
         PRIVATE
         rtmidi
+        sndfile
         "${CMAKE_JS_LIB}"
         portaudio
         fmt::fmt
