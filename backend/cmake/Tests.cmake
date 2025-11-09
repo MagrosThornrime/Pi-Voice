@@ -35,6 +35,7 @@ foreach(TEST_SRC ${TEST_SOURCES})
             gtest
             gtest_main
             $<$<NOT:$<PLATFORM_ID:Windows>>:pthread>
+            -Wl,--whole-archive
             midi
             pipeline
             filters
@@ -42,6 +43,7 @@ foreach(TEST_SRC ${TEST_SOURCES})
             oscillators
             fileio
             application
+            -Wl,--no-whole-archive
     )
 
     add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})

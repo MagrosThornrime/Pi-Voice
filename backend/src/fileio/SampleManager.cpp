@@ -12,6 +12,15 @@ SampleManager::SampleManager(const std::string& samplesDirectory)
     _loadSampleNames();
 }
 
+std::vector<std::string> SampleManager::getSampleNames() {
+    std::vector<std::string> names;
+    for (const auto& sample : _sampleNames) {
+        names.push_back(sample);
+    }
+    return names;
+}
+
+
 void SampleManager::_loadSampleNames() {
     // This structure would distinguish a file from a
     // directory
