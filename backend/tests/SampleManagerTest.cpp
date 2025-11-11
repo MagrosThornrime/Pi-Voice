@@ -3,7 +3,7 @@
 #include <unordered_set>
 
 TEST(SampleManager, ListFiles) {
-    fileio::SampleManager sampleManager("samples");
+    fileio::SampleManager sampleManager("resources/samples");
 
     auto samples = sampleManager.getSampleNames();
     auto samplesSet = std::unordered_set(samples.begin(), samples.end());
