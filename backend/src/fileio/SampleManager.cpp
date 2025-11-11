@@ -2,44 +2,39 @@
 #include <filesystem>
 #include <string>
 #include <fmt/core.h>
-#include <sys/stat.h>
+#include <range/v3/all.hpp>
 
 namespace fs = std::filesystem;
 
 namespace fileio {
 SampleManager::SampleManager(const std::string& samplesDirectory)
 : _samplesDirectory(samplesDirectory) {
-    _loadSampleNames();
+    _loadSamplePaths();
 }
 
 std::vector<std::string> SampleManager::getSampleNames() {
     std::vector<std::string> names;
-    for (const auto& sample : _sampleNames) {
+    for (const auto& sample: ranges::views::keys(_samplePaths)) {
         names.push_back(sample);
     }
     return names;
 }
 
 
-void SampleManager::_loadSampleNames() {
-    // This structure would distinguish a file from a
-    // directory
-    struct stat sb;
-
-    // Looping until all the items of the directory are
-    // exhausted
+void SampleManager::_loadSamplePaths() {
     for (const auto& entry : fs::directory_iterator(_samplesDirectory)) {
-
-        // Converting the path to const char * in the
-        // subsequent lines
-        std::filesystem::path outfilename = entry.path();
-        std::string outfilename_str = outfilename.string();
-        const char* path = outfilename_str.c_str();
-
-        // Testing whether the path points to a
-        // non-directory or not If it does, displays path
-        if (stat(path, &sb) == 0 && !(sb.st_mode & S_IFDIR))
-            fmt::println("{}", path);
+        fs::path entryPath = entry.path();
+        if(!fs::is_regular_file(entryPath)) {
+            continue;
+        }
+        std::string sampleName = entryPath.stem().string();
+        std:: string currentName = sampleName;
+        int sameNamed = 1;
+        while(_samplePaths.contains(currentName)) {
+            sameNamed++;
+            currentName = fmt::format("{} {}", currentName, sameNamed);
+        }
+        _samplePaths.emplace(currentName, entryPath.string());
     }
 }
 }
