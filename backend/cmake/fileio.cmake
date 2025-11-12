@@ -24,4 +24,5 @@ target_link_libraries(fileio PUBLIC
 	range-v3::range-v3
 	portaudio
 	portaudiocpp
+	sndfile
 )
