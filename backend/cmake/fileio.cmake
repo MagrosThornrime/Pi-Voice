@@ -3,6 +3,8 @@ include_guard()
 include("cmake/libs/fmt.cmake")
 include("cmake/libs/ranges.cmake")
 include("cmake/libs/portaudio.cmake")
+include("cmake/libs/libsndfile.cmake")
+include("cmake/utils.cmake")
 
 file(GLOB_RECURSE FILEIO_SRC "src/fileio/*.cpp")
 
@@ -15,5 +17,13 @@ else()
   unset(CMAKE_POSITION_INDEPENDENT_CODE CACHE)
 endif()
 
-target_include_directories(fileio PUBLIC include ${rtmidi_SOURCE_DIR}/include)
-target_link_libraries(fileio PUBLIC fmt::fmt range-v3::range-v3 portaudio portaudiocpp)
+target_include_directories(fileio PUBLIC include ${rtmidi_SOURCE_DIR}/include
+	${libsndfile_SOURCE_DIR}/include
+)
+target_link_libraries(fileio PUBLIC
+	fmt::fmt
+	range-v3::range-v3
+	portaudio
+	portaudiocpp
+	utils
+)
