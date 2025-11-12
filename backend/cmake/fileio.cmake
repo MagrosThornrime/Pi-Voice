@@ -4,7 +4,6 @@ include("cmake/libs/fmt.cmake")
 include("cmake/libs/ranges.cmake")
 include("cmake/libs/portaudio.cmake")
 include("cmake/libs/libsndfile.cmake")
-include("cmake/utils.cmake")
 
 file(GLOB_RECURSE FILEIO_SRC "src/fileio/*.cpp")
 
@@ -25,5 +24,4 @@ target_link_libraries(fileio PUBLIC
 	range-v3::range-v3
 	portaudio
 	portaudiocpp
-	utils
 )
