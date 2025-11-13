@@ -4,7 +4,7 @@ namespace application {
 Synthesiser::Synthesiser(const std::string& recordingPath, i32 channels, i32 sampleRate)
     : _sampleRate(sampleRate), _channels(channels) {
 	_pipeline = std::make_shared<pipeline::Pipeline>();
-	_recorder = std::make_shared<fileio::FileRecorder>(recordingPath, channels, sampleRate);
+	_recorder = std::make_shared<fileio::FileRecorder>(sampleRate, channels);
     _autoSys = std::make_unique<portaudio::AutoSystem>();
     _voiceManager = std::make_shared<polyphonic::VoiceManager>(128, 44100.0f);
 }

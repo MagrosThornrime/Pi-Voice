@@ -5,13 +5,17 @@
 #include <array>
 #include <bit>
 #include <utility>
+#include <chrono>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
+#include <string>
 
 namespace fileio {
 
-FileRecorder::FileRecorder(const std::string& filename, const u32 sampleRate, const u32 channels, const float seconds, const bool skip):
+FileRecorder::FileRecorder(const u32 sampleRate, const u32 channels, const float seconds, const bool skip):
 	_channels{channels},
 	_sampleRate{sampleRate},
-	_filename{filename},
 	_queue{u32(channels * sampleRate * seconds)},
 	_skip{skip} {}
 
@@ -30,6 +34,15 @@ int FileRecorder::paCallbackFun(const void* inputBuffer, void* outputBuffer, uns
 	return paContinue;
 }
 
+std::string FileRecorder::_getFilename(){
+	auto now = std::chrono::system_clock::now();
+	auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+	std::stringstream ss;
+	ss << std::put_time(std::localtime(&in_time_t), "%d-%m-%Y %H-%M-%S.wav");
+	return ss.str();
+}
+
 void FileRecorder::start() {
 	SF_INFO sfInfo{
 		.samplerate = (int)_sampleRate,
@@ -37,9 +50,14 @@ void FileRecorder::start() {
 		.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT,
 		.seekable = true
 	};
-	auto file = sf_open(_filename.c_str(), SFM_WRITE, &sfInfo);
-	if (not file) {
-		throw std::runtime_error(fmt::format("Failed to open file '{}' for writing", _filename));
+	std::string filename = _getFilename();
+	auto file = sf_open(filename.c_str(), SFM_WRITE, &sfInfo);
+	if (!file) {
+		std::string err = sf_strerror(nullptr);
+		throw std::runtime_error(fmt::format(
+			"Failed to open file '{}' for writing: {}",
+			filename, err
+		));
 	}
 
 	_thread = std::jthread(
