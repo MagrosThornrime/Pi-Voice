@@ -34,7 +34,6 @@ void Synthesiser::start(){
         paClipOff
     );
     _voiceManager->setOscillatorType(oscillators::square, 0);
-    _recorder->start();
 
     auto& pipelineRef = *_pipeline.get();
     pipelineRef.setSource(_voiceManager).addLayer(_recorder);
@@ -102,6 +101,16 @@ void Synthesiser::setSustain(f32 sustain){
 void Synthesiser::setRelease(f32 release){
     auto lock = std::lock_guard(_mutex);
     _voiceManager->setRelease(release);
+}
+
+void Synthesiser::startRecording(){
+    auto lock = std::lock_guard(_mutex);
+    _recorder->start();
+}
+
+void Synthesiser::stopRecording(){
+    auto lock = std::lock_guard(_mutex);
+    _recorder->stop();
 }
 
 }

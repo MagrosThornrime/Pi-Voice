@@ -7,9 +7,9 @@ declare global {
         synthAPI: {
             ports: () => Promise<string[]>;
             openPort: (port: number) => Promise<void>;
-            start: () => Promise<void>;
-            stop: () => Promise<void>;
-            cleanup: () => Promise<void>;
+            setAmplitude: (value: number) => Promise<void>;
+            startRecording: () => Promise<void>;
+            stopRecording: () => Promise<void>;
         };
     }
 }
@@ -33,10 +33,21 @@ export default function PlayPage() {
         setStatus(`Port ${port} opened`);
     };
 
+    const startRecording = async () => {
+        setStatus("Recording started...");
+        await window.synthAPI.startRecording();
+    };
+
+    const stopRecording = async () => {
+        setStatus("Recording stopped.");
+        await window.synthAPI.stopRecording();
+    };
+
     return (
         <main>
             <h1>🎛️ Simple Synth Controller</h1>
             <p>Status: {status}</p>
+
             <div>
                 <button onClick={listPorts}>List MIDI Ports</button>
                 <ul>
@@ -49,6 +60,14 @@ export default function PlayPage() {
                         </li>
                     ))}
                 </ul>
+            </div>
+
+            {/* 🎤 Recording Controls */}
+            <div style={{ marginTop: "20px" }}>
+                <button onClick={startRecording}>Start Recording</button>
+                <button onClick={stopRecording} style={{ marginLeft: "10px" }}>
+                    Stop Recording
+                </button>
             </div>
         </main>
     );

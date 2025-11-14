@@ -91,6 +91,12 @@ public:
     /// @brief Sets the release factor value in ADSR (how fast the amplitude declines to 0 after releasing the key)
     /// @param release release factor value (between 0 and 1)
     void setRelease(f32 release);
+
+    /// @brief Starts recording the audio.
+    void startRecording();
+
+    /// @brief Stops recording the audio.
+    void stopRecording();
 };
 
 }

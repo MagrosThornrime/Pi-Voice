@@ -43,3 +43,5 @@ ipcMain.handle("synth-setAttack", (e, val) => synth.setAttack(val));
 ipcMain.handle("synth-setDecay", (e, val) => synth.setDecay(val));
 ipcMain.handle("synth-setSustain", (e, val) => synth.setSustain(val));
 ipcMain.handle("synth-setRelease", (e, val) => synth.setRelease(val));
+ipcMain.handle("synth-startRecording", (e) => synth.startRecording());
+ipcMain.handle("synth-stopRecording", (e) => synth.stopRecording());

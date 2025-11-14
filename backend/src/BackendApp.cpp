@@ -156,6 +156,27 @@ void setRelease(const Napi::CallbackInfo& info) {
 	fmt::println("Release set to {}", release);
 }
 
+void startRecording(const Napi::CallbackInfo& info) {
+    auto lock = std::lock_guard(mutex);
+    auto env = info.Env();
+    if (info.Length() != 0) {
+        Napi::TypeError::New(env, "Expected no arguments").ThrowAsJavaScriptException();
+        return;
+    }
+    synthesiser->startRecording();
+	fmt::println("Started recording");
+}
+
+void stopRecording(const Napi::CallbackInfo& info) {
+    auto lock = std::lock_guard(mutex);
+    auto env = info.Env();
+    if (info.Length() != 0) {
+        Napi::TypeError::New(env, "Expected no arguments").ThrowAsJavaScriptException();
+        return;
+    }
+    synthesiser->stopRecording();
+	fmt::println("Stopped recording");
+}
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
     initializeApplication();
@@ -170,6 +191,9 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
     exports.Set("setDecay", Napi::Function::New(env, setDecay));
     exports.Set("setSustain", Napi::Function::New(env, setSustain));
     exports.Set("setRelease", Napi::Function::New(env, setRelease));
+
+    exports.Set("startRecording", Napi::Function::New(env, startRecording));
+    exports.Set("stopRecording", Napi::Function::New(env, stopRecording));
 
     env.AddCleanupHook(destroyApplication, (void*)nullptr);
 

@@ -13,7 +13,6 @@ contextBridge.exposeInMainWorld("synthAPI", {
     setSustain: (value) => ipcRenderer.invoke("synth-setSustain", value),
     setRelease: (value) => ipcRenderer.invoke("synth-setRelease", value),
 
-    // Filters
-    addFilter: (name) => ipcRenderer.invoke("synth-addFilter", name),
-    clearFilters: () => ipcRenderer.invoke("synth-clearFilters"),
+    startRecording: () => ipcRenderer.invoke("synth-startRecording"),
+    stopRecording: () => ipcRenderer.invoke("synth-stopRecording")
 });
