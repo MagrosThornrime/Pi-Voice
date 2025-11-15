@@ -6,6 +6,7 @@
 #include <Types.hpp>
 #include <sndfile.h>
 #include <thread>
+#include <mutex>
 
 namespace fileio {
 	class FileRecorder: public portaudio::CallbackInterface {
@@ -19,6 +20,9 @@ namespace fileio {
 		void stop();
 
 	private:
+		std::mutex _mutex;
+		bool _isRunning = false;
+
 		std::string _getFilename();
 
 		u32 _channels{}, _sampleRate{};

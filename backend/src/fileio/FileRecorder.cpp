@@ -21,15 +21,19 @@ FileRecorder::FileRecorder(const u32 sampleRate, const u32 channels, const float
 
 int FileRecorder::paCallbackFun(const void* inputBuffer, void* outputBuffer, unsigned long numFrames,
 	const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) {
-	const float* in = (const float*)inputBuffer;
-	float* out = (float*)outputBuffer;
+	auto lock = std::lock_guard(_mutex);
 
-	const u32 size = numFrames * _channels;
-	std::copy_n(in, size, out); // recorder is a part of a bigger pipeline, it is invisible
-	if (not _skip) for (u32 i = 0; i != size; ++i) {
-		// force push
-		while (!_queue.push(in[i]));
-	} else _queue.push(in, size);
+	if(_isRunning) {
+		const float* in = (const float*)inputBuffer;
+		float* out = (float*)outputBuffer;
+
+		const u32 size = numFrames * _channels;
+		std::copy_n(in, size, out); // recorder is a part of a bigger pipeline, it is invisible
+		if (not _skip) for (u32 i = 0; i != size; ++i) {
+			// force push
+			while (!_queue.push(in[i]));
+		} else _queue.push(in, size);
+	}
 
 	return paContinue;
 }
@@ -44,6 +48,10 @@ std::string FileRecorder::_getFilename(){
 }
 
 void FileRecorder::start() {
+	auto lock = std::lock_guard(_mutex);
+	if(_isRunning) {
+		return;
+	}
 	SF_INFO sfInfo{
 		.samplerate = (int)_sampleRate,
 		.channels = (int)_channels,
@@ -68,11 +76,17 @@ void FileRecorder::start() {
 		),
 		std::ref(_queue), _channels, _sampleRate
 	);
+	_isRunning = true;
 }
 
 void FileRecorder::stop() {
+	auto lock = std::lock_guard(_mutex);
+	if(!_isRunning) {
+		return;
+	}
 	_thread.request_stop();
 	_thread.join();
+	_isRunning = false;
 }
 
 void FileRecorder::threadFn(std::stop_token stopToken, std::unique_ptr<SNDFILE, void(*)(SNDFILE*)> file, utils::SPSCQueue<float>& queue, const u32 channels, const u32 sampleRate) {
