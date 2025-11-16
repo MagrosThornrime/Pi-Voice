@@ -118,11 +118,11 @@ export default function Home() {
   return (
     <Box minH="100vh" bg="gray.50" p={10}>
 
-      <Heading textAlign="center" mb={10} color="teal.600">
+      <Heading size="3xl" textAlign="center" mb={10} color="teal.600">
         Audio Platform
       </Heading>
 
-      <Box h="40" />
+      <Box h="20" />
 
       <Grid
         templateColumns={{
@@ -131,66 +131,73 @@ export default function Home() {
           lg: "repeat(2, 1fr)",
         }}
         
-        gap={10}
-        maxW="800px"
-        mx="auto"
+          gap={8}
+          maxW="1200px"
+          mx="auto"
+          alignItems="center"
+          justifyItems="center"
       >
+        {
+          charts.map((chart) => (
 
-        <Chart.Root width={600} height={300} chart={chart_adsr}>
-          <LineChart data={chart_adsr.data}>
+          <Chart.Root key={chart.id} width = "100%" height={400} chart = {chart}>
+            <LineChart data={chart.data}>
 
-            <CartesianGrid vertical={false} />
+              <CartesianGrid vertical={false} />
 
-            <XAxis dataKey="x"
-              label={{ value: "X", position: "bottom" }}
-              stroke={chart_adsr.color("border")}
-              tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
-            />
+              <XAxis dataKey="x"
+                label={{ value: "X", position: "bottom" }}
+                stroke={chart.color("border")}
+                tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
+              />
 
-            <YAxis dataKey="y"
-              label={{ value: "Y", position: "left" }}
-              stroke={chart_adsr.color("border")}
-              tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
-            />
+              <YAxis dataKey="y"
+                label={{ value: "Y", position: "left" }}
+                stroke={chart.color("border")}
+                tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
+              />
 
-            <Tooltip
-              animationDuration={100}
-              cursor={false}
-              content={({ active, payload, label }) => {
-                if (active && payload && payload.length) 
-                {
-                  const x = Math.round(Number(label) * 100) / 100;
-                  const y = Math.round(payload[0].value * 100) / 100;
+              <Tooltip
+                animationDuration={100}
+                cursor={false}
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) 
+                  {
+                    const x = Math.round(Number(label) * 100) / 100;
+                    const y = Math.round(payload[0].value * 100) / 100;
 
-                  return (
-                    <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
-                      <Text fontSize="sm" color="gray.600">x: {x}</Text>
-                      <Text fontSize="sm" color="gray.600">y: {y}</Text>
-                    </Box>
-                    );
+                    return (
+                      <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
+                        <Text fontSize="sm" color="gray.600">x: {x}</Text>
+                        <Text fontSize="sm" color="gray.600">y: {y}</Text>
+                      </Box>
+                      );
+                  }
                 }
-              }} 
-            />
+                } 
+              />
 
-            {
-              chart_adsr.series.map((item) => (
-                <Line key={item.name}
-                  isAnimationActive={false}
-                  dataKey={chart_adsr.key(item.name)}
-                  stroke={chart_adsr.color(item.color)}
-                  strokeWidth={2}
-                  dot={false}
-                />
+          {
+            chart.series.map((item) => (
+              <Line key={item.name}
+                isAnimationActive={false}
+                dataKey={chart.key(item.name)}
+                stroke={chart.color(item.color)}
+                strokeWidth={2}
+                dot={false} />
               )
-              )
-            }
+            )
+          }
 
           </LineChart>
         </Chart.Root>
+        )
+      )
+      }
 
       </Grid>
 
-      <Box h="80" />
+      <Box h="20" />
       <Grid
         templateColumns={{
           base: "1fr",
@@ -287,7 +294,8 @@ export default function Home() {
               onValueChangeEnd={(e) => {
                 setEndDecayValue(e.value);
                 window.synthAPI.setDecay(10**(-e.value[0]/10));
-              }}
+              }
+            }
             >
               <Slider.Control>
                 <Slider.Track>
