@@ -14,5 +14,6 @@ contextBridge.exposeInMainWorld("synthAPI", {
     setRelease: (value) => ipcRenderer.invoke("synth-setRelease", value),
 
     startRecording: () => ipcRenderer.invoke("synth-startRecording"),
-    stopRecording: () => ipcRenderer.invoke("synth-stopRecording")
+    stopRecording: () => ipcRenderer.invoke("synth-stopRecording"),
+    setRecordingPath: (value) => ipcRenderer.invoke("synth-setRecordingPath", value)
 });

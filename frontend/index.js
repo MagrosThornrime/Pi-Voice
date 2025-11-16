@@ -45,3 +45,4 @@ ipcMain.handle("synth-setSustain", (e, val) => synth.setSustain(val));
 ipcMain.handle("synth-setRelease", (e, val) => synth.setRelease(val));
 ipcMain.handle("synth-startRecording", (e) => synth.startRecording());
 ipcMain.handle("synth-stopRecording", (e) => synth.stopRecording());
+ipcMain.handle("synth-setRecordingPath", (e, val) => synth.setRecordingPath(val));

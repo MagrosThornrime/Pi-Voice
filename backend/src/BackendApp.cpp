@@ -63,8 +63,12 @@ void setAmplitude(const Napi::CallbackInfo& info) {
     }
 
     f32 amp = info[0].As<Napi::Number>().FloatValue();
-    amp = std::clamp(amp, 0.0f, 1.0f);
-    synthesiser->setAmplitude(amp);
+	try {
+    	synthesiser->setAmplitude(amp);
+	} catch (const std::exception& e) {
+		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
+		return;
+	}
     fmt::println("Amplitude set to {}", amp);
 }
 
@@ -72,13 +76,13 @@ void setAmplitude(const Napi::CallbackInfo& info) {
 void setOscillatorType(const Napi::CallbackInfo& info) {
     auto lock = std::lock_guard(mutex);
     auto env = info.Env();
-    if (info.Length() != 2 || !info[0].IsNumber() || !info[1].IsNumber()) {
-        Napi::TypeError::New(env, "Expected (index:i32, type:i32)").ThrowAsJavaScriptException();
+    if (info.Length() != 2 || !info[0].IsString() || !info[1].IsNumber()) {
+        Napi::TypeError::New(env, "Expected (type:string, index:i32)").ThrowAsJavaScriptException();
         return;
     }
 
-    i32 index = info[1].As<Napi::Number>().Int32Value();
     std::string typeName = info[0].As<Napi::String>();
+    i32 index = info[1].As<Napi::Number>().Int32Value();
     if (index < 0 || index > 2) {
         Napi::RangeError::New(env, "Invalid oscillator index").ThrowAsJavaScriptException();
         return;
@@ -102,8 +106,12 @@ void setOscillatorAmplitude(const Napi::CallbackInfo& info) {
         Napi::RangeError::New(env, "Invalid oscillator index").ThrowAsJavaScriptException();
         return;
     }
-    amp = std::clamp(amp, 0.0f, 1.0f);
-    synthesiser->setOscillatorAmplitude(amp, index);
+	try {
+    	synthesiser->setOscillatorAmplitude(amp, index);
+	} catch (const std::exception& e) {
+		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
+		return;
+	}
     fmt::println("Oscillator {} amplitude set to {}", index, amp);
 }
 
@@ -116,7 +124,12 @@ void setAttack(const Napi::CallbackInfo& info) {\
         return;
     }
 	f32 attack = info[0].As<Napi::Number>().FloatValue();
-    synthesiser->setAttack(attack);
+	try {
+    	synthesiser->setAttack(attack);
+	} catch (const std::exception& e) {
+		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
+		return;
+	}
     fmt::println("Attack set to {}", attack);
 }
 
@@ -128,7 +141,12 @@ void setDecay(const Napi::CallbackInfo& info) {
         return;
     }
 	f32 decay = info[0].As<Napi::Number>().FloatValue();
-    synthesiser->setDecay(decay);
+	try {
+    	synthesiser->setDecay(decay);
+	} catch (const std::exception& e) {
+		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
+		return;
+	}
 	fmt::println("Decay set to {}", decay);
 }
 
@@ -140,7 +158,12 @@ void setSustain(const Napi::CallbackInfo& info) {
         return;
     }
 	f32 sustain = info[0].As<Napi::Number>().FloatValue();
-    synthesiser->setSustain(sustain);
+	try {
+    	synthesiser->setSustain(sustain);
+	} catch (const std::exception& e) {
+		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
+		return;
+	}
 	fmt::println("Sustain set to {}", sustain);
 }
 
@@ -152,10 +175,16 @@ void setRelease(const Napi::CallbackInfo& info) {
         return;
     }
 	f32 release = info[0].As<Napi::Number>().FloatValue();
-    synthesiser->setRelease(release);
+	try {
+    	synthesiser->setRelease(release);
+	} catch (const std::exception& e) {
+		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
+		return;
+	}
 	fmt::println("Release set to {}", release);
 }
 
+// Recorder
 void startRecording(const Napi::CallbackInfo& info) {
     auto lock = std::lock_guard(mutex);
     auto env = info.Env();
@@ -178,6 +207,24 @@ void stopRecording(const Napi::CallbackInfo& info) {
 	fmt::println("Stopped recording");
 }
 
+void setRecordingPath(const Napi::CallbackInfo& info) {
+	auto lock = std::lock_guard(mutex);
+	auto env = info.Env();
+    if (info.Length() != 1 || !info[0].IsString()) {
+        Napi::TypeError::New(env, "Expected type:string").ThrowAsJavaScriptException();
+        return;
+    }
+	std::string path = info[0].As<Napi::String>().ToString();
+	try {
+		synthesiser->setRecordingPath(path);
+	}
+	catch (const std::exception& e) {
+		Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
+		return;
+	}
+	fmt::println("Recording path set to {}", path);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
     initializeApplication();
 
@@ -194,6 +241,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 
     exports.Set("startRecording", Napi::Function::New(env, startRecording));
     exports.Set("stopRecording", Napi::Function::New(env, stopRecording));
+	exports.Set("setRecordingPath", Napi::Function::New(env, setRecordingPath));
 
     env.AddCleanupHook(destroyApplication, (void*)nullptr);
 

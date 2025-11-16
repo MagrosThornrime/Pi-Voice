@@ -113,4 +113,9 @@ void Synthesiser::stopRecording(){
     _recorder->stop();
 }
 
+void Synthesiser::setRecordingPath(const std::string& path){
+	auto lock = std::lock_guard(_mutex);
+	_recorder->setOutputDirectory(path);
+}
+
 }

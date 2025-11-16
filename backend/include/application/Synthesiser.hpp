@@ -97,6 +97,11 @@ public:
 
     /// @brief Stops recording the audio.
     void stopRecording();
+
+	/// @brief Tells where to put audio recordings
+	/// @param path output directory
+	void setRecordingPath(const std::string& path);
+
 };
 
 }

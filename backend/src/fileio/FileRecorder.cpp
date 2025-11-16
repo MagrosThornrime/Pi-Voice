@@ -2,14 +2,16 @@
 #include <stdexcept>
 #include <fmt/core.h>
 #include <vector>
-#include <array>
 #include <bit>
 #include <utility>
 #include <chrono>
 #include <ctime>
 #include <sstream>
 #include <iomanip>
-#include <string>
+#include <filesystem>
+#include <fstream>
+
+namespace fs = std::filesystem;
 
 namespace fileio {
 
@@ -17,7 +19,9 @@ FileRecorder::FileRecorder(const u32 sampleRate, const u32 channels, const float
 	_channels{channels},
 	_sampleRate{sampleRate},
 	_queue{u32(channels * sampleRate * seconds)},
-	_skip{skip} {}
+	_skip{skip} {
+	setOutputDirectory("./output");
+}
 
 int FileRecorder::paCallbackFun(const void* inputBuffer, void* outputBuffer, unsigned long numFrames,
 	const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) {
@@ -58,7 +62,7 @@ void FileRecorder::start() {
 		.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT,
 		.seekable = true
 	};
-	std::string filename = _getFilename();
+	std::string filename = fmt::format("{}/{}", _outputDirectory, _getFilename());
 	auto file = sf_open(filename.c_str(), SFM_WRITE, &sfInfo);
 	if (!file) {
 		std::string err = sf_strerror(nullptr);
@@ -69,7 +73,7 @@ void FileRecorder::start() {
 	}
 
 	_thread = std::jthread(
-		&threadFn,
+		&_threadFn,
 		std::unique_ptr<SNDFILE, void(*)(SNDFILE*)>(
 			std::exchange(file, nullptr),
 			[](SNDFILE* file) { sf_close(file); }
@@ -89,7 +93,7 @@ void FileRecorder::stop() {
 	_isRunning = false;
 }
 
-void FileRecorder::threadFn(std::stop_token stopToken, std::unique_ptr<SNDFILE, void(*)(SNDFILE*)> file, utils::SPSCQueue<float>& queue, const u32 channels, const u32 sampleRate) {
+void FileRecorder::_threadFn(std::stop_token stopToken, std::unique_ptr<SNDFILE, void(*)(SNDFILE*)> file, utils::SPSCQueue<float>& queue, const u32 channels, const u32 sampleRate) {
 	auto buffer = std::vector<float>();
 	buffer.reserve(channels * sampleRate);
 
@@ -110,6 +114,34 @@ void FileRecorder::threadFn(std::stop_token stopToken, std::unique_ptr<SNDFILE, 
 	}
 
 	writeBuffer();
+}
+
+bool FileRecorder::_canWriteToDirectory(const std::string& dir) {
+    std::string test_file = fmt::format("{}/.__write_test__", dir);
+    std::ofstream ofs(test_file);
+    if (!ofs){
+		return false;
+	}
+    ofs.close();
+    std::filesystem::remove(test_file);
+    return true;
+};
+
+void FileRecorder::setOutputDirectory(const std::string& dir) {
+	if(!fs::exists(dir)) {
+		try {
+			fs::create_directory(dir);
+		} catch (const std::exception& e) {
+			throw std::invalid_argument(fmt::format("Can't create directory '{}'", dir));
+		}
+	}
+	if(!fs::is_directory(dir)) {
+		throw std::invalid_argument(fmt::format("Directory '{}' is not a directory", dir));
+	}
+	if(!_canWriteToDirectory(dir)) {
+		throw std::invalid_argument(fmt::format("Directory '{}' is not writable", dir));
+	}
+	_outputDirectory = dir;
 }
 
 }
