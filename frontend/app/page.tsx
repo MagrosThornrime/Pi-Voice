@@ -122,7 +122,7 @@ export default function Home() {
         Audio Platform
       </Heading>
 
-      <Box h="20" />
+      <Box h="10" />
 
       <Grid
         templateColumns={{
@@ -197,7 +197,7 @@ export default function Home() {
 
       </Grid>
 
-      <Box h="20" />
+      <Box h="10" />
       <Grid
         templateColumns={{
           base: "1fr",
