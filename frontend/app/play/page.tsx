@@ -57,7 +57,7 @@ export default function PlayPage() {
             <Box>
                 <Button onClick = {listPorts}> List MIDI Ports </Button>
                 <List.Root>
-                    {
+                {
                         midiPorts.map((port, i) => (
                         <ListItem
                             key={port || i}
@@ -86,7 +86,7 @@ export default function PlayPage() {
                         </ListItem>
                         )
                     )
-                    }
+                }
                 </List.Root>
             </Box>
         </Box>

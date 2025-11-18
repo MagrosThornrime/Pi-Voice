@@ -12,7 +12,8 @@ function get_example_data(n: number, eps: number, func : (X:number) => number) {
   }));
 }
 
-const oscilatorTypes = createListCollection({
+const oscilatorTypes = createListCollection(
+  {
   items: [
     { label: "Sine", value: "sine" },
     { label: "Square", value: "square" },
@@ -21,7 +22,8 @@ const oscilatorTypes = createListCollection({
     { label: "Noise", value: "noise" },
     { label: "No oscilator", value: "empty" },
   ],
-})
+  }
+)
 
 export default function Page() {
   const [oscilator1, setOscilator1] = useState<string>("empty")
@@ -31,7 +33,7 @@ export default function Page() {
       series: [{ name: "y", color: "teal.solid" }]
     })
   
-    const data = get_example_data(100, 0.1, Math.sin);
+  // const data = get_example_data(100, 0.1, Math.sin);
   return(
     <Box minH="100vh" bg="gray.50" p={10}>
       <Group>
@@ -86,13 +88,17 @@ export default function Page() {
               }
 
             </LineChart>
+
           </Chart.Root>
+
           <Select.Root collection={oscilatorTypes} variant={"subtle"} onValueChange={(e) => {
             setOscilator1(e.value[0]);
             window.synthAPI.setOscillatorType(e.value[0],0);
           }}>
+
             <Select.HiddenSelect />
             <Select.Label color={"black"}>Oscilator1</Select.Label>
+            
             <Select.Control>
               <Select.Trigger>
                 <Select.ValueText placeholder="Select oscilator" />
