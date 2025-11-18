@@ -30,6 +30,7 @@ export default function PlayPage() {
     const [status, setStatus] = useState<string>("idle");
     const [midiPorts, setMidiPorts] = useState<string[]>([]);
     const [selectedPort, setSelectedPort] = useState<number | null>(null);
+    const [buttonText, setButtonText] = useState<string>("Start");
 
     const listPorts = async () => {
         setStatus("Fetching MIDI ports...");
@@ -88,6 +89,7 @@ export default function PlayPage() {
                     )
                 }
                 </List.Root>
+                <Button bg={"red"} onClick={()=>{if(buttonText=="Start"){setButtonText("Stop")}else{setButtonText("Start")}}}>{buttonText+" Recording"}</Button>
             </Box>
         </Box>
     );
