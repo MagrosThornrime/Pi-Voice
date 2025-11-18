@@ -1,11 +1,11 @@
 "use client";
 
 import { Chart, useChart } from "@chakra-ui/charts";
-import { Box,createListCollection,Flex,Group,Portal,Select,Stack,Text } from "@chakra-ui/react";
+import { Box,createListCollection,Flex,Group, Grid, Portal,Select,Stack,Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 
-function get_example_data(n: number, eps: number, func : (X:number) => number) {
+function get_example_data(n: number, domain: number[], eps: number, func : (X:number) => number) {
   return Array.from({ length: n }, (_, i) => ({
     x: i * eps,
     y: func(i * eps),
@@ -26,181 +26,143 @@ const oscilatorTypes = createListCollection(
 )
 
 export default function Page() {
-  const [oscilator1, setOscilator1] = useState<string>("empty")
-  const [oscilator2, setOscilator2] = useState<string>("empty")
-  const chart = useChart({
-      data: get_example_data(100, 0.1, Math.sin),
+  
+  const [oscillators, setOscillator] = useState(["empty", "empty", "empty"])
+
+  function changeOscillators(i:number, val:string){
+    if (i < 0 || i > 2) throw new Error("index out of range (0..2)");
+    setOscillator(prev => {
+      const next = [...prev];
+      next[i] = val;
+      return next;
+    });
+  }
+
+  const chart1 = useChart({
+      data: get_example_data(100, [0.0, 1.0], 0.1, Math.sin),
       series: [{ name: "y", color: "teal.solid" }]
     })
-  
-  // const data = get_example_data(100, 0.1, Math.sin);
+
+  const chart2 = useChart({
+    data: get_example_data(100, [0.0, 10.0], 0.1, ((x) => Math.cos(5*x))),
+    series: [{ name: "y", color: "teal.solid" }]
+  })
+
+  const chart3 = useChart({
+    data: get_example_data(100, [0.0, 1.0], 0.1, Math.expm1),
+    series: [{ name: "y", color: "teal.solid" }]
+  })
+
+
+
+const charts = [chart1, chart2, chart3]
+
   return(
     <Box minH="100vh" bg="gray.50" p={10}>
-      <Group>
-        <Stack>
-          <Chart.Root width={600} height={300} chart={chart}>
-            <LineChart data={chart.data}>
+      <Grid templateColumns={{
+          base: "2fr",
+          md: "repeat(3, 1fr)",
+          lg: "repeat(3, 1fr)",
+        }}
+          gap={30}
+          maxW="1400px"
+          mx="auto"
+          alignItems="center"
+          justifyItems="center"
+        >
 
-              <CartesianGrid vertical={false} />
+        {
+          charts.map((chart, i) => (
+          <Box>
+            <Chart.Root width={400} height={300} chart={chart}>
 
-              <XAxis dataKey="x"
-                label={{ value: "X", position: "bottom" }}
-                stroke={chart.color("border")}
-                tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
-              />
+              <LineChart data={chart.data}>
 
-              <YAxis dataKey="y"
-                label={{ value: "Y", position: "left" }}
-                stroke={chart.color("border")}
-                tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
-              />
+                <CartesianGrid vertical={false} />
 
-              <Tooltip
-                animationDuration={100}
-                cursor={false}
-                content={({ active, payload, label }) => {
-                  if (active && payload && payload.length) 
-                  {
-                    const x = Math.round(Number(label) * 100) / 100;
-                    const y = Math.round(payload[0].value * 100) / 100;
+                <XAxis dataKey="x"
+                  label={{ value: "X", position: "bottom" }}
+                  stroke={chart.color("border")}
+                  tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
+                />
 
-                    return (
-                      <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
-                        <Text fontSize="sm" color="gray.600">x: {x}</Text>
-                        <Text fontSize="sm" color="gray.600">y: {y}</Text>
-                      </Box>
-                      );
-                  }
-                }} 
-              />
+                <YAxis dataKey="y"
+                  label={{ value: "Y", position: "left" }}
+                  stroke={chart.color("border")}
+                  tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
+                />
 
-              {
-                chart.series.map((item) => (
-                  <Line key={item.name}
-                    isAnimationActive={false}
-                    dataKey={chart.key(item.name)}
-                    stroke={chart.color(item.color)}
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                )
-                )
-              }
+                <Tooltip
+                  animationDuration={100}
+                  cursor={false}
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) 
+                    {
+                      const x = Math.round(Number(label) * 100) / 100;
+                      const y = Math.round(payload[0].value * 100) / 100;
 
-            </LineChart>
+                      return (
+                        <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
+                          <Text fontSize="sm" color="gray.600">x: {x}</Text>
+                          <Text fontSize="sm" color="gray.600">y: {y}</Text>
+                        </Box>
+                        );
+                    }
+                  }} 
+                />
 
-          </Chart.Root>
+                {
+                  chart.series.map((item) => (
+                    <Line key={item.name}
+                      isAnimationActive={false}
+                      dataKey={chart.key(item.name)}
+                      stroke={chart.color(item.color)}
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  )
+                  )
+                }
 
-          <Select.Root collection={oscilatorTypes} variant={"subtle"} onValueChange={(e) => {
-            setOscilator1(e.value[0]);
-            window.synthAPI.setOscillatorType(e.value[0],0);
-          }}>
+              </LineChart>
 
-            <Select.HiddenSelect />
-            <Select.Label color={"black"}>Oscilator1</Select.Label>
-            
-            <Select.Control>
-              <Select.Trigger>
-                <Select.ValueText placeholder="Select oscilator" />
-              </Select.Trigger>
-              <Select.IndicatorGroup>
-                <Select.Indicator />
-              </Select.IndicatorGroup>
-            </Select.Control>
-            <Portal>
-              <Select.Positioner>
-                <Select.Content>
-                  {oscilatorTypes.items.map((oscilator) => (
-                    <Select.Item item={oscilator} key={oscilator.value}>
-                      {oscilator.label}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Portal>
-          </Select.Root>
-        </Stack>
-        <Stack>
-          <Chart.Root width={600} height={300} chart={chart}>
-            <LineChart data={chart.data}>
+            </Chart.Root>
 
-              <CartesianGrid vertical={false} />
+            <Select.Root collection={oscilatorTypes} variant={"subtle"} onValueChange={(e) => {
+              changeOscillators(i, e.value[0]);
 
-              <XAxis dataKey="x"
-                label={{ value: "X", position: "bottom" }}
-                stroke={chart.color("border")}
-                tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
-              />
+              window.synthAPI.setOscillatorType(e.value[0],0);
+            }}>
 
-              <YAxis dataKey="y"
-                label={{ value: "Y", position: "left" }}
-                stroke={chart.color("border")}
-                tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
-              />
+              <Select.HiddenSelect />
+              <Select.Label color={"black"}>{`Oscilator${i+1}`}</Select.Label>
+              
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText placeholder="Select oscillator" />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Portal>
+                <Select.Positioner>
+                  <Select.Content>
+                    {oscilatorTypes.items.map((oscilator) => (
+                      <Select.Item color = "black" item={oscilator} key={oscilator.value}>
+                        {oscilator.label}
+                        <Select.ItemIndicator />
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select.Positioner>
+              </Portal>
+            </Select.Root>
 
-              <Tooltip
-                animationDuration={100}
-                cursor={false}
-                content={({ active, payload, label }) => {
-                  if (active && payload && payload.length) 
-                  {
-                    const x = Math.round(Number(label) * 100) / 100;
-                    const y = Math.round(payload[0].value * 100) / 100;
-
-                    return (
-                      <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
-                        <Text fontSize="sm" color="gray.600">x: {x}</Text>
-                        <Text fontSize="sm" color="gray.600">y: {y}</Text>
-                      </Box>
-                      );
-                  }
-                }} 
-              />
-
-              {
-                chart.series.map((item) => (
-                  <Line key={item.name}
-                    isAnimationActive={false}
-                    dataKey={chart.key(item.name)}
-                    stroke={chart.color(item.color)}
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                )
-                )
-              }
-
-            </LineChart>
-          </Chart.Root>
-          <Select.Root collection={oscilatorTypes} variant={"subtle"} onValueChange={(e) => {
-            setOscilator2(e.value[0]);
-            window.synthAPI.setOscillatorType(e.value[0],1);
-          }}>
-            <Select.HiddenSelect />
-            <Select.Label color={"black"}>Oscilator2</Select.Label>
-            <Select.Control>
-              <Select.Trigger>
-                <Select.ValueText placeholder="Select oscilator" />
-              </Select.Trigger>
-              <Select.IndicatorGroup>
-                <Select.Indicator />
-              </Select.IndicatorGroup>
-            </Select.Control>
-            <Portal>
-              <Select.Positioner>
-                <Select.Content>
-                  {oscilatorTypes.items.map((oscilator) => (
-                    <Select.Item item={oscilator} key={oscilator.value}>
-                      {oscilator.label}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Portal>
-          </Select.Root>
-        </Stack>
-      </Group>
+          </Box>
+          ))
+        }
+        
+      </Grid>
     </Box>
 )}
