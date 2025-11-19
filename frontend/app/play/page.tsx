@@ -2,6 +2,18 @@
 
 import { useState } from "react";
 
+import {
+  Box,
+  Heading,
+  Text,
+  Grid,
+  Slider,
+  Stack,
+  Button,
+  List,
+  ListItem,
+} from "@chakra-ui/react";
+
 declare global {
     interface Window {
         synthAPI: {
@@ -18,6 +30,7 @@ export default function PlayPage() {
     const [status, setStatus] = useState<string>("idle");
     const [midiPorts, setMidiPorts] = useState<string[]>([]);
     const [selectedPort, setSelectedPort] = useState<number | null>(null);
+    const [buttonText, setButtonText] = useState<string>("Start");
 
     const listPorts = async () => {
         setStatus("Fetching MIDI ports...");
@@ -34,22 +47,50 @@ export default function PlayPage() {
     };
 
     return (
-        <main>
-            <h1>🎛️ Simple Synth Controller</h1>
-            <p>Status: {status}</p>
-            <div>
-                <button onClick={listPorts}>List MIDI Ports</button>
-                <ul>
-                    {midiPorts.map((port, i) => (
-                        <li key={i}>
-                            {port}{" "}
-                            <button onClick={() => openPort(i)}>
+        <Box minH="100vh" bg="gray.200" p={10}>
+        
+            <Heading size="2xl" textAlign="center" mb={10} color="teal.600">
+            🎛️ Simple Synth Controller
+            </Heading>
+
+            <Text color="black"> Status: {status} </Text>
+            <Box h="5" />
+            <Box>
+                <Button onClick = {listPorts}> List MIDI Ports </Button>
+                <List.Root>
+                {
+                        midiPorts.map((port, i) => (
+                        <ListItem
+                            key={port || i}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            p={3}
+                            borderWidth="1px"
+                            borderRadius="md"
+                            _hover={{ bg: "gray.50" }}
+                            >
+                            <Box>
+                                <Text fontWeight="medium">{port}</Text>
+                                {
+                                    port && (
+                                    <Text fontSize="sm" color="gray.500">
+                                        {port}
+                                    </Text>
+                                    )
+                                }
+                            </Box>
+
+                            <Button colorScheme="blue" onClick={() => openPort(i)}>
                                 Open Port {i}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </main>
+                            </Button>
+                        </ListItem>
+                        )
+                    )
+                }
+                </List.Root>
+                <Button bg={"red"} onClick={()=>{if(buttonText=="Start"){setButtonText("Stop")}else{setButtonText("Start")}}}>{buttonText+" Recording"}</Button>
+            </Box>
+        </Box>
     );
 }
