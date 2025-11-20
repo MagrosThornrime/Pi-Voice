@@ -2,7 +2,7 @@
 
 import { Chart, useChart } from "@chakra-ui/charts";
 import { Box,createListCollection,Flex,Group, Grid, Portal,Select,Stack,Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useMemo} from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 
 function get_example_data(n: number, domain: number[], eps: number, func : (X:number) => number) {
@@ -25,6 +25,57 @@ const oscilatorTypes = createListCollection(
   }
 )
 
+function square_wave(x:number, interv: number){
+  let position = x % interv;
+  let eps = 0.01;
+
+  if (position < eps){
+    return 0;
+  }
+
+  if (Math.abs(position - Math.floor(interv/2)) < eps){
+    if (position > Math.floor(interv/2)){
+      return 1;
+    }
+    return 0;
+  }
+
+  if(position < Math.floor(interv/2)){
+    return 1;
+  }
+
+  return 0;
+}
+
+
+function triangle_wave(x:number, interv: number){
+    let position = x % interv;
+    let eps = 0.01;
+
+    if(position < Math.floor(interv/2)){
+      return x;
+    }
+    return -x;
+}
+
+
+const oscillatorsFuncMapping: Record<string, (X:number) => number> = {
+  sine: ((x) => Math.sin(3 * x)),
+  square: ((x => square_wave(x, 1.0))),
+  triangle: ((x) => triangle_wave(x, 1.0)),
+  noise: ((x) => Math.sin(3 * x) + Math.random()/2)
+}
+
+
+function get_oscillator_chart(oscType: string){
+  const chart = useChart({
+      data: get_example_data(100, [0.0, 1.0], 0.1, oscillatorsFuncMapping[oscType]),
+      series: [{ name: "y", color: "teal.solid" }]
+    })
+}
+
+
+
 export default function Page() {
   
   const [oscillators, setOscillator] = useState(["empty", "empty", "empty"])
@@ -38,24 +89,25 @@ export default function Page() {
     });
   }
 
-  const chart1 = useChart({
-      data: get_example_data(100, [0.0, 1.0], 0.1, Math.sin),
-      series: [{ name: "y", color: "teal.solid" }]
-    })
+  
+  // const chart1 = useMemo(() => {
+  //   return get_oscillator_chart(oscillators[0])
+  // }, [oscillators[0]])
 
-  const chart2 = useChart({
-    data: get_example_data(100, [0.0, 10.0], 0.1, ((x) => Math.cos(5*x))),
-    series: [{ name: "y", color: "teal.solid" }]
-  })
+  // const chart2 = useChart({
+  //   data: get_example_data(100, [0.0, 10.0], 0.1, ((x) => Math.cos(5*x))),
+  //   series: [{ name: "y", color: "teal.solid" }]
+  // })
 
-  const chart3 = useChart({
-    data: get_example_data(100, [0.0, 1.0], 0.1, Math.expm1),
-    series: [{ name: "y", color: "teal.solid" }]
-  })
+  // const chart3 = useChart({
+  //   data: get_example_data(100, [0.0, 1.0], 0.1, Math.expm1),
+  //   series: [{ name: "y", color: "teal.solid" }]
+  // })
 
+  const charts = useMemo(() => {
+  return oscillators.map(o => get_oscillator_chart(o));
+  }, [oscillators]);
 
-
-const charts = [chart1, chart2, chart3]
 
   return(
     <Box minH="100vh" bg="gray.50" p={10}>
