@@ -73,14 +73,6 @@ function norm(param:number[]){
 
 export default function Home() {
 
-  // const chart = useChart({
-  //   data: get_example_data(100, 0.1, Math.sin),
-  //   series: [{ name: "y", color: "teal.solid" }]
-  // })
-
-  // const data_adsr = get_adsr_curve(0.1, 0.2, 0.2, 0.4, 1.0, 100);
-
-
   const [volumeValue, setVolumeValue] = useState([10])
   const [endVolumeValue, setEndVolumeValue] = useState([40])
 
@@ -340,18 +332,5 @@ export default function Home() {
     </Box>
   );
 }
-
-
-{/* <LineChart
-      width={600}
-      height={300}
-      data={data}
-      margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
-    >
-      <CartesianGrid stroke="#ccc" />
-      <XAxis dataKey="x" label={{ value: "x", position: "bottom" }} />
-      <YAxis dataKey="y" label={{ value: "y", position: "left" }} />
-      <Line type="monotone" dataKey="y" stroke="teal" dot={false} />
-    </LineChart> */}
 
 

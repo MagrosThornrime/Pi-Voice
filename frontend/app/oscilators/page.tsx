@@ -5,10 +5,10 @@ import { Box,createListCollection,Flex,Group, Grid, Portal,Select,Stack,Text } f
 import { useState, useMemo} from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 
-function get_example_data(n: number, domain: number[], eps: number, func : (X:number) => number) {
+function get_example_data(n: number, domain: number[], func : (X:number) => number) {
   return Array.from({ length: n }, (_, i) => ({
-    x: i * eps,
-    y: func(i * eps),
+    x: domain[0] + i * (domain[1] - domain[0])/n,
+    y: func(domain[0] + i * (domain[1] - domain[0])/n),
   }));
 }
 
@@ -16,6 +16,7 @@ const oscilatorTypes = createListCollection(
   {
   items: [
     { label: "Sine", value: "sine" },
+    { label: "Cosine", value: "cosine" },
     { label: "Square", value: "square" },
     { label: "Sawtooth", value: "sawtooth" },
     { label: "Triangle", value: "triangle" },
@@ -25,6 +26,7 @@ const oscilatorTypes = createListCollection(
   }
 )
 
+
 function square_wave(x:number, interv: number){
   let position = x % interv;
   let eps = 0.01;
@@ -33,14 +35,14 @@ function square_wave(x:number, interv: number){
     return 0;
   }
 
-  if (Math.abs(position - Math.floor(interv/2)) < eps){
-    if (position > Math.floor(interv/2)){
+  if (Math.abs(position - interv/2) < eps){
+    if (position > interv/2){
       return 1;
     }
     return 0;
   }
 
-  if(position < Math.floor(interv/2)){
+  if(position < interv/2){
     return 1;
   }
 
@@ -50,9 +52,9 @@ function square_wave(x:number, interv: number){
 
 function triangle_wave(x:number, interv: number){
     let position = x % interv;
-    let eps = 0.01;
+    console.log("position:", position)
 
-    if(position < Math.floor(interv/2)){
+    if(position < interv/2){
       return x;
     }
     return -x;
@@ -61,19 +63,22 @@ function triangle_wave(x:number, interv: number){
 
 const oscillatorsFuncMapping: Record<string, (X:number) => number> = {
   sine: ((x) => Math.sin(3 * x)),
+  cosine: ((x) => 0.5 * Math.cos(4 * x)),
   square: ((x => square_wave(x, 1.0))),
   triangle: ((x) => triangle_wave(x, 1.0)),
-  noise: ((x) => Math.sin(3 * x) + Math.random()/2)
+  noise: ((x) => Math.sin(3 * x) + Math.random()/2),
+  empty: ((x) => 0.0),
+  sawtooth: ((x) => 1.0)
 }
 
 
-function get_oscillator_chart(oscType: string){
+export function get_oscillator_chart(oscType: string){
   const chart = useChart({
-      data: get_example_data(100, [0.0, 1.0], 0.1, oscillatorsFuncMapping[oscType]),
+      data: get_example_data(100, [0.0, 10.0], oscillatorsFuncMapping[oscType]),
       series: [{ name: "y", color: "teal.solid" }]
     })
+    return chart;
 }
-
 
 
 export default function Page() {
@@ -89,25 +94,7 @@ export default function Page() {
     });
   }
 
-  
-  // const chart1 = useMemo(() => {
-  //   return get_oscillator_chart(oscillators[0])
-  // }, [oscillators[0]])
-
-  // const chart2 = useChart({
-  //   data: get_example_data(100, [0.0, 10.0], 0.1, ((x) => Math.cos(5*x))),
-  //   series: [{ name: "y", color: "teal.solid" }]
-  // })
-
-  // const chart3 = useChart({
-  //   data: get_example_data(100, [0.0, 1.0], 0.1, Math.expm1),
-  //   series: [{ name: "y", color: "teal.solid" }]
-  // })
-
-  const charts = useMemo(() => {
-  return oscillators.map(o => get_oscillator_chart(o));
-  }, [oscillators]);
-
+  const charts = oscillators.map(o => get_oscillator_chart(o));
 
   return(
     <Box minH="100vh" bg="gray.50" p={10}>
@@ -125,7 +112,7 @@ export default function Page() {
 
         {
           charts.map((chart, i) => (
-          <Box>
+          <Box key = {i}>
             <Chart.Root width={400} height={300} chart={chart}>
 
               <LineChart data={chart.data}>
@@ -191,7 +178,7 @@ export default function Page() {
               
               <Select.Control>
                 <Select.Trigger>
-                  <Select.ValueText placeholder="Select oscillator" />
+                  <Select.ValueText color = {"black"} placeholder="Select oscillator" />
                 </Select.Trigger>
                 <Select.IndicatorGroup>
                   <Select.Indicator />
