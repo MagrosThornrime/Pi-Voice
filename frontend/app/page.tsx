@@ -19,10 +19,10 @@ export interface Point {
 }
 
 
-function get_example_data(n: number, eps: number, func : (X:number) => number, shift: number = 0): Point[] {
+function get_example_data(n: number, domain: number[], func : (X:number) => number) {
   return Array.from({ length: n }, (_, i) => ({
-    x: i * eps + shift,
-    y: func(i * eps + shift),
+    x: domain[0] + i * (domain[1] - domain[0])/n,
+    y: func(domain[0] + i * (domain[1] - domain[0])/n),
   }));
 }
 
@@ -90,18 +90,55 @@ export default function Home() {
   const [endReleaseValue, setEndReleaseValue] = useState([40])
 
 
+  // type adsrParams = {
+  //   attackValue: number;
+  //   decayValue: number;
+  //   sustainValue: number;
+  //   releaseValue: number
+  // };
+
+  // type adsrEndParams = {
+  //   endAttackValue: number;
+  //   endDecayValue: number;
+  //   endSustainValue: number;
+  //   endReleaseValue: number
+  // }
+
+  // const [adsrProps, setAdsrProps] = useState<adsrParams>(
+  //   {
+  //     attackValue: 10,
+  //     decayValue: 20,
+  //     sustainValue: 30,
+  //     releaseValue: 40
+  //   }
+  // )
+
+  // const [endAdsrProps, setEndAdsrProps] = useState<adsrEndParams>(
+  //   {
+  //     endAttackValue: 10,
+  //     endDecayValue: 20,
+  //     endSustainValue: 30,
+  //     endReleaseValue: 40
+  //   }
+  // )
+
+  // const data_adsr = useMemo(() => {
+  //   return get_adsr_curve(adsrProps.attackValue/100, adsrProps.decayValue/100, adsrProps.sustainValue/100, adsrProps.releaseValue/100, 1.0, 100);
+  // }, [adsrProps]);
+
+  
   const data_adsr = useMemo(() => {
     return get_adsr_curve(norm(attackValue), norm(decayValue), norm(sustainValue), norm(releaseValue), 1.0, 100);
   }, [attackValue, decayValue, sustainValue, releaseValue]);
-
 
   const chart_adsr = useChart({
     data: data_adsr,
     series: [{ name: "y", color: "teal.solid" }]
   })
 
+
   const chart_sound = useChart({
-    data: get_example_data(100, 0.1, Math.sin),
+    data: get_example_data(100, [0.0, 10.0], Math.sin),
     series: [{ name: "y", color: "teal.solid" }]
   })
 

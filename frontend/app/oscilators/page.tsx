@@ -67,8 +67,8 @@ const oscillatorsFuncMapping: Record<string, (X:number) => number> = {
   square: ((x => square_wave(x, 1.0))),
   triangle: ((x) => triangle_wave(x, 1.0)),
   noise: ((x) => Math.sin(3 * x) + Math.random()/2),
-  empty: ((x) => 0.0),
-  sawtooth: ((x) => 1.0)
+  empty: (() => 0.0),
+  sawtooth: (() => 1.0)
 }
 
 
@@ -94,7 +94,9 @@ export default function Page() {
     });
   }
 
+
   const charts = oscillators.map(o => get_oscillator_chart(o));
+
 
   return(
     <Box minH="100vh" bg="gray.50" p={10}>
@@ -200,8 +202,7 @@ export default function Page() {
 
           </Box>
           ))
-        }
-        
+        }  
       </Grid>
     </Box>
 )}
