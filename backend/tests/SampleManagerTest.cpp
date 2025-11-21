@@ -32,7 +32,7 @@ TEST(SampleManager, AlternativeFiles) {
 
 TEST(SampleManager, SampleHalfNonZero) {
     fileio::SampleManager sampleManager("resources/samples", 44100);
-	auto output = sampleManager.loadSample("industry");
+	auto output = sampleManager.getSample("industry");
 
 	ASSERT_FALSE(output.empty());
     i32 nonZeroCount = 0;

@@ -13,6 +13,7 @@ SampleManager::SampleManager(const std::string& samplesDirectory, i32 samplingRa
 }
 
 std::vector<std::string> SampleManager::getSampleNames() {
+	auto lock = std::lock_guard(_mutex);
     std::vector<std::string> names;
     for (const auto& sample: ranges::views::keys(_samplePaths)) {
         names.push_back(sample);
@@ -21,6 +22,10 @@ std::vector<std::string> SampleManager::getSampleNames() {
 }
 
 void SampleManager::changeSamplesDirectory(const std::string& samplesDirectory) {
+	auto lock = std::lock_guard(_mutex);
+	if (!_cachedSamples.empty()){
+		throw std::runtime_error("Couldn't change samples directory: a sample is being used as oscillator");
+	}
 	_samplePaths.clear();
 	_samplesDirectory = samplesDirectory;
 	_loadSamplePaths();
@@ -66,7 +71,7 @@ void SampleManager::_loadSamplePaths() {
     }
 }
 
-std::vector<f32> SampleManager::loadSample(const std::string& sampleName) {
+std::vector<f32> SampleManager::_loadSample(const std::string& sampleName) {
 	std::string samplePath;
 	try{
 		samplePath = _samplePaths.at(sampleName);
@@ -87,4 +92,18 @@ std::vector<f32> SampleManager::loadSample(const std::string& sampleName) {
 	_closeFile(file);
 	return output;
 }
+
+const std::vector<f32>& SampleManager::getSample(const std::string& sampleName) {
+	auto lock = std::lock_guard(_mutex);
+	if(!_cachedSamples.contains(sampleName)) {
+		_cachedSamples[sampleName] = _loadSample(sampleName);
+	}
+	return _cachedSamples.at(sampleName);
+}
+
+void SampleManager::removeFromCache(const std::string& sampleName) {
+	auto lock = std::lock_guard(_mutex);
+	_cachedSamples.erase(sampleName);
+}
+
 }
