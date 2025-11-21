@@ -19,14 +19,6 @@ export interface Point {
 }
 
 
-function get_example_data(n: number, domain: number[], func : (X:number) => number) {
-  return Array.from({ length: n }, (_, i) => ({
-    x: domain[0] + i * (domain[1] - domain[0])/n,
-    y: func(domain[0] + i * (domain[1] - domain[0])/n),
-  }));
-}
-
-
 function get_adsr_curve(attack: number, decay: number, sustain: number, release: number, totalTime: number, sampleRate: number): Point[] {
 
   const points: Point[] = [];
@@ -137,12 +129,7 @@ export default function Home() {
   })
 
 
-  const chart_sound = useChart({
-    data: get_example_data(100, [0.0, 10.0], Math.sin),
-    series: [{ name: "y", color: "teal.solid" }]
-  })
-
-  const charts = [chart_adsr, chart_sound];
+  const charts = [chart_adsr];
 
   return (
     <Box minH="100vh" bg="gray.50" p={10}>
@@ -156,8 +143,8 @@ export default function Home() {
       <Grid
         templateColumns={{
           base: "1fr",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(2, 1fr)",
+          md: "repeat(1, 1fr)",
+          lg: "repeat(1, 1fr)",
         }}
         
           gap={8}
