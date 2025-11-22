@@ -23,11 +23,20 @@ VoiceManager::VoiceManager(i32 voicesNumber, f32 sampleRate, std::shared_ptr<fil
 }
 
 void VoiceManager::setOscillatorType(const std::string& type, i32 index){
+    if(index < 0 || index > 2){
+        throw std::invalid_argument(fmt::format("Invalid index value of: {}", index));
+    }
 	auto lock = std::lock_guard(_oscillatorMutex);
 	_oscillatorTypes[index] = type;
 }
 
 void VoiceManager::setOscillatorAmplitude(f32 amplitude, i32 index){
+    if(index < 0 || index > 2){
+        throw std::invalid_argument(fmt::format("Invalid index value of: {}", index));
+    }
+    if(amplitude < 0.0f || amplitude > 1.0f){
+        throw std::invalid_argument(fmt::format("Invalid amplitude value of: {}", amplitude));
+    }
 	auto lock = std::lock_guard(_oscillatorMutex);
 	_oscillatorAmplitudes[index] = amplitude;
 }
@@ -92,21 +101,34 @@ void VoiceManager::turnOff(i32 voiceNumber){
 }
 
 void VoiceManager::setAttack(f32 attack){
+    if(attack < 0.0f || attack > 1.0f) {
+		throw std::invalid_argument(fmt::format("Invalid attack value of: {}", attack));
+    }
 	auto lock = std::lock_guard(_oscillatorMutex);
 	_attack = attack;
 }
 
 void VoiceManager::setDecay(f32 decay){
+	if(decay < 0.0f || decay > 1.0f) {
+		throw std::invalid_argument(fmt::format("Invalid decay value of: {}", decay));
+	}
 	auto lock = std::lock_guard(_oscillatorMutex);
 	_decay = decay;
 }
 
 void VoiceManager::setSustain(f32 sustain){
+	if(sustain < 0.0f || sustain > 1.0f) {
+		throw std::invalid_argument(fmt::format("Invalid sustain value of: {}", sustain));
+	}
 	auto lock = std::lock_guard(_oscillatorMutex);
 	_sustain = sustain;
 }
 
 void VoiceManager::setRelease(f32 release){
+	if(release < 0.0f || release > 1.0f) {
+		throw std::invalid_argument(fmt::format("Invalid release value of: {}", release));
+	}
+	auto lock = std::lock_guard(_oscillatorMutex);
 	_release = release;
 }
 }

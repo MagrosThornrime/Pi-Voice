@@ -19,17 +19,29 @@ class VoiceManager : public portaudio::CallbackInterface {
 	/// @brief Global amplitude
 	f32 _amplitude = 0.1f;
 
+	/// @brief Sound's sampling rate
 	f32 _sampleRate;
 
+	/// @brief Oscillator types of the next sound
 	std::string _oscillatorTypes[3] = {"empty", "empty", "empty"};
+
+	/// @brief Oscillator amplitudes of the next sound
 	f32 _oscillatorAmplitudes[3] = {1.0f, 1.0f, 1.0f};
+
+	/// @brief Attack factor value of the next sound
 	f32 _attack = 0.001f;
+
+	/// @brief Decay factor value of the next sound
 	f32 _decay = 0.02f;
+
+	/// @brief Sustain amplitude value of the next sound
 	f32 _sustain = 0.8f;
+
+	/// @brief Release value of the next sound
 	f32 _release = 0.00001f;
 
+	/// @brief Find an unused voice. Returns -1 if not found.
 	i32 _findVoice();
-
 
 public:
 	/// @brief Constructor

@@ -74,10 +74,14 @@ public:
 	/// @param release rate of the amplitude's decrease after releasing the key (between 0.0 and 1.0)
 	void setRelease(f32 release);
 
+	/// @brief Set music note
+	/// @param note note of the sound
 	void setNote(i32 note);
 
+	/// @brief Get music note
 	i32 getNote();
 
+	/// @brief Tells if the sound is playing
 	bool isPlaying();
 };
 }

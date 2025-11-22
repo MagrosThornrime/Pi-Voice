@@ -14,7 +14,7 @@ protected:
 
 public:
 
-	/// @brief Reset oscillator
+	/// @brief Resets oscillator
 	virtual void reset() {};
 
     /// @brief Constructor
@@ -26,6 +26,7 @@ public:
     /// @brief Calculates next sample's value
     virtual f32 getNextSample();
 
+    /// @brief Sets music note for the oscillator
 	virtual void setNote(i32 voiceNumber);
 
 };
