@@ -1,15 +1,15 @@
 #include <oscillators/Oscillator.hpp>
-#include <oscillators/NoiseOscillator.hpp>
 #include <oscillators/PhaseOscillator.hpp>
 #include <oscillators/SineOscillator.hpp>
 #include <oscillators/SawtoothOscillator.hpp>
 #include <oscillators/SquareOscillator.hpp>
 #include <oscillators/TriangleOscillator.hpp>
+#include <string>
 
 namespace oscillators {
 // @brief Oscillator types
 enum OscillatorType {
-    noise, sine, sawtooth, square, triangle, empty
+    sine, sawtooth, square, triangle, empty
 };
 
 inline OscillatorType oscillatorFromString(const std::string& type){
@@ -27,9 +27,6 @@ inline OscillatorType oscillatorFromString(const std::string& type){
     }
     if (type == "square"){
         return square;
-    }
-    if (type == "noise"){
-        return noise;
     }
     return empty;
 }

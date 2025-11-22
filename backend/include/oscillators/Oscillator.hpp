@@ -9,15 +9,12 @@ protected:
     /// @brief Sample rate of generated sound
     f32 _sampleRate;
 
-    /// @brief Frequency of generated sound
-    f32 _currentFrequency = 440.0f;
+	/// @brief Index of the note
+	i32 _voiceNumber;
 
 public:
     /// @brief Constructor
-    explicit Oscillator(f32 sampleRate);
-
-    /// @brief Explicitly sets the frequency
-    void setFrequency(f32 freq);
+    explicit Oscillator(f32 sampleRate, i32 voiceNumber);
 
     /// @brief Updates the oscillator's state for the next frame
     virtual void advance() {};

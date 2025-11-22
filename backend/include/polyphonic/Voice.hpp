@@ -13,8 +13,8 @@ class Voice {
 	/// @brief Oscillators' amplitudes
 	f32 _amplitudes[3];
 
-	/// @brief The note's frequency
-	f32 _frequency;
+	/// @brief The note's index
+	i32 _voiceNumber;
 
 	/// @brief Sound sample rate
 	f32 _sampleRate;

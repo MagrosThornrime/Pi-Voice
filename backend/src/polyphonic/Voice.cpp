@@ -8,25 +8,21 @@ void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType, i32 in
     }
     switch (oscillatorType) {
         case oscillators::empty:
-            _oscillators[index] = std::make_shared<oscillators::Oscillator>(_sampleRate);
-            break;
-        case oscillators::noise:
-            _oscillators[index] = std::make_shared<oscillators::NoiseOscillator>(_sampleRate);
+            _oscillators[index] = std::make_shared<oscillators::Oscillator>(_sampleRate, _voiceNumber);
             break;
         case oscillators::sine:
-            _oscillators[index] = std::make_shared<oscillators::SineOscillator>(_sampleRate);
+            _oscillators[index] = std::make_shared<oscillators::SineOscillator>(_sampleRate, _voiceNumber);
             break;
         case oscillators::sawtooth:
-            _oscillators[index] = std::make_shared<oscillators::SawtoothOscillator>(_sampleRate);
+            _oscillators[index] = std::make_shared<oscillators::SawtoothOscillator>(_sampleRate, _voiceNumber);
             break;
         case oscillators::square:
-            _oscillators[index] = std::make_shared<oscillators::SquareOscillator>(_sampleRate);
+            _oscillators[index] = std::make_shared<oscillators::SquareOscillator>(_sampleRate, _voiceNumber);
             break;
         case oscillators::triangle:
-            _oscillators[index] = std::make_shared<oscillators::TriangleOscillator>(_sampleRate);
+            _oscillators[index] = std::make_shared<oscillators::TriangleOscillator>(_sampleRate, _voiceNumber);
             break;
     }
-	_oscillators[index]->setFrequency(_frequency);
 }
 
 f32 Voice::getNextSample(){
@@ -53,8 +49,7 @@ void Voice::setOscillatorAmplitude(f32 amplitude, i32 index){
     _amplitudes[index] = amplitude;
 }
 
-Voice::Voice(i32 voiceNumber, f32 sampleRate) : _sampleRate(sampleRate) {
-    _frequency = 440.f * std::pow(2.f, (voiceNumber - 69.f) / 12.f);
+Voice::Voice(i32 voiceNumber, f32 sampleRate) : _sampleRate(sampleRate), _voiceNumber(voiceNumber) {
     for (i32 i=0; i<3; i++){
         setOscillatorType(oscillators::empty, i);
         setOscillatorAmplitude(1.0, i);

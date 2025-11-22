@@ -2,6 +2,7 @@
 #include "Voice.hpp"
 #include <portaudiocpp/PortAudioCpp.hxx>
 #include <mutex>
+#include <vector>
 
 namespace polyphonic{
 /// @brief Controls all Voices in the synthesiser and mixes their outputs
