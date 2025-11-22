@@ -2,7 +2,11 @@
 #include <application/Synthesiser.hpp>
 #include <napi.h>
 #include <Types.hpp>
+#include <application/BackendApp.hpp>
 
+std::shared_ptr<application::Synthesiser> synthesiser{};
+std::shared_ptr<application::MidiManager> midiApp{};
+std::mutex mutex{};
 
 std::shared_ptr<application::Synthesiser> synthesiser;
 std::shared_ptr<application::MidiManager> midiApp;
