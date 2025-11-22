@@ -4,7 +4,7 @@
 
 namespace oscillators{
 PhaseOscillator::PhaseOscillator(f32 sampleRate, i32 voiceNumber) : Oscillator(sampleRate, voiceNumber) {
-    _currentFrequency = 440.f * std::pow(2.f, (voiceNumber - 69.f) / 12.f);
+    setNote(voiceNumber);
 }
 
 void PhaseOscillator::advance() {
@@ -19,5 +19,10 @@ void PhaseOscillator::advance() {
 
 void PhaseOscillator::reset() {
     _phase = 0.0f;
+}
+
+void PhaseOscillator::setNote(i32 voiceNumber){
+    _voiceNumber = voiceNumber;
+    _currentFrequency = 440.f * std::pow(2.f, (voiceNumber - 69.f) / 12.f);
 }
 }

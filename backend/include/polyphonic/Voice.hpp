@@ -32,10 +32,9 @@ public:
 	bool isPressed = false;
 
 	/// @brief Constructor
-	/// @param voiceNumber ID of the note
 	/// @param sampleRate sound sample rate
 	/// @param sampleManager sample manager
-    Voice(i32 voiceNumber, f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager);
+    Voice(f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager);
 
 	/// @brief Replaces a current oscillator
 	/// @param oscillatorType type of the new oscillator
@@ -74,5 +73,11 @@ public:
 	/// @brief Set release value for ADSR
 	/// @param release rate of the amplitude's decrease after releasing the key (between 0.0 and 1.0)
 	void setRelease(f32 release);
+
+	void setNote(i32 note);
+
+	i32 getNote();
+
+	bool isPlaying();
 };
 }

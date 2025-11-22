@@ -4,7 +4,7 @@
 namespace oscillators {
 ModulatedOscillator::ModulatedOscillator(f32 sampleRate, i32 voiceNumber, const std::vector<f32>& sample)
     : Oscillator(sampleRate, voiceNumber), _sample(sample) {
-    _stepFactor = std::pow(2.f, (voiceNumber - 69.f) / 12.f);
+    setNote(voiceNumber);
 }
 
 void ModulatedOscillator::advance() {
@@ -20,5 +20,10 @@ f32 ModulatedOscillator::getNextSample() {
 
 void ModulatedOscillator::reset() {
     _index = 0;
+}
+
+void ModulatedOscillator::setNote(i32 voiceNumber){
+    _voiceNumber = voiceNumber;
+    _stepFactor = std::pow(2.f, (voiceNumber - 69.f) / 12.f);
 }
 }

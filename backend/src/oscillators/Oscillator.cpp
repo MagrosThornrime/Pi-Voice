@@ -10,4 +10,8 @@ Oscillator::Oscillator(f32 sampleRate, i32 voiceNumber):
 f32 Oscillator::getNextSample() {
 	return 0.0f;
 }
+
+void Oscillator::setNote(i32 voiceNumber){
+	_voiceNumber = voiceNumber;
+}
 }

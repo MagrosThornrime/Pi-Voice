@@ -26,5 +26,7 @@ public:
     /// @brief Calculates next sample's value
     virtual f32 getNextSample();
 
+	virtual void setNote(i32 voiceNumber);
+
 };
 }

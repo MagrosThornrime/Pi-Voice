@@ -22,5 +22,7 @@ public:
     /// @brief Updates the oscillator's state for the next frame
     void advance() override;
 
+    void setNote(i32 voiceNumber) override;
+
 };
 }

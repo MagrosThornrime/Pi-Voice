@@ -19,6 +19,18 @@ class VoiceManager : public portaudio::CallbackInterface {
 	/// @brief Global amplitude
 	f32 _amplitude = 0.1f;
 
+	f32 _sampleRate;
+
+	std::string _oscillatorTypes[3] = {"empty", "empty", "empty"};
+	f32 _oscillatorAmplitudes[3] = {1.0f, 1.0f, 1.0f};
+	f32 _attack = 0.001f;
+	f32 _decay = 0.02f;
+	f32 _sustain = 0.8f;
+	f32 _release = 0.00001f;
+
+	i32 _findVoice();
+
+
 public:
 	/// @brief Constructor
 	/// @param voicesNumber the number of notes used by keyboard

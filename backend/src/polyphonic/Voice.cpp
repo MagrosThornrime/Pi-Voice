@@ -51,12 +51,23 @@ void Voice::setOscillatorAmplitude(f32 amplitude, i32 index){
     _amplitudes[index] = amplitude;
 }
 
-Voice::Voice(i32 voiceNumber, f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager)
-: _sampleRate(sampleRate), _voiceNumber(voiceNumber), _sampleManager(sampleManager) {
+Voice::Voice(f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager)
+: _sampleRate(sampleRate), _sampleManager(sampleManager) {
     for (i32 i=0; i<3; i++){
         setOscillatorType("empty", i);
         setOscillatorAmplitude(1.0, i);
     }
+}
+
+void Voice::setNote(i32 voiceNumber){
+    _voiceNumber = voiceNumber;
+    for (i32 i=0; i<3; i++){
+        _oscillators[i]->setNote(voiceNumber);
+    }
+}
+
+i32 Voice::getNote(){
+    return _voiceNumber;
 }
 
 void Voice::turnOn(){
@@ -97,5 +108,9 @@ void Voice::setRelease(f32 release){
 		throw std::invalid_argument(fmt::format("Invalid release value of: {}", release));
 	}
 	_adsr.releaseFactor = release;
+}
+
+bool Voice::isPlaying(){
+    return _adsr.isPlaying();
 }
 }
