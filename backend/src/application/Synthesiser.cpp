@@ -146,7 +146,7 @@ std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name, i32 len
     else if (name == "sine") {
         oscillator = std::make_unique<oscillators::SineOscillator>(_sampleRate, note);
     }
-    else if (name == "saw") {
+    else if (name == "sawtooth") {
         oscillator = std::make_unique<oscillators::SawtoothOscillator>(_sampleRate, note);
     }
     else if (name == "square") {

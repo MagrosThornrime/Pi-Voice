@@ -9,7 +9,7 @@ void Voice::setOscillatorType(const std::string& oscillatorType, i32 index) {
     else if (oscillatorType == "sine") {
         _oscillators[index] = std::make_shared<oscillators::SineOscillator>(_sampleRate, _voiceNumber);
     }
-    else if (oscillatorType == "saw") {
+    else if (oscillatorType == "sawtooth") {
         _oscillators[index] = std::make_shared<oscillators::SawtoothOscillator>(_sampleRate, _voiceNumber);
     }
     else if (oscillatorType == "square") {
