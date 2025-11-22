@@ -2,34 +2,26 @@
 
 import { useState } from "react";
 
-// ---- Custom Error Types ----
-export class DirectoryAccessError extends Error {
-    constructor(message: string = "Cannot write to the requested directory.") {
-        super(message);
-        this.name = "DirectoryAccessError";
-    }
-}
+import {
+  Box,
+  Heading,
+  Text,
+  Grid,
+  Slider,
+  Stack,
+  Button,
+  List,
+  ListItem,
+} from "@chakra-ui/react";
 
-export class ValueOutOfRangeError extends Error {
-    constructor(message: string = "Value is out of allowed bounds.") {
-        super(message);
-        this.name = "ValueOutOfRangeError";
-    }
-}
-
-// ---- extend synthAPI interface ----
 declare global {
     interface Window {
         synthAPI: {
             ports: () => Promise<string[]>;
             openPort: (port: number) => Promise<void>;
-            setAmplitude: (value: number) => Promise<void>;
-            startRecording: () => Promise<void>;
-            stopRecording: () => Promise<void>;
-
-            // New error-related APIs
-            setRecordingPath?: (path: string) => Promise<void | DirectoryAccessError>;
-            validateValue?: (value: number) => Promise<void | ValueOutOfRangeError>;
+            start: () => Promise<void>;
+            stop: () => Promise<void>;
+            cleanup: () => Promise<void>;
         };
     }
 }
@@ -38,13 +30,8 @@ export default function PlayPage() {
     const [status, setStatus] = useState<string>("idle");
     const [midiPorts, setMidiPorts] = useState<string[]>([]);
     const [selectedPort, setSelectedPort] = useState<number | null>(null);
+    const [buttonText, setButtonText] = useState<string>("Start");
 
-    // new state for directory input
-    const [recordingDir, setRecordingDir] = useState<string>("");
-
-    // --------------------
-    // MIDI port handling
-    // --------------------
     const listPorts = async () => {
         setStatus("Fetching MIDI ports...");
         const ports = await window.synthAPI.ports();
@@ -59,80 +46,51 @@ export default function PlayPage() {
         setStatus(`Port ${port} opened`);
     };
 
-    // --------------------
-    // Recording directory
-    // --------------------
-    const applyDirectory = async () => {
-
-        try {
-            const result = await window.synthAPI.setRecordingPath(recordingDir);
-            if (result instanceof DirectoryAccessError) {
-                setStatus(`Error: ${result.message}`);
-            } else {
-                setStatus(`Directory set to: ${recordingDir}`);
-            }
-        } catch (err: any) {
-            setStatus("Error: " + err.message);
-        }
-    };
-
-    // --------------------
-    // Recording controls
-    // --------------------
-    const startRecording = async () => {
-        setStatus("Recording started...");
-        await window.synthAPI.startRecording();
-    };
-
-    const stopRecording = async () => {
-        setStatus("Recording stopped.");
-        await window.synthAPI.stopRecording();
-    };
-
     return (
-        <main>
-            <h1>Simple Synth Controller</h1>
-            <p>Status: {status}</p>
+        <Box minH="100vh" bg="gray.200" p={10}>
 
-            <div>
-                <button onClick={listPorts}>List MIDI Ports</button>
-                <ul>
-                    {midiPorts.map((port, i) => (
-                        <li key={i}>
-                            {port}{" "}
-                            <button onClick={() => openPort(i)}>
+            <Heading size="2xl" textAlign="center" mb={10} color="teal.600">
+            🎛️ Simple Synth Controller
+            </Heading>
+
+            <Text color="black"> Status: {status} </Text>
+            <Box h="5" />
+            <Box>
+                <Button onClick = {listPorts}> List MIDI Ports </Button>
+                <List.Root>
+                {
+                        midiPorts.map((port, i) => (
+                        <ListItem
+                            key={port || i}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            p={3}
+                            borderWidth="1px"
+                            borderRadius="md"
+                            _hover={{ bg: "gray.50" }}
+                            >
+                            <Box>
+                                <Text fontWeight="medium">{port}</Text>
+                                {
+                                    port && (
+                                    <Text fontSize="sm" color="gray.500">
+                                        {port}
+                                    </Text>
+                                    )
+                                }
+                            </Box>
+
+                            <Button colorScheme="blue" onClick={() => openPort(i)}>
                                 Open Port {i}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
-            {/* Recording Directory */}
-            <div style={{ marginTop: "20px" }}>
-                <h3>Recording Directory</h3>
-                <input
-                    type="text"
-                    placeholder="output"
-                    value={recordingDir}
-                    onChange={(e) => setRecordingDir(e.target.value)}
-                    style={{ padding: "6px", width: "200px" }}
-                />
-                <button
-                    onClick={applyDirectory}
-                    style={{ marginLeft: "10px" }}
-                >
-                    Apply
-                </button>
-            </div>
-
-            {/* Recording Controls */}
-            <div style={{ marginTop: "20px" }}>
-                <button onClick={startRecording}>Start Recording</button>
-                <button onClick={stopRecording} style={{ marginLeft: "10px" }}>
-                    Stop Recording
-                </button>
-            </div>
-        </main>
+                            </Button>
+                        </ListItem>
+                        )
+                    )
+                }
+                </List.Root>
+                <Button bg={"red"} onClick={()=>{if(buttonText=="Start"){setButtonText("Stop")}else{setButtonText("Start")}}}>{buttonText+" Recording"}</Button>
+            </Box>
+        </Box>
     );
 }
