@@ -131,4 +131,13 @@ void VoiceManager::setRelease(f32 release){
 	auto lock = std::lock_guard(_oscillatorMutex);
 	_release = release;
 }
+
+bool VoiceManager::hasActiveVoices(){
+	for(auto& voice : _voices){
+		if(voice.isPlaying()){
+			return true;
+		}
+	}
+	return false;
+}
 }

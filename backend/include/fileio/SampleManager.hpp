@@ -46,8 +46,12 @@ public:
     /// @brief Get list of samples
     std::vector<std::string> getSampleNames();
 
+	/// @brief Get a particular sample. Store it into cache if it's not stored already.
+	/// @param sampleName name of the sample
 	const std::vector<f32>& getSample(const std::string& sampleName);
-	void removeFromCache(const std::string& sampleName);
+
+	/// @brief Clear cached samples
+	void clearCache();
 };
 
 }

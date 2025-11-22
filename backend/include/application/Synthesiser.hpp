@@ -106,6 +106,18 @@ public:
 	/// @param path output directory
 	void setRecordingPath(const std::string& path);
 
+	/// @brief Tells where to get samples from
+	/// @param path input directory
+	void setSamplesPath(const std::string& path);
+
+	/// @brief Gets all oscillators' names
+	std::vector<std::string> getSampleNames();
+
+	/// @brief Gets the oscillator output signal
+	/// @param name oscillator's name
+	/// @param i32 plot length
+	std::vector<f32> getOscillatorPlot(const std::string& name, i32 length);
+
 };
 
 }

@@ -13,15 +13,6 @@ SampleManager::SampleManager(const std::string& samplesDirectory, i32 samplingRa
     _loadSamplePaths();
 }
 
-std::vector<std::string> SampleManager::getSampleNames() {
-	auto lock = std::lock_guard(_mutex);
-    std::vector<std::string> names;
-    for (const auto& sample: ranges::views::keys(_samplePaths)) {
-        names.push_back(sample);
-    }
-    return names;
-}
-
 void SampleManager::changeSamplesDirectory(const std::string& samplesDirectory) {
 	auto lock = std::lock_guard(_mutex);
 	if (!_cachedSamples.empty()){
@@ -102,9 +93,20 @@ const std::vector<f32>& SampleManager::getSample(const std::string& sampleName) 
 	return _cachedSamples.at(sampleName);
 }
 
-void SampleManager::removeFromCache(const std::string& sampleName) {
+void SampleManager::clearCache() {
 	auto lock = std::lock_guard(_mutex);
-	_cachedSamples.erase(sampleName);
+	_cachedSamples.clear();
+}
+
+std::vector<std::string> SampleManager::getSampleNames(){
+	std::vector<std::string> names;
+	for (const auto& entry : ranges::views::all(oscillators::reservedOscillators)) {
+		names.emplace_back(entry);
+	}
+	for (const auto& entry : ranges::views::keys(_samplePaths)) {
+		names.emplace_back(entry);
+	}
+	return names;
 }
 
 }

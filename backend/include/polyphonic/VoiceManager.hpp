@@ -95,5 +95,8 @@ public:
 	/// @brief Set release value for ADSR
 	/// @param release rate of the amplitude's decrease after releasing the key (between 0.0 and 1.0)
 	void setRelease(f32 release);
+
+	/// @brief Tells if at least one voice is turned on
+	bool hasActiveVoices();
 };
 }
