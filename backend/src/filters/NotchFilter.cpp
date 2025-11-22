@@ -5,9 +5,7 @@
 
 namespace filters {
 void NotchFilter::refresh() {
-	if (_prev.empty()) {
-		_prev = decltype(_prev)(_channels);
-	}
+	_prev.resize(_channels);
 
 	const auto omega = (2 * std::numbers::pi_v<f32>) * _cutoff / _sampleRate;
 	const auto cosOmega = std::cos(omega);

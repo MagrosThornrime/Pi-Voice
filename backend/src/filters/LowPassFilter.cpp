@@ -6,9 +6,7 @@
 
 namespace filters {
 void LowPassFilter::refresh() {
-	if (_prev.empty()) {
-		_prev = decltype(_prev)(_channels);
-	}
+	_prev.resize(_channels);
 
 	constexpr auto pi = std::numbers::pi_v<f32>;
 
