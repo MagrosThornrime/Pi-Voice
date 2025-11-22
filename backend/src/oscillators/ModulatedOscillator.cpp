@@ -8,7 +8,7 @@ ModulatedOscillator::ModulatedOscillator(f32 sampleRate, i32 voiceNumber, const 
 }
 
 void ModulatedOscillator::advance() {
-    _index += _stepFactor;
+    _index += _step;
     while(_index >= _sample.size()) {
         _index -= _sample.size();
     }
@@ -24,6 +24,6 @@ void ModulatedOscillator::reset() {
 
 void ModulatedOscillator::setNote(i32 voiceNumber){
     _voiceNumber = voiceNumber;
-    _stepFactor = std::pow(2.f, (voiceNumber - 69.f) / 12.f);
+    _step = std::pow(2.f, (voiceNumber - 69.f) / 12.f);
 }
 }
