@@ -14,9 +14,8 @@ include("cmake/application.cmake")
 
 add_library(BackendApp SHARED)
 
+target_include_directories(BackendApp PUBLIC include "${CMAKE_JS_INC}" "${portaudio_SOURCE_DIR}/include" ${PROJECT_SOURCE_DIR}/../frontend/node_modules/node-api-headers/include ${PROJECT_SOURCE_DIR}/../frontend/node_modules/node-addon-api)
 target_sources(BackendApp PRIVATE src/BackendApp.cpp "${CMAKE_JS_SRC}")
-target_include_directories(BackendApp PUBLIC include "${CMAKE_JS_INC}" ${portaudio_SOURCE_DIR}/include)
-
 
 if (MSVC)
     target_link_libraries(BackendApp
