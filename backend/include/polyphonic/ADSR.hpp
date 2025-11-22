@@ -4,6 +4,7 @@
 namespace polyphonic {
 // @brief Stages on ADSR envelope
 enum ADSRStage{
+    stopped, ///< when the music doesn't play
 	attack, ///< when the key is pressed, the amplitude starts to grow until it reaches 1.0
     decay, ///< after the amplitude reaches 1.0, it declines to the sustain value
     sustain, ///< while the key is being hold, the amplitude is constant
@@ -17,7 +18,7 @@ class ADSR {
     f32 _amplitude{};
 
     // @brief Current stage on the envelope
-	ADSRStage _stage = release;
+	ADSRStage _stage = stopped;
 
 public:
     // @brief Tells how fast the amplitude grows in the attack stage
@@ -38,5 +39,8 @@ public:
     /// @brief Get current amplitude
     /// @param isPressed tells if the Voice using this is pressed
     f32 getAmplitude(bool isPressed);
+
+    /// @brief Tells if the sound is playing or it's stopped
+    bool isPlaying();
 };
 }

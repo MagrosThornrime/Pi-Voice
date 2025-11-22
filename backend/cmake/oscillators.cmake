@@ -16,4 +16,4 @@ else()
 endif()
 
 target_include_directories(oscillators PUBLIC include ${rtmidi_SOURCE_DIR}/include)
-target_link_libraries(oscillators PUBLIC fmt::fmt range-v3::range-v3 portaudio portaudiocpp)
+target_link_libraries(oscillators PUBLIC fmt::fmt range-v3::range-v3 portaudio portaudiocpp sndfile)

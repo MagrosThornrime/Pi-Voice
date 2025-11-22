@@ -2,6 +2,7 @@
 #include "Voice.hpp"
 #include <portaudiocpp/PortAudioCpp.hxx>
 #include <mutex>
+#include <vector>
 
 namespace polyphonic{
 /// @brief Controls all Voices in the synthesiser and mixes their outputs
@@ -18,11 +19,36 @@ class VoiceManager : public portaudio::CallbackInterface {
 	/// @brief Global amplitude
 	f32 _amplitude = 0.1f;
 
+	/// @brief Sound's sampling rate
+	f32 _sampleRate;
+
+	/// @brief Oscillator types of the next sound
+	std::string _oscillatorTypes[3] = {"empty", "empty", "empty"};
+
+	/// @brief Oscillator amplitudes of the next sound
+	f32 _oscillatorAmplitudes[3] = {1.0f, 1.0f, 1.0f};
+
+	/// @brief Attack factor value of the next sound
+	f32 _attack = 0.001f;
+
+	/// @brief Decay factor value of the next sound
+	f32 _decay = 0.02f;
+
+	/// @brief Sustain amplitude value of the next sound
+	f32 _sustain = 0.8f;
+
+	/// @brief Release value of the next sound
+	f32 _release = 0.00001f;
+
+	/// @brief Find an unused voice. Returns -1 if not found.
+	i32 _findVoice();
+
 public:
 	/// @brief Constructor
 	/// @param voicesNumber the number of notes used by keyboard
 	/// @param sampleRate sound's sample rate
-    VoiceManager(i32 voicesNumber, f32 sampleRate);
+	/// @param sampleManager sample manager
+    VoiceManager(i32 voicesNumber, f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager);
 
     /// @brief PortAudio callback used for streaming the audio
     int paCallbackFun(const void* input, void* output,
@@ -37,7 +63,7 @@ public:
 	/// @brief Replaces oscillators of all Voices
 	/// @param type type of the new oscillator
 	/// @param index id of the new oscillator (0, 1 or 2)
-    void setOscillatorType(oscillators::OscillatorType type, i32 index);
+    void setOscillatorType(const std::string& type, i32 index);
 
 	/// @brief Changes amplitude of a given oscillator for all Voices
 	/// @param amplitude amplitude of the oscillator (between 0 and 1)
@@ -69,5 +95,8 @@ public:
 	/// @brief Set release value for ADSR
 	/// @param release rate of the amplitude's decrease after releasing the key (between 0.0 and 1.0)
 	void setRelease(f32 release);
+
+	/// @brief Tells if at least one voice is turned on
+	bool hasActiveVoices();
 };
 }

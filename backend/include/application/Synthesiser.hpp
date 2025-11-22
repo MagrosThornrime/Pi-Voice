@@ -23,6 +23,9 @@ class Synthesiser {
     /// @brief Creates basic sounds (that are later modified in Pipeline) using data from the keyboard
     std::shared_ptr<polyphonic::VoiceManager> _voiceManager;
 
+	/// @brief Loads samples to be used as oscillators
+	std::shared_ptr<fileio::SampleManager> _sampleManager;
+
     /// @brief Port audio configuration data
     std::unique_ptr<portaudio::AutoSystem> _autoSys;
 
@@ -46,7 +49,8 @@ public:
     /// @param recordingPath name of the audio file where you want to record the output
     /// @param channels number of audio output channels
     /// @param sampleRate sound's sample rate
-    Synthesiser(const std::string& recordingPath, i32 channels, i32 sampleRate);
+	/// @param samplesPath path to a directory with samples for oscillators
+    Synthesiser(const std::string& recordingPath, i32 channels, i32 sampleRate, const std::string& samplesPath);
 
     /// @brief Tells the voice manager that you pressed a key on the keyboard
     /// @param key id of the key
@@ -69,7 +73,7 @@ public:
     /// @brief Sets the type of a particular oscillator
     /// @param type type of the oscillator (see Oscillators.hpp)
     /// @param index id of the oscillator (0, 1 or 2)
-    void setOscillatorType(oscillators::OscillatorType type, i32 index);
+    void setOscillatorType(const std::string& type, i32 index);
 
     /// @brief Sets the amplitude of a particular oscillator (its importance in output)
     /// @param amplitude amplitude of the oscillator (between 0 and 1)
@@ -91,6 +95,29 @@ public:
     /// @brief Sets the release factor value in ADSR (how fast the amplitude declines to 0 after releasing the key)
     /// @param release release factor value (between 0 and 1)
     void setRelease(f32 release);
+
+    /// @brief Starts recording the audio.
+    void startRecording();
+
+    /// @brief Stops recording the audio.
+    void stopRecording();
+
+	/// @brief Tells where to put audio recordings
+	/// @param path output directory
+	void setRecordingPath(const std::string& path);
+
+	/// @brief Tells where to get samples from
+	/// @param path input directory
+	void setSamplesPath(const std::string& path);
+
+	/// @brief Gets all oscillators' names
+	std::vector<std::string> getSampleNames();
+
+	/// @brief Gets the oscillator output signal
+	/// @param name oscillator's name
+	/// @param i32 plot length
+	std::vector<f32> getOscillatorPlot(const std::string& name, i32 length);
+
 };
 
 }

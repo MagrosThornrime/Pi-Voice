@@ -3,6 +3,7 @@ include_guard()
 include("cmake/libs/fmt.cmake")
 include("cmake/libs/ranges.cmake")
 include("cmake/libs/portaudio.cmake")
+include("cmake/fileio.cmake")
 
 file(GLOB_RECURSE APPLICATION_SRC "src/application/*.cpp")
 
@@ -16,4 +17,4 @@ else()
 endif()
 
 target_include_directories(application PUBLIC include ${rtmidi_SOURCE_DIR}/include)
-target_link_libraries(application PUBLIC fmt::fmt range-v3::range-v3 portaudio portaudiocpp rtmidi)
+target_link_libraries(application PUBLIC fmt::fmt range-v3::range-v3 portaudio portaudiocpp rtmidi fileio)

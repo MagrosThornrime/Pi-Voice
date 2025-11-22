@@ -3,6 +3,7 @@
 #include <Types.hpp>
 #include <memory>
 #include "ADSR.hpp"
+#include <fileio/SampleManager.hpp>
 
 namespace polyphonic {
 /// @brief A source of sounds played by a particular key
@@ -13,8 +14,8 @@ class Voice {
 	/// @brief Oscillators' amplitudes
 	f32 _amplitudes[3];
 
-	/// @brief The note's frequency
-	f32 _frequency;
+	/// @brief The note's index
+	i32 _voiceNumber;
 
 	/// @brief Sound sample rate
 	f32 _sampleRate;
@@ -22,20 +23,23 @@ class Voice {
 	/// @brief Calculates amplitude using ADSR envelope
     ADSR _adsr;
 
+	/// @brief Loads samples to be used as oscillators
+	std::shared_ptr<fileio::SampleManager> _sampleManager;
+
 public:
 
 	/// @brief Tells if the key is pressed
 	bool isPressed = false;
 
 	/// @brief Constructor
-	/// @param voiceNumber ID of the note
 	/// @param sampleRate sound sample rate
-    Voice(i32 voiceNumber, f32 sampleRate);
+	/// @param sampleManager sample manager
+    Voice(f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager);
 
 	/// @brief Replaces a current oscillator
 	/// @param oscillatorType type of the new oscillator
 	/// @param index id of the oscillator (0, 1 or 2)
-    void setOscillatorType(oscillators::OscillatorType oscillatorType, i32 index);
+    void setOscillatorType(const std::string& oscillatorType, i32 index);
 
 	/// @brief Sets amplitude for a given oscillator
 	/// @param amplitude value of the amplitude (between 0 and 1)
@@ -69,5 +73,15 @@ public:
 	/// @brief Set release value for ADSR
 	/// @param release rate of the amplitude's decrease after releasing the key (between 0.0 and 1.0)
 	void setRelease(f32 release);
+
+	/// @brief Set music note
+	/// @param note note of the sound
+	void setNote(i32 note);
+
+	/// @brief Get music note
+	i32 getNote();
+
+	/// @brief Tells if the sound is playing
+	bool isPlaying();
 };
 }
