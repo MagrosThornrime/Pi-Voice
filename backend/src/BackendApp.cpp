@@ -9,7 +9,7 @@ std::shared_ptr<application::MidiManager> midiApp;
 std::mutex mutex;
 
 void initializeApplication(){
-    synthesiser = std::make_shared<application::Synthesiser>("capture_in.wav", 2, 44100);
+    synthesiser = std::make_shared<application::Synthesiser>("capture_in.wav", 2, 44100, "resources/samples");
     midiApp = std::make_shared<application::MidiManager>(synthesiser);
     synthesiser->start();
 }
@@ -81,15 +81,14 @@ void setOscillatorType(const Napi::CallbackInfo& info) {
         return;
     }
 
-    std::string typeName = info[0].As<Napi::String>();
+    std::string type = info[0].As<Napi::String>();
     i32 index = info[1].As<Napi::Number>().Int32Value();
     if (index < 0 || index > 2) {
         Napi::RangeError::New(env, "Invalid oscillator index").ThrowAsJavaScriptException();
         return;
     }
-    auto type = oscillators::oscillatorFromString(typeName);
     synthesiser->setOscillatorType(type, index);
-    fmt::println("Oscillator {} type set to {}", index, typeName);
+    fmt::println("Oscillator {} type set to {}", index, type);
 }
 
 // Set oscillator amplitude (0,1,2)

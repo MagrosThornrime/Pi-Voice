@@ -16,13 +16,13 @@ int VoiceManager::paCallbackFun(const void* input, void* output,
 	return 0;
 }
 
-VoiceManager::VoiceManager(i32 voicesNumber, f32 sampleRate){
+VoiceManager::VoiceManager(i32 voicesNumber, f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager) {
     for(i32 i = 0; i < voicesNumber; i++){
-        _voices.emplace_back(i, sampleRate);
+        _voices.emplace_back(i, sampleRate, sampleManager);
     }
 }
 
-void VoiceManager::setOscillatorType(oscillators::OscillatorType type, i32 index){
+void VoiceManager::setOscillatorType(const std::string& type, i32 index){
 	auto lock = std::lock_guard(_oscillatorMutex);
 	for(auto& voice : _voices){
 		voice.setOscillatorType(type, index);

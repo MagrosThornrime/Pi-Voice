@@ -16,4 +16,8 @@ void PhaseOscillator::advance() {
         _phase += 2.0 * std::numbers::pi;
     }
 }
+
+void PhaseOscillator::reset() {
+    _phase = 0.0f;
+}
 }

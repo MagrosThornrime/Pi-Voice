@@ -4,7 +4,7 @@
 #include <cmath>
 
 TEST(SampleManager, ListFiles) {
-    fileio::SampleManager sampleManager("resources/samples", 44100);
+    fileio::SampleManager sampleManager("../resources/samples", 44100);
 
     auto samples = sampleManager.getSampleNames();
     auto samplesSet = std::unordered_set(samples.begin(), samples.end());
@@ -12,12 +12,13 @@ TEST(SampleManager, ListFiles) {
     auto wantedSamples = std::unordered_set<std::string>{
         "industry",  // industry.wav
         "summer",    // summer.wav
+		"noise"		// noise.wav
     };
     ASSERT_EQ(samplesSet, wantedSamples);
 }
 
 TEST(SampleManager, AlternativeFiles) {
-    fileio::SampleManager sampleManager("resources/samples", 44100);
+    fileio::SampleManager sampleManager("../resources/samples", 44100);
 
 	sampleManager.changeSamplesDirectory("resources/samples_testing");
 
@@ -31,7 +32,7 @@ TEST(SampleManager, AlternativeFiles) {
 }
 
 TEST(SampleManager, SampleHalfNonZero) {
-    fileio::SampleManager sampleManager("resources/samples", 44100);
+    fileio::SampleManager sampleManager("../resources/samples", 44100);
 	auto output = sampleManager.getSample("industry");
 
 	ASSERT_FALSE(output.empty());

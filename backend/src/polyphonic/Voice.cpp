@@ -2,26 +2,28 @@
 #include <fmt/core.h>
 
 namespace polyphonic {
-void Voice::setOscillatorType(oscillators::OscillatorType oscillatorType, i32 index) {
+void Voice::setOscillatorType(const std::string& oscillatorType, i32 index) {
     if(index < 0 || index > 2){
         throw std::invalid_argument(fmt::format("Invalid index value of: {}", index));
     }
-    switch (oscillatorType) {
-        case oscillators::empty:
-            _oscillators[index] = std::make_shared<oscillators::Oscillator>(_sampleRate, _voiceNumber);
-            break;
-        case oscillators::sine:
-            _oscillators[index] = std::make_shared<oscillators::SineOscillator>(_sampleRate, _voiceNumber);
-            break;
-        case oscillators::sawtooth:
-            _oscillators[index] = std::make_shared<oscillators::SawtoothOscillator>(_sampleRate, _voiceNumber);
-            break;
-        case oscillators::square:
-            _oscillators[index] = std::make_shared<oscillators::SquareOscillator>(_sampleRate, _voiceNumber);
-            break;
-        case oscillators::triangle:
-            _oscillators[index] = std::make_shared<oscillators::TriangleOscillator>(_sampleRate, _voiceNumber);
-            break;
+    if (oscillatorType == "empty") {
+        _oscillators[index] = std::make_shared<oscillators::Oscillator>(_sampleRate, _voiceNumber);
+    }
+    else if (oscillatorType == "sine") {
+        _oscillators[index] = std::make_shared<oscillators::SineOscillator>(_sampleRate, _voiceNumber);
+    }
+    else if (oscillatorType == "saw") {
+        _oscillators[index] = std::make_shared<oscillators::SawtoothOscillator>(_sampleRate, _voiceNumber);
+    }
+    else if (oscillatorType == "square") {
+        _oscillators[index] = std::make_shared<oscillators::SquareOscillator>(_sampleRate, _voiceNumber);
+    }
+    else if (oscillatorType == "triangle") {
+        _oscillators[index] = std::make_shared<oscillators::TriangleOscillator>(_sampleRate, _voiceNumber);
+    }
+    else {
+        const std::vector<f32>& sample = _sampleManager->getSample(oscillatorType);
+        _oscillators[index] = std::make_shared<oscillators::ModulatedOscillator>(_sampleRate, _voiceNumber, sample);
     }
 }
 
@@ -49,14 +51,18 @@ void Voice::setOscillatorAmplitude(f32 amplitude, i32 index){
     _amplitudes[index] = amplitude;
 }
 
-Voice::Voice(i32 voiceNumber, f32 sampleRate) : _sampleRate(sampleRate), _voiceNumber(voiceNumber) {
+Voice::Voice(i32 voiceNumber, f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager)
+: _sampleRate(sampleRate), _voiceNumber(voiceNumber), _sampleManager(sampleManager) {
     for (i32 i=0; i<3; i++){
-        setOscillatorType(oscillators::empty, i);
+        setOscillatorType("empty", i);
         setOscillatorAmplitude(1.0, i);
     }
 }
 
 void Voice::turnOn(){
+    for(i32 i=0; i<3; i++){
+        _oscillators[i]->reset();
+    }
     _adsr.reset();
     isPressed = true;
 }

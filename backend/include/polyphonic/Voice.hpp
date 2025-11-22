@@ -3,6 +3,7 @@
 #include <Types.hpp>
 #include <memory>
 #include "ADSR.hpp"
+#include <fileio/SampleManager.hpp>
 
 namespace polyphonic {
 /// @brief A source of sounds played by a particular key
@@ -22,6 +23,9 @@ class Voice {
 	/// @brief Calculates amplitude using ADSR envelope
     ADSR _adsr;
 
+	/// @brief Loads samples to be used as oscillators
+	std::shared_ptr<fileio::SampleManager> _sampleManager;
+
 public:
 
 	/// @brief Tells if the key is pressed
@@ -30,12 +34,13 @@ public:
 	/// @brief Constructor
 	/// @param voiceNumber ID of the note
 	/// @param sampleRate sound sample rate
-    Voice(i32 voiceNumber, f32 sampleRate);
+	/// @param sampleManager sample manager
+    Voice(i32 voiceNumber, f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager);
 
 	/// @brief Replaces a current oscillator
 	/// @param oscillatorType type of the new oscillator
 	/// @param index id of the oscillator (0, 1 or 2)
-    void setOscillatorType(oscillators::OscillatorType oscillatorType, i32 index);
+    void setOscillatorType(const std::string& oscillatorType, i32 index);
 
 	/// @brief Sets amplitude for a given oscillator
 	/// @param amplitude value of the amplitude (between 0 and 1)

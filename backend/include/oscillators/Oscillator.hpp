@@ -13,6 +13,10 @@ protected:
 	i32 _voiceNumber;
 
 public:
+
+	/// @brief Reset oscillator
+	virtual void reset() {};
+
     /// @brief Constructor
     explicit Oscillator(f32 sampleRate, i32 voiceNumber);
 

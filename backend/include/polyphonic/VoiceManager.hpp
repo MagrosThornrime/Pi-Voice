@@ -23,7 +23,8 @@ public:
 	/// @brief Constructor
 	/// @param voicesNumber the number of notes used by keyboard
 	/// @param sampleRate sound's sample rate
-    VoiceManager(i32 voicesNumber, f32 sampleRate);
+	/// @param sampleManager sample manager
+    VoiceManager(i32 voicesNumber, f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager);
 
     /// @brief PortAudio callback used for streaming the audio
     int paCallbackFun(const void* input, void* output,
@@ -38,7 +39,7 @@ public:
 	/// @brief Replaces oscillators of all Voices
 	/// @param type type of the new oscillator
 	/// @param index id of the new oscillator (0, 1 or 2)
-    void setOscillatorType(oscillators::OscillatorType type, i32 index);
+    void setOscillatorType(const std::string& type, i32 index);
 
 	/// @brief Changes amplitude of a given oscillator for all Voices
 	/// @param amplitude amplitude of the oscillator (between 0 and 1)

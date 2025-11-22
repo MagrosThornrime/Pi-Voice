@@ -4,31 +4,13 @@
 #include <oscillators/SawtoothOscillator.hpp>
 #include <oscillators/SquareOscillator.hpp>
 #include <oscillators/TriangleOscillator.hpp>
+#include <oscillators/ModulatedOscillator.hpp>
 #include <string>
+#include <unordered_set>
 
 namespace oscillators {
-// @brief Oscillator types
-enum OscillatorType {
-    sine, sawtooth, square, triangle, empty
+const static std::unordered_set<std::string> reservedOscillators = {
+    "sine", "square", "triangle", "sawtooth",
 };
-
-inline OscillatorType oscillatorFromString(const std::string& type){
-    if (type == "empty"){
-        return empty;
-    }
-    if (type == "sine"){
-        return sine;
-    }
-    if (type == "triangle"){
-        return triangle;
-    }
-    if (type == "sawtooth"){
-        return sawtooth;
-    }
-    if (type == "square"){
-        return square;
-    }
-    return empty;
-}
 
 }

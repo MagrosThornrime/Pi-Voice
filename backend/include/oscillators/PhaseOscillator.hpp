@@ -13,6 +13,9 @@ protected:
 
 public:
 
+	/// @brief Reset oscillator
+	void reset() override;
+
     /// @brief Constructor
     PhaseOscillator(f32 sampleRate, i32 voiceNumber);
 
