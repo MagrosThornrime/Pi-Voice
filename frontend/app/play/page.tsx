@@ -22,6 +22,8 @@ declare global {
             start: () => Promise<void>;
             stop: () => Promise<void>;
             cleanup: () => Promise<void>;
+            startRecording: () => Promise<void>;
+            stopRecording: () => Promise<void>;
         };
     }
 }
@@ -89,7 +91,28 @@ export default function PlayPage() {
                     )
                 }
                 </List.Root>
-                <Button bg={"red"} onClick={()=>{if(buttonText=="Start"){setButtonText("Stop")}else{setButtonText("Start")}}}>{buttonText+" Recording"}</Button>
+                <Button
+                    bg={buttonText === "Start" ? "green.400" : "red.400"}
+                    onClick={async () => {
+                        try {
+                            if (buttonText === "Start") {
+                                setButtonText("Stop");
+                                setStatus("Recording...");
+                                await window.synthAPI.startRecording();
+                            } else {
+                                setButtonText("Start");
+                                setStatus("Recording stopped.");
+                                await window.synthAPI.stopRecording();
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            setStatus("Error controlling recording.");
+                        }
+                    }}
+                >
+                    {buttonText} Recording
+                </Button>
+
             </Box>
         </Box>
     );
