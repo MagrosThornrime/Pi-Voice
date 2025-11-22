@@ -6,6 +6,6 @@
 namespace filters {
 class AllPassFilter: public BwFilter {
 public:
-	AllPassFilter(const u32 channels, const f32 cutoffFrequency, const f32 samplingRate, const f32 quality = std::numbers::sqrt2_v<f32> / 2);
+	void refresh() override;
 };
 }
