@@ -6,6 +6,7 @@
 #include <Types.hpp>
 #include <string>
 #include <pipeline/Pipeline.hpp>
+#include <effects/Pitch.hpp>
 
 namespace application {
 
@@ -22,6 +23,8 @@ class Synthesiser {
 
     /// @brief Creates basic sounds (that are later modified in Pipeline) using data from the keyboard
     std::shared_ptr<polyphonic::VoiceManager> _voiceManager;
+
+    std::shared_ptr<effects::Pitch> _pitch;
 
     /// @brief Port audio configuration data
     std::unique_ptr<portaudio::AutoSystem> _autoSys;

@@ -7,6 +7,7 @@ Synthesiser::Synthesiser(const std::string& recordingPath, i32 channels, i32 sam
 	_recorder = std::make_shared<fileio::FileRecorder>(recordingPath, channels, sampleRate);
     _autoSys = std::make_unique<portaudio::AutoSystem>();
     _voiceManager = std::make_shared<polyphonic::VoiceManager>(128, 44100.0f);
+    _pitch = std::make_shared<effects::Pitch>(1, 2.0);
 }
 
 void Synthesiser::start(){
@@ -37,7 +38,7 @@ void Synthesiser::start(){
     _recorder->start();
 
     auto& pipelineRef = *_pipeline.get();
-    pipelineRef.setSource(_voiceManager).addLayer(_recorder);
+    pipelineRef.setSource(_voiceManager).addLayer(_pitch).addLayer(_recorder);
     _stream = std::make_unique<portaudio::InterfaceCallbackStream>(streamParams, pipelineRef);
     _stream->start();
     _running = true;
