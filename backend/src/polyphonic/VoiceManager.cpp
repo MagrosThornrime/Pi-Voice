@@ -52,6 +52,9 @@ f32 VoiceManager::_getNextSample(){
 	auto lock = std::lock_guard(_oscillatorMutex);
 	f32 sample = 0.0f;
 	for(auto& voice : _voices){
+		if(!voice.isPlaying()){
+			continue;
+		}
 		sample += voice.getNextSample();
 	}
 	return sample;
