@@ -10,7 +10,7 @@ std::shared_ptr<application::MidiManager> midiApp;
 std::mutex mutex;
 
 void initializeApplication(){
-    synthesiser = std::make_shared<application::Synthesiser>("capture_in.wav", 2, 44100, "resources/samples");
+    synthesiser = std::make_shared<application::Synthesiser>("capture_in.wav", 2, 44100, "res/samples");
     midiApp = std::make_shared<application::MidiManager>(synthesiser);
     synthesiser->start();
 }

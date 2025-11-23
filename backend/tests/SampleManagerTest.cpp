@@ -4,7 +4,7 @@
 #include <cmath>
 
 TEST(SampleManager, ListFiles) {
-    fileio::SampleManager sampleManager("../resources/samples", 44100);
+    fileio::SampleManager sampleManager("../res/samples", 44100);
 
     auto samples = sampleManager.getSampleNames();
     auto samplesSet = std::unordered_set(samples.begin(), samples.end());
@@ -18,9 +18,9 @@ TEST(SampleManager, ListFiles) {
 }
 
 TEST(SampleManager, AlternativeFiles) {
-    fileio::SampleManager sampleManager("../resources/samples", 44100);
+    fileio::SampleManager sampleManager("../res/samples", 44100);
 
-	sampleManager.changeSamplesDirectory("resources/samples_testing");
+	sampleManager.changeSamplesDirectory("res/samples_testing");
 
     auto samples = sampleManager.getSampleNames();
     auto samplesSet = std::unordered_set(samples.begin(), samples.end());
@@ -32,7 +32,7 @@ TEST(SampleManager, AlternativeFiles) {
 }
 
 TEST(SampleManager, SampleHalfNonZero) {
-    fileio::SampleManager sampleManager("../resources/samples", 44100);
+    fileio::SampleManager sampleManager("../res/samples", 44100);
 	auto output = sampleManager.getSample("industry");
 
 	ASSERT_FALSE(output.empty());
