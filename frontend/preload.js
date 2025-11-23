@@ -17,3 +17,10 @@ contextBridge.exposeInMainWorld("synthAPI", {
     addFilter: (name) => ipcRenderer.invoke("synth-addFilter", name),
     clearFilters: () => ipcRenderer.invoke("synth-clearFilters"),
 });
+
+contextBridge.exposeInMainWorld("presetsAPI", {
+  read: () => ipcRenderer.invoke("presets:read"),
+  write: (data) => ipcRenderer.invoke("presets:write", data),
+  saveOne: (name, preset) => ipcRenderer.invoke("presets:saveOne", { name, preset }),
+  delete: (name) => ipcRenderer.invoke("presets:delete", name)
+});
