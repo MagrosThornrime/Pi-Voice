@@ -15,5 +15,14 @@ contextBridge.exposeInMainWorld("synthAPI", {
 
     startRecording: () => ipcRenderer.invoke("synth-startRecording"),
     stopRecording: () => ipcRenderer.invoke("synth-stopRecording"),
-    setRecordingPath: (value) => ipcRenderer.invoke("synth-setRecordingPath", value)
+    setRecordingPath: (value) => ipcRenderer.invoke("synth-setRecordingPath", value),
+
+    
+    pipelineAddFilter: (filter, idx) => ipcRenderer.invoke("synth-pipelineAddFilter", filter, idx),
+    pipelineRemove: (idx) => ipcRenderer.invoke("synth-pipelineRemove", idx),
+    pipelineMove: (current, target) => ipcRenderer.invoke("synth-pipelineMove", current, target),
+    pipelineSwap: (i1, i2) => ipcRenderer.invoke("synth-pipelineSwap", i1, i2),
+    pipelineSetFilterParam: (idx, param, value) => ipcRenderer.invoke("synth-pipelineSetFilterParam", idx, param, value),
+    pipelineGetFilterParam: (idx, param) => ipcRenderer.invoke("synth-pipelineGetFilterParam", idx, param),
+    pipelineLength: () => ipcRenderer.invoke("synth-pipelineLength"),
 });

@@ -46,3 +46,11 @@ ipcMain.handle("synth-setRelease", (e, val) => synth.setRelease(val));
 ipcMain.handle("synth-startRecording", (e) => synth.startRecording());
 ipcMain.handle("synth-stopRecording", (e) => synth.stopRecording());
 ipcMain.handle("synth-setRecordingPath", (e, val) => synth.setRecordingPath(val));
+// pipelineAPI
+ipcMain.handle("synth-pipelineAddFilter", (e, filter, idx) => synth.pipelineAddFilter(filter, idx));
+ipcMain.handle("synth-pipelineRemove", (e, idx) => synth.pipelineRemove(idx));
+ipcMain.handle("synth-pipelineMove", (e, current, target) => synth.pipelineMove(current, target));
+ipcMain.handle("synth-pipelineSwap", (e, i1, i2) => synth.pipelineSwap(vi1, i2al));
+ipcMain.handle("synth-pipelineSetFilterParam", (e, idx, param, value) => synth.pipelineSetFilterParam(idx, param, value));
+ipcMain.handle("synth-pipelineGetFilterParam", (e, idx, param) => synth.pipelineGetFilterParam(idx, param));
+ipcMain.handle("synth-pipelineLength", (e) => synth.pipelineLength());
