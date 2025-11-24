@@ -28,9 +28,14 @@ f32 ADSR::getAmplitude(bool isPressed) {
 	    _stage = release;
 	    _amplitude -= releaseFactor;
 	    if (_amplitude <= 0.0f){
+			_stage = stopped;
 			_amplitude = 0.0f;
 		}
 	}
     return _amplitude;
+}
+
+bool ADSR::isPlaying(){
+	return _stage != stopped;
 }
 }
