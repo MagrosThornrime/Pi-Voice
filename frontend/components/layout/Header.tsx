@@ -16,8 +16,7 @@ import {
 import Link from "next/link";
 import { LuExternalLink} from "react-icons/lu";
 import { MuseoModerno } from "next/font/google";
-import { start } from "repl";
-import { useState } from "react";
+import { usePreset } from "@/components/ui/presetsProvider";
 
 interface Props {
   children: React.ReactNode;
@@ -56,8 +55,13 @@ const museoModerno = MuseoModerno({ subsets: ["latin"] });
 
 export default function WithAction() {
   const { open, setOpen } = useDisclosure();
-  const [presetNr, setPresetNr] = useState(1);
-  const maxPresets = 5;
+
+  const {
+    presetNr,
+    setPresetNr,
+    maxPresets,
+    loadPreset,
+  } = usePreset();
   
   return (
     <Box
@@ -133,7 +137,11 @@ export default function WithAction() {
           variant={"solid"} 
           colorScheme={"teal"} 
           size={"sm"}
-          onClick={()=>setPresetNr(Math.max(presetNr-1, 1))}
+          onClick={()=>{
+            const newNr = Math.max(presetNr - 1, 1);
+            setPresetNr(newNr);
+            loadPreset(String(newNr));
+          }}
           >
             prev
           </Button>
@@ -149,7 +157,11 @@ export default function WithAction() {
           colorScheme={"teal"} 
           size={"sm"} 
           mr={4}
-          onClick={()=>setPresetNr(Math.min(presetNr+1, maxPresets))}
+          onClick={()=>{
+            const newNr = Math.min(presetNr + 1, maxPresets);
+            setPresetNr(newNr);
+            loadPreset(String(newNr));
+          }}
           >
             next
           </Button>
