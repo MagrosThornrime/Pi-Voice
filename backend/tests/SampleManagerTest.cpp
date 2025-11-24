@@ -12,6 +12,7 @@ TEST(SampleManager, ListFiles) {
     auto wantedSamples = std::unordered_set<std::string>{
 		"sine", "square", "sawtooth", "triangle",  // base oscillators
         "noise",  // noise.wav
+        "meow"    // meow.wav
     };
 
     ASSERT_EQ(samplesSet, wantedSamples);
