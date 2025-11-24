@@ -136,12 +136,12 @@ std::vector<std::string> Synthesiser::getSampleNames(){
 }
 
 std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name, i32 length){
-	auto lock = std::lock_guard(_mutex);
 	if(length <= 0){
 		throw std::invalid_argument("length must be greater than 0");
 	}
 	const i32 note = 69;
 	std::unique_ptr<oscillators::Oscillator> oscillator;
+	auto lock = std::lock_guard(_mutex);
     if (name == "empty") {
         oscillator = std::make_unique<oscillators::Oscillator>(_sampleRate, note);
     }

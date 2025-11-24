@@ -9,9 +9,7 @@ ModulatedOscillator::ModulatedOscillator(f32 sampleRate, i32 voiceNumber, const 
 
 void ModulatedOscillator::advance() {
     _index += _step;
-    while(_index >= _sample.size()) {
-        _index -= _sample.size();
-    }
+    _index = std::fmod(_index, _sample.size());
 }
 
 f32 ModulatedOscillator::getNextSample() {

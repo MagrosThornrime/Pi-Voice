@@ -5,6 +5,7 @@
 #include <Types.hpp>
 #include <sndfile.h>
 #include <mutex>
+#include <string_view>
 
 
 namespace fileio {
@@ -13,20 +14,28 @@ class SampleManager {
     /// @brief A directory where the samples are stored
     std::string _samplesDirectory;
 
+	/// @brief Sound's sampling rate
 	i32 _samplingRate;
 
     /// @brief All samples possible to use
     std::unordered_map<std::string, std::string> _samplePaths;
 
-	std::unordered_map<std::string, std::vector<f32>> _cachedSamples;
+	/// @brief Samples that are loaded into memory
+	std::unordered_map<std::string_view, std::vector<f32>> _cachedSamples;
 
+	/// @brief Mutex
 	std::mutex _mutex;
 
     /// @brief Reads the samples' directory and gets names of all usable samples
     void _loadSamplePaths();
 
+	/// @brief Load sound file
+	/// @param samplePath path to the file
+	/// @brief info struct storing sound's metadata
 	SNDFILE* _openFile(const std::string& samplePath, SF_INFO& info);
 
+	/// @brief Close sound file
+	/// @param file sound file
 	void _closeFile(SNDFILE* file);
 
     /// @brief Loads a sample from given file
