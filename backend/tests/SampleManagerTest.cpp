@@ -10,29 +10,33 @@ TEST(SampleManager, ListFiles) {
     auto samplesSet = std::unordered_set(samples.begin(), samples.end());
 
     auto wantedSamples = std::unordered_set<std::string>{
-        "industry",  // industry.wav
-        "summer",    // summer.wav
-		"noise"		// noise.wav
+		"sine", "square", "sawtooth", "triangle",  // base oscillators
+        "noise",  // noise.wav
     };
+
     ASSERT_EQ(samplesSet, wantedSamples);
 }
 
 TEST(SampleManager, AlternativeFiles) {
     fileio::SampleManager sampleManager("../res/samples", 44100);
 
-	sampleManager.changeSamplesDirectory("res/samples_testing");
+	sampleManager.changeSamplesDirectory("../res/samples_testing");
 
     auto samples = sampleManager.getSampleNames();
     auto samplesSet = std::unordered_set(samples.begin(), samples.end());
 
-    auto wantedSamples = std::unordered_set<std::string>{
-        "noise",  // noise.wav
+	auto wantedSamples = std::unordered_set<std::string>{
+		"sine", "square", "sawtooth", "triangle",  // base oscillators
+        "industry",  // industry.wav
+        "summer",    // summer.wav
+		"meow"		// meow.wav
     };
+
     ASSERT_EQ(samplesSet, wantedSamples);
 }
 
 TEST(SampleManager, SampleHalfNonZero) {
-    fileio::SampleManager sampleManager("../res/samples", 44100);
+    fileio::SampleManager sampleManager("../res/samples_testing", 44100);
 	auto output = sampleManager.getSample("industry");
 
 	ASSERT_FALSE(output.empty());
