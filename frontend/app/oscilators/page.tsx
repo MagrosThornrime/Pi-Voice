@@ -4,6 +4,7 @@ import { Box,createListCollection,Flex,Group, Grid, Portal,Select,Stack,Text } f
 import React, { useState, useMemo} from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 
+
 function get_example_data(n: number, domain: number[], func : (X:number) => number) {
   return Array.from({ length: n }, (_, i) => ({
     x: domain[0] + i * (domain[1] - domain[0])/n,
@@ -187,8 +188,8 @@ export default function Page() {
           justifyItems="center" >
         {
           oscillators.map((o, i) => (
-            <Box>
-              <MemoFunctionChart key={i} func = {oscillatorsFuncMapping[o]} />
+            <Box key={i}>
+              <MemoFunctionChart func = {oscillatorsFuncMapping[o]} />
 
               <Select.Root collection={oscilatorTypes} variant={"subtle"}
                 onValueChange={(e) => {
