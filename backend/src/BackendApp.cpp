@@ -22,8 +22,8 @@ void destroyApplication(void*) {
 }
 
 Napi::Array getMidiPorts(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
+    auto lock = std::lock_guard(mutex);
     auto ports = midiApp->listMidiPorts();
     auto result = Napi::Array::New(env);
 
@@ -40,7 +40,6 @@ Napi::Array getMidiPorts(const Napi::CallbackInfo& info) {
 }
 
 void openMidiPort(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
     if (info.Length() != 1) {
         Napi::TypeError::New(env, "Expected port number").ThrowAsJavaScriptException();
@@ -48,6 +47,7 @@ void openMidiPort(const Napi::CallbackInfo& info) {
     }
     i32 portNum = info[0].As<Napi::Number>().Int32Value();
     try {
+    	auto lock = std::lock_guard(mutex);
         midiApp->openMidiPort(portNum);
         fmt::println("MIDI reader opened on port {}", portNum);
     } catch (const std::exception& e) {
@@ -56,7 +56,6 @@ void openMidiPort(const Napi::CallbackInfo& info) {
 }
 
 void setAmplitude(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
     if (info.Length() != 1 || !info[0].IsNumber()) {
         Napi::TypeError::New(env, "Expected 1 numeric argument (amplitude)").ThrowAsJavaScriptException();
@@ -65,6 +64,7 @@ void setAmplitude(const Napi::CallbackInfo& info) {
 
     f32 amp = info[0].As<Napi::Number>().FloatValue();
 	try {
+    	auto lock = std::lock_guard(mutex);
     	synthesiser->setAmplitude(amp);
 	} catch (const std::exception& e) {
 		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
@@ -75,26 +75,29 @@ void setAmplitude(const Napi::CallbackInfo& info) {
 
 // Set oscillator type (0,1,2)
 void setOscillatorType(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
     if (info.Length() != 2 || !info[0].IsString() || !info[1].IsNumber()) {
         Napi::TypeError::New(env, "Expected (type:string, index:i32)").ThrowAsJavaScriptException();
         return;
     }
-
     std::string type = info[0].As<Napi::String>();
     i32 index = info[1].As<Napi::Number>().Int32Value();
     if (index < 0 || index > 2) {
         Napi::RangeError::New(env, "Invalid oscillator index").ThrowAsJavaScriptException();
         return;
     }
-    synthesiser->setOscillatorType(type, index);
+	try {
+    	auto lock = std::lock_guard(mutex);
+    	synthesiser->setOscillatorType(type, index);
+	} catch (const std::exception& e) {
+		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
+		return;
+	}
     fmt::println("Oscillator {} type set to {}", index, type);
 }
 
 // Set oscillator amplitude (0,1,2)
 void setOscillatorAmplitude(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
     if (info.Length() != 2 || !info[0].IsNumber() || !info[1].IsNumber()) {
         Napi::TypeError::New(env, "Expected (amplitude:f32, index:i32)").ThrowAsJavaScriptException();
@@ -107,6 +110,7 @@ void setOscillatorAmplitude(const Napi::CallbackInfo& info) {
         return;
     }
 	try {
+    	auto lock = std::lock_guard(mutex);
     	synthesiser->setOscillatorAmplitude(amp, index);
 	} catch (const std::exception& e) {
 		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
@@ -117,7 +121,6 @@ void setOscillatorAmplitude(const Napi::CallbackInfo& info) {
 
 // ADSR controls
 void setAttack(const Napi::CallbackInfo& info) {\
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
     if (info.Length() != 1 || !info[0].IsNumber()) {
         Napi::TypeError::New(env, "Expected attack:f32").ThrowAsJavaScriptException();
@@ -125,6 +128,7 @@ void setAttack(const Napi::CallbackInfo& info) {\
     }
 	f32 attack = info[0].As<Napi::Number>().FloatValue();
 	try {
+    	auto lock = std::lock_guard(mutex);
     	synthesiser->setAttack(attack);
 	} catch (const std::exception& e) {
 		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
@@ -134,7 +138,6 @@ void setAttack(const Napi::CallbackInfo& info) {\
 }
 
 void setDecay(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
     if (info.Length() != 1 || !info[0].IsNumber()) {
         Napi::TypeError::New(env, "Expected decay:f32").ThrowAsJavaScriptException();
@@ -142,6 +145,7 @@ void setDecay(const Napi::CallbackInfo& info) {
     }
 	f32 decay = info[0].As<Napi::Number>().FloatValue();
 	try {
+		auto lock = std::lock_guard(mutex);
     	synthesiser->setDecay(decay);
 	} catch (const std::exception& e) {
 		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
@@ -151,7 +155,6 @@ void setDecay(const Napi::CallbackInfo& info) {
 }
 
 void setSustain(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
     if (info.Length() != 1 || !info[0].IsNumber()) {
         Napi::TypeError::New(env, "Expected sustain:f32").ThrowAsJavaScriptException();
@@ -159,6 +162,7 @@ void setSustain(const Napi::CallbackInfo& info) {
     }
 	f32 sustain = info[0].As<Napi::Number>().FloatValue();
 	try {
+    	auto lock = std::lock_guard(mutex);
     	synthesiser->setSustain(sustain);
 	} catch (const std::exception& e) {
 		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
@@ -168,7 +172,6 @@ void setSustain(const Napi::CallbackInfo& info) {
 }
 
 void setRelease(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
     if (info.Length() != 1 || !info[0].IsNumber()) {
         Napi::TypeError::New(env, "Expected release:f32").ThrowAsJavaScriptException();
@@ -176,6 +179,7 @@ void setRelease(const Napi::CallbackInfo& info) {
     }
 	f32 release = info[0].As<Napi::Number>().FloatValue();
 	try {
+    	auto lock = std::lock_guard(mutex);
     	synthesiser->setRelease(release);
 	} catch (const std::exception& e) {
 		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
@@ -186,29 +190,28 @@ void setRelease(const Napi::CallbackInfo& info) {
 
 // Recorder
 void startRecording(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
     if (info.Length() != 0) {
         Napi::TypeError::New(env, "Expected no arguments").ThrowAsJavaScriptException();
         return;
     }
+    auto lock = std::lock_guard(mutex);
     synthesiser->startRecording();
 	fmt::println("Started recording");
 }
 
 void stopRecording(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
     if (info.Length() != 0) {
         Napi::TypeError::New(env, "Expected no arguments").ThrowAsJavaScriptException();
         return;
     }
+    auto lock = std::lock_guard(mutex);
     synthesiser->stopRecording();
 	fmt::println("Stopped recording");
 }
 
 void setRecordingPath(const Napi::CallbackInfo& info) {
-	auto lock = std::lock_guard(mutex);
 	auto env = info.Env();
     if (info.Length() != 1 || !info[0].IsString()) {
         Napi::TypeError::New(env, "Expected type:string").ThrowAsJavaScriptException();
@@ -216,6 +219,7 @@ void setRecordingPath(const Napi::CallbackInfo& info) {
     }
 	std::string path = info[0].As<Napi::String>().ToString();
 	try {
+		auto lock = std::lock_guard(mutex);
 		synthesiser->setRecordingPath(path);
 	}
 	catch (const std::exception& e) {
@@ -226,7 +230,6 @@ void setRecordingPath(const Napi::CallbackInfo& info) {
 }
 
 void setSamplesPath(const Napi::CallbackInfo& info) {
-	auto lock = std::lock_guard(mutex);
 	auto env = info.Env();
     if (info.Length() != 1 || !info[0].IsString()) {
         Napi::TypeError::New(env, "Expected type:string").ThrowAsJavaScriptException();
@@ -234,6 +237,7 @@ void setSamplesPath(const Napi::CallbackInfo& info) {
     }
 	std::string path = info[0].As<Napi::String>().ToString();
 	try {
+		auto lock = std::lock_guard(mutex);
 		synthesiser->setSamplesPath(path);
 	}
 	catch (const std::exception& e) {
@@ -244,50 +248,41 @@ void setSamplesPath(const Napi::CallbackInfo& info) {
 }
 
 Napi::Array getOscillatorNames(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
     auto env = info.Env();
+    auto lock = std::lock_guard(mutex);
 	auto names = synthesiser->getSampleNames();
     auto result = Napi::Array::New(env);
-
     if (names.empty()) {
 		Napi::Error::New(env, "No oscillators found").ThrowAsJavaScriptException();
         return result;
     }
-
 	for (auto& name : names) {
 		result.Set(Napi::String::New(env, "{}"), name);
 	}
-
     return result;
 }
 
 Napi::Array getOscillatorPlot(const Napi::CallbackInfo& info) {
-    auto lock = std::lock_guard(mutex);
-    Napi::Env env = info.Env();
-
+    auto env = info.Env();
     if (info.Length() != 2 || !info[0].IsString() || !info[1].IsNumber()) {
         Napi::TypeError::New(env, "Expected (type:string, length:i32)")
             .ThrowAsJavaScriptException();
         return Napi::Array::New(env);
     }
-
     std::string name = info[0].As<Napi::String>();
     i32 length = info[1].As<Napi::Number>().Int32Value();
-
     std::vector<f32> plot;
     try {
+    	auto lock = std::lock_guard(mutex);
         plot = synthesiser->getOscillatorPlot(name, length);
     } catch (const std::exception& e) {
         Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
         return Napi::Array::New(env);
     }
-
     Napi::Array result = Napi::Array::New(env, plot.size());
-
     for (size_t i = 0; i < plot.size(); i++) {
         result.Set(i, Napi::Number::New(env, plot[i]));
     }
-
     return result;
 }
 
