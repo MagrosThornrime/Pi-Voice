@@ -39,6 +39,9 @@ export function PresetProvider({ children }) {
       sustain: sustainValue[0] / 100,
       release: releaseValue[0] / 100,
       volume: volumeValue[0] / 100,
+      oscilator1: oscilator1,
+      oscilator2: oscilator2,
+      oscilator3: oscilator3,
     };
 
     window.presetsAPI.saveOne(name, preset);
@@ -54,6 +57,9 @@ export function PresetProvider({ children }) {
       setSustainValue([preset.sustain * 100]);
       setReleaseValue([preset.release * 100]);
       setVolumeValue([preset.volume * 100]);
+      setOscillator1(preset.oscilator1);
+      setOscillator2(preset.oscilator2);
+      setOscillator3(preset.oscilator3);
     });
   }
 
