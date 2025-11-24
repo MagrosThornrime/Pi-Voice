@@ -8,12 +8,8 @@ setup: *
 
 ifeq ($(OS),Windows_NT)
 copy_resources:
-	powershell -Command " \
-		$dest = '../app/MIDIApp-win32-x64/res'; \
-		if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }; \
-		Copy-Item '../res' $dest -Recurse -Force \
-	"
-
+	powershell -Command "$$dest = '../app/MIDIApp-win32-x64/res'; if (Test-Path $$dest) { Remove-Item $$dest -Recurse -Force }; Copy-Item '../res' $$dest -Recurse -Force"
+	
 copy_module: *
 	powershell -Command "if (!(Test-Path './lib')) { New-Item -ItemType Directory -Path './lib' } ; Copy-Item '../backend/build/Release/*' -Destination './lib' -Recurse -Force"
 
