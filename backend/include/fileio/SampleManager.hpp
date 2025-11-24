@@ -5,6 +5,7 @@
 #include <Types.hpp>
 #include <sndfile.h>
 #include <mutex>
+#include <string_view>
 
 
 namespace fileio {
@@ -20,7 +21,7 @@ class SampleManager {
     std::unordered_map<std::string, std::string> _samplePaths;
 
 	/// @brief Samples that are loaded into memory
-	std::unordered_map<std::string, std::vector<f32>> _cachedSamples;
+	std::unordered_map<std::string_view, std::vector<f32>> _cachedSamples;
 
 	/// @brief Mutex
 	std::mutex _mutex;
