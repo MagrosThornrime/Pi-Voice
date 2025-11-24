@@ -28,6 +28,7 @@ export function PresetProvider({ children }) {
       setSustainValue([preset.sustain * 100]);
       setReleaseValue([preset.release * 100]);
       setVolumeValue([preset.volume * 100]);
+      setPresetNr(last);
     });
   }, []);
 
