@@ -6,12 +6,18 @@ import { useController, ControllerRenderProps, SubmitHandler, useForm, FieldErro
 import { z } from "zod"
 
 const FiltersFormSchema = z.object({
-  framework: z.array(z.string()).max(3, {
-    message: "You cannot select more than 3 effects.",
+    filters: z.array(z.string()).max(3, {
+    message: "You cannot select more than 3 filters.",
   }),
+  effects: z.array(z.string()).max(3, {
+    message: "You cannot select more than 3 effects.",
+  })
 })
 
+
+
 type FiltersData = z.infer<typeof FiltersFormSchema>
+
 
 const items = [
   { label: "AllPass", value: "allpass" },
@@ -25,9 +31,24 @@ const items = [
 ]
 
 
+const effects = [
+  { label: "aaa", value: "aaa" },
+  { label: "bbb", value: "bbb" },
+  { label: "ccc", value: "ccc" },
+  { label: "ddd", value: "ddd" },
+  { label: "eee", value: "eee" },
+  { label: "fff", value: "fff" },
+  { label: "ggg", value: "ggg" },
+  { label: "hhh", value: "hhh" }
+]
+
+
+
 type FormWithHeadingProps = {
   formItems: { label: string; value: string }[];
   field: ControllerRenderProps<any, any>;
+  ifButton:boolean;
+  headerText: string;
   buttonText?: string;
   error?: FieldError;
   invalid?: boolean;
@@ -37,6 +58,8 @@ type FormWithHeadingProps = {
 function CheckboxesWithHeading({
     formItems,
     field,
+    ifButton,
+    headerText,
     buttonText,
     error,
     invalid,
@@ -45,7 +68,7 @@ function CheckboxesWithHeading({
     return (
         <Box>
             <Heading size="3xl" textAlign="center" mb={10} color="teal.600">
-                Select Filters
+                {headerText}
             </Heading>
 
             <Fieldset.Root invalid={invalid}>
@@ -65,7 +88,7 @@ function CheckboxesWithHeading({
                             gap={10} maxW="800px" mx="auto">
 
                             {
-                                items.map((item) => (
+                                formItems.map((item) => (
                                     <Checkbox.Root key={item.value} value={item.value}>
                                         <Checkbox.HiddenInput />
                                         <Checkbox.Control />
@@ -87,9 +110,14 @@ function CheckboxesWithHeading({
                         <Fieldset.ErrorText>{error.message}</Fieldset.ErrorText>
                     )}
                     <Box h="2" />
-                    <Button size="sm" type="submit" alignSelf="flex-start">
-                        {buttonText || "Submit"}
-                    </Button>
+
+                    {
+                        ifButton &&
+                        <Button size="sm" type="submit" alignSelf="flex-start">
+                            {buttonText || "Submit"}
+                        </Button>
+                    }
+
                 </Box>
 
             </Fieldset.Root>
@@ -101,28 +129,44 @@ function CheckboxesWithHeading({
 export default function Home() {
     const { handleSubmit, control, formState: { errors } } = useForm<FiltersData>({
         resolver: standardSchemaResolver(FiltersFormSchema),
+        defaultValues: {
+            filters: [],  
+            effects: [],  
+        }
     })
 
-    const framework = useController(
-        {
-            control,
-            name: "framework",
-            defaultValue: [],
-        }
-    )
+   const filtersField = useController({ control, name: "filters" });
+   const effectsField = useController({ control, name: "effects" });
 
-    const invalid = !!errors.framework
+    const invalid = !!errors.filters
+
+    const invalid_eff = !!errors.effects
 
     return (
         <Box minH="100vh" bg="gray.50" p={10}>
             <form onSubmit={handleSubmit((data) => console.log(data))}>
-                <CheckboxesWithHeading field = {framework.field}
+                <CheckboxesWithHeading field = {filtersField.field}
                     formItems = {items}
                     invalid = {invalid}
-                    error={ Array.isArray(errors.framework) 
-                        ? errors.framework[0] 
-                        : errors.framework 
+                    error={ Array.isArray(errors.filters) 
+                        ? errors.filters[0] 
+                        : errors.filters
                     }
+                    ifButton = {false}
+                    headerText="Select filters"
+                    buttonText="HAHAHA">
+
+                </CheckboxesWithHeading>
+
+                <CheckboxesWithHeading field = {effectsField.field}
+                    formItems = {effects}
+                    invalid = {invalid_eff}
+                    error={ Array.isArray(errors.effects) 
+                        ? errors.effects[0] 
+                        : errors.effects
+                    }
+                    ifButton = {true}
+                     headerText="Select effects"
                     buttonText="HAHAHA">
 
                 </CheckboxesWithHeading>
