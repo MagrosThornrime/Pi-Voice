@@ -139,12 +139,11 @@ export default function Home() {
    const effectsField = useController({ control, name: "effects" });
 
     const invalid = !!errors.filters
-
     const invalid_eff = !!errors.effects
 
     return (
         <Box minH="100vh" bg="gray.50" p={10}>
-            <form onSubmit={handleSubmit((data) => console.log(data))}>
+            <form onSubmit={handleSubmit((data) => console.log(data.filters))}>
                 <CheckboxesWithHeading field = {filtersField.field}
                     formItems = {items}
                     invalid = {invalid}
