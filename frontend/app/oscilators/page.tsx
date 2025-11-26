@@ -1,7 +1,7 @@
 "use client";
 import { Chart, useChart } from "@chakra-ui/charts";
 import { Box,createListCollection,Flex,Group, Grid, Portal,Select,Stack,Text } from "@chakra-ui/react";
-import { useState, useMemo, useEffect} from "react";
+import {useState, useMemo, useEffect, memo} from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { usePreset } from "@/components/ui/presetsProvider";
 
@@ -159,7 +159,7 @@ function FunctionChart({func, domain = [0, 10], n = 1000}: FunctionChartProps){
 }
 
 
-const MemoFunctionChart = React.memo(FunctionChart);
+const MemoFunctionChart = memo(FunctionChart);
 
 
 export default function Page() {
