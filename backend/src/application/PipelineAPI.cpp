@@ -20,7 +20,7 @@ auto lockPipeline() {
 	return std::make_pair(std::unique_lock(mutex), std::ref(synthesiser->getPipeline()));
 }
 
-Napi::Value addFilter(const Napi::CallbackInfo& info) {
+void addFilter(const Napi::CallbackInfo& info) {
 	auto env = info.Env();
 
 	if (info.Length() != 2) {
@@ -43,11 +43,9 @@ Napi::Value addFilter(const Napi::CallbackInfo& info) {
 	auto&& [lock, p] = lockPipeline();
 
 	p.add(filters::BwFilter::create((filters::FilterType::Value)type), idx);
-
-	return env.Null();
 }
 
-Napi::Value remove(const Napi::CallbackInfo& info) {
+void remove(const Napi::CallbackInfo& info) {
 	auto env = info.Env();
 
 	if (info.Length() != 1) {
@@ -63,11 +61,9 @@ Napi::Value remove(const Napi::CallbackInfo& info) {
 
 	auto&& [lock, p] = lockPipeline();
 	(void)p.remove(idx);
-
-	return env.Null();
 }
 
-Napi::Value move(const Napi::CallbackInfo& info) {
+void move(const Napi::CallbackInfo& info) {
 	auto env = info.Env();
 
 	if (info.Length() != 2) {
@@ -90,11 +86,9 @@ Napi::Value move(const Napi::CallbackInfo& info) {
 	auto&& [lock, p] = lockPipeline();
 
 	p.move(curr, target);
-
-	return env.Null();
 }
 
-Napi::Value swap(const Napi::CallbackInfo& info) {
+void swap(const Napi::CallbackInfo& info) {
 	auto env = info.Env();
 
 	if (info.Length() != 2) {
@@ -117,11 +111,9 @@ Napi::Value swap(const Napi::CallbackInfo& info) {
 	auto&& [lock, p] = lockPipeline();
 
 	p.swap(i1, i2);
-
-	return env.Null();
 }
 
-Napi::Value setFilterParam(const Napi::CallbackInfo& info) {
+void setFilterParam(const Napi::CallbackInfo& info) {
 	auto env = info.Env();
 
 	if (info.Length() != 3) {
@@ -175,8 +167,6 @@ Napi::Value setFilterParam(const Napi::CallbackInfo& info) {
 		SET_FILTER_PARAM(filters::FilterParams::quality);
 		SET_FILTER_PARAM(filters::FilterParams::sampleRate);
 	}
-
-	return env.Null();
 }
 
 Napi::Value getFilterParam(const Napi::CallbackInfo& info) {
@@ -224,7 +214,7 @@ Napi::Value getFilterParam(const Napi::CallbackInfo& info) {
 		GET_FILTER_PARAM(filters::FilterParams::sampleRate);
 	}
 
-	return env.Null();
+	return Napi::Number::New(env, std::nan(""));
 }
 
 Napi::Value length(const Napi::CallbackInfo& info) {

@@ -24,6 +24,15 @@ declare global {
             cleanup: () => Promise<void>;
             startRecording: () => Promise<void>;
             stopRecording: () => Promise<void>;
+
+            // pipelineAPI
+            pipelineAddFilter: (filter: number, idx: number) => Promise<void>;
+            pipelineRemove: (idx: number) => Promise<void>;
+            pipelineMove: (current: number, target: number) => Promise<void>;
+            pipelineSwap: (i1: number, i2: number) => Promise<void>;
+            pipelineSetFilterParam: (idx: number, param: number, value: number) => Promise<void>;
+            pipelineGetFilterParam: (idx: number, param: number) => Promise<number>;
+            pipelineLength: () => Promise<number>;
         };
     }
 }
