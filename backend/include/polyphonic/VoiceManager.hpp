@@ -1,17 +1,17 @@
 #pragma once
 #include "Voice.hpp"
-#include <portaudiocpp/PortAudioCpp.hxx>
+#include <pipeline/Layer.hpp>
 #include <mutex>
 #include <vector>
 
-namespace polyphonic{
+namespace polyphonic {
 /// @brief Controls all Voices in the synthesiser and mixes their outputs
-class VoiceManager : public portaudio::CallbackInterface {
+class VoiceManager: public pipeline::Layer {
 	/// @brief Used Voices
-    std::vector<Voice> _voices;
+	std::vector<Voice> _voices;
 
 	/// @brief Gets current sample of the sound
-    f32 _getNextSample();
+	f32 _getNextSample();
 
 	/// @brief Mutex for changing oscillators
 	std::mutex _oscillatorMutex;
@@ -48,13 +48,13 @@ public:
 	/// @param voicesNumber the number of notes used by keyboard
 	/// @param sampleRate sound's sample rate
 	/// @param sampleManager sample manager
-    VoiceManager(i32 voicesNumber, f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager);
+	VoiceManager(i32 voicesNumber, f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager);
 
-    /// @brief PortAudio callback used for streaming the audio
-    int paCallbackFun(const void* input, void* output,
-        unsigned long frameCount,
-        const PaStreamCallbackTimeInfo* timeInfo,
-        PaStreamCallbackFlags statusFlags);
+	/// @brief PortAudio callback used for streaming the audio
+	int paCallbackFun(const void* input, void* output,
+		unsigned long frameCount,
+		const PaStreamCallbackTimeInfo* timeInfo,
+		PaStreamCallbackFlags statusFlags);
 
 	/// @brief Change the global amplitude
 	/// @param amplitude new global amplitude (between 0 and 1)
@@ -63,7 +63,7 @@ public:
 	/// @brief Replaces oscillators of all Voices
 	/// @param type type of the new oscillator
 	/// @param index id of the new oscillator (0, 1 or 2)
-    void setOscillatorType(const std::string& type, i32 index);
+	void setOscillatorType(const std::string& type, i32 index);
 
 	/// @brief Changes amplitude of a given oscillator for all Voices
 	/// @param amplitude amplitude of the oscillator (between 0 and 1)
@@ -71,7 +71,7 @@ public:
 	void setOscillatorAmplitude(f32 amplitude, i32 index);
 
 	/// @brief Advance all oscillators
-    void update();
+	void update();
 
 	/// @brief Signalise that a key was pressed
 	/// @param voiceNumber ID of the key
@@ -79,7 +79,7 @@ public:
 
 	/// @brief Signalise that a key was released
 	/// @param voiceNumber ID of the key
-    void turnOff(i32 voiceNumber);
+	void turnOff(i32 voiceNumber);
 
 	/// @param attack rate of the amplitude's increase after pressing the key (between 0.0 and 1.0)
 	void setAttack(f32 attack);
@@ -98,5 +98,9 @@ public:
 
 	/// @brief Tells if at least one voice is turned on
 	bool hasActiveVoices();
+
+	// dummy Layer methods
+	pipeline::Layer& setParam(const u32 param, std::any value);
+	std::any getParam(const u32 param);
 };
 }

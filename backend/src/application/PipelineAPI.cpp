@@ -16,8 +16,8 @@ void init(Napi::Env env, Napi::Object exports) {
 	exports.Set("pipelineLength", Napi::Function::New(env, length));
 }
 
-std::tuple<std::lock_guard<std::mutex>, pipeline::Pipeline&> lockPipeline() {
-	return std::tuple_cat(std::make_tuple(std::lock_guard(mutex)), std::tie(synthesiser->getPipeline()));
+auto lockPipeline() {
+	return std::make_pair(std::unique_lock(mutex), std::ref(synthesiser->getPipeline()));
 }
 
 Napi::Value addFilter(const Napi::CallbackInfo& info) {
