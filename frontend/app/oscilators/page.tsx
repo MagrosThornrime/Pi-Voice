@@ -194,8 +194,6 @@ export default function Page() {
     savePreset(String(presetNr));
   }, [oscilator1, oscilator2, oscilator3]);
 
-  const charts = oscillators.map(o => get_oscillator_chart(o));
-
   return(
     <Box minH="100vh" bg="gray.50" p={10}>
       <Grid templateColumns={{
