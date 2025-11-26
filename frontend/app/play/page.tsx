@@ -19,9 +19,15 @@ declare global {
         synthAPI: {
             ports: () => Promise<string[]>;
             openPort: (port: number) => Promise<void>;
-            start: () => Promise<void>;
-            stop: () => Promise<void>;
-            cleanup: () => Promise<void>;
+
+            // setters
+            setAmplitude: (value: number) => Promise<void>;
+            setOscillatorType: (type: string, index: number) => Promise<void>;
+            setOscillatorAmplitude: (amp: number, index: number) => Promise<void>;
+            setAttack: (v: number) => Promise<void>;
+            setDecay: (v: number) => Promise<void>;
+            setSustain: (v: number) => Promise<void>;
+            setRelease: (v: number) => Promise<void>;
             startRecording: () => Promise<void>;
             stopRecording: () => Promise<void>;
 
@@ -33,6 +39,14 @@ declare global {
             pipelineSetFilterParam: (idx: number, param: number, value: number) => Promise<void>;
             pipelineGetFilterParam: (idx: number, param: number) => Promise<number>;
             pipelineLength: () => Promise<number>;
+
+            // sample manager
+            setSamplesPath: (path: string) => Promise<void>;
+            getOscillatorNames: () => Promise<string[]>;
+
+            // waveform preview
+            getOscillatorPlot: (name: string, length: number) => Promise<number[]>;
+
         };
     }
 }
