@@ -4,6 +4,7 @@ import "./globals.css";
 import { Provider } from "@/components/ui/provider"
 import Header from "@/components/layout/Header";
 import { Box, Center, Container } from "@chakra-ui/react"
+import { PresetProvider } from "@/components/ui/presetsProvider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,10 +30,12 @@ export default function RootLayout({
     <html suppressHydrationWarning>
       <body>
         <Provider>
-          <Box p={0} m={0} minH="100vh" w="100vw">
-            <Header />
-            <Box as="main" w="100%" minH="100dvh" px={10} pt={24} pb={10}>{children}</Box>
-          </Box>
+          <PresetProvider>
+            <Box p={0} m={0} minH="100vh" w="100vw">
+              <Header />
+              <Box as="main" w="100%" minH="100dvh" px={10} pt={24} pb={10}>{children}</Box>
+            </Box>
+          </PresetProvider>
         </Provider>
       </body>
     </html>

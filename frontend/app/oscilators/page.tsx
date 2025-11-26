@@ -1,8 +1,9 @@
 "use client";
 import { Chart, useChart } from "@chakra-ui/charts";
 import { Box,createListCollection,Flex,Group, Grid, Portal,Select,Stack,Text } from "@chakra-ui/react";
-import React, { useState, useMemo} from "react";
+import { useState, useMemo, useEffect} from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
+import { usePreset } from "@/components/ui/presetsProvider";
 
 
 function get_example_data(n: number, domain: number[], func : (X:number) => number) {
@@ -163,16 +164,35 @@ const MemoFunctionChart = React.memo(FunctionChart);
 
 export default function Page() {
   
-  const [oscillators, setOscillator] = useState(["empty", "empty", "empty"])
+  const {
+    presetNr,
+    oscilator1,
+    setOscillator1,
+    oscilator2,
+    setOscillator2,
+    oscilator3,
+    setOscillator3,
+    savePreset,
+  } = usePreset();
+
+  const [oscillators, setOscillator] = useState([oscilator1, oscilator2, oscilator3])
 
   function changeOscillators(i:number, val:string){
     if (i < 0 || i > 2) throw new Error("index out of range (0..2)");
+    if (i==0){setOscillator1(val)};
+    if (i==1){setOscillator2(val)};
+    if (i==2){setOscillator3(val)};
     setOscillator(prev => {
       const next = [...prev];
       next[i] = val;
       return next;
     });
   }
+
+  useEffect(() => {
+    setOscillator([oscilator1,oscilator2,oscilator3]);
+    savePreset(String(presetNr));
+  }, [oscilator1, oscilator2, oscilator3]);
 
   return(
     <Box minH="100vh" bg="gray.50" p={10}>
@@ -194,7 +214,7 @@ export default function Page() {
               <Select.Root collection={oscilatorTypes} variant={"subtle"}
                 onValueChange={(e) => {
                   changeOscillators(i, e.value[0]);
-                  window.synthAPI.setOscillatorType(e.value[0], 0);
+                  window.synthAPI.setOscillatorType(e.value[0], i);
                 }}>
 
                 <Select.HiddenSelect />
