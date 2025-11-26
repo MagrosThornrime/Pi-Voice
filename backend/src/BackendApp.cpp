@@ -248,19 +248,21 @@ void setSamplesPath(const Napi::CallbackInfo& info) {
 }
 
 Napi::Array getOscillatorNames(const Napi::CallbackInfo& info) {
-    auto env = info.Env();
-    auto lock = std::lock_guard(mutex);
+	auto env = info.Env();
+	auto lock = std::lock_guard(mutex);
 	auto names = synthesiser->getSampleNames();
-    auto result = Napi::Array::New(env);
-    if (names.empty()) {
+	Napi::Array result = Napi::Array::New(env, names.size());
+	if (names.empty()) {
 		Napi::Error::New(env, "No oscillators found").ThrowAsJavaScriptException();
-        return result;
-    }
-	for (auto& name : names) {
-		result.Set(Napi::String::New(env, "{}"), name);
+		return result;
 	}
-    return result;
+	i32 i = 0;
+	for (const auto& name : names) {
+		result.Set(i++, Napi::String::New(env, name));
+	}
+	return result;
 }
+
 
 Napi::Array getOscillatorPlot(const Napi::CallbackInfo& info) {
     auto env = info.Env();
