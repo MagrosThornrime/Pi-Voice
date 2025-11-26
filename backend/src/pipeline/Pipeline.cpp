@@ -21,7 +21,7 @@ LayerRef Pipeline::add(const LayerRef& layer, u32 i) {
 		return layer;
 	}
 
-	if (i >= _layers.size()) {
+	if (i >= _layers.size() and i != 0) {
 		i = _layers.size() - 1;
 	}
 
