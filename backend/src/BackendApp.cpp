@@ -256,9 +256,8 @@ Napi::Array getOscillatorNames(const Napi::CallbackInfo& info) {
 		Napi::Error::New(env, "No oscillators found").ThrowAsJavaScriptException();
 		return result;
 	}
-	i32 i = 0;
-	for (const auto& name : names) {
-		result.Set(i++, Napi::String::New(env, name));
+	for (i32 i = 0; i < names.size(); i++) {
+		result.Set(i, Napi::String::New(env, names[i]));
 	}
 	return result;
 }
@@ -282,7 +281,7 @@ Napi::Array getOscillatorPlot(const Napi::CallbackInfo& info) {
         return Napi::Array::New(env);
     }
     Napi::Array result = Napi::Array::New(env, plot.size());
-    for (size_t i = 0; i < plot.size(); i++) {
+    for (i32 i = 0; i < plot.size(); i++) {
         result.Set(i, Napi::Number::New(env, plot[i]));
     }
     return result;
