@@ -9,7 +9,7 @@ file(GLOB_RECURSE APPLICATION_SRC "src/application/*.cpp")
 
 get_property(orig_pic GLOBAL PROPERTY POSITION_INDEPENDENT_CODE)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON CACHE BOOL "Enable PIC for pipeline" FORCE)
-add_library(application STATIC ${APPLICATION_SRC})
+add_library(application STATIC ${APPLICATION_SRC} "${CMAKE_JS_SRC}")
 if(orig_pic)
     set_property(GLOBAL PROPERTY POSITION_INDEPENDENT_CODE ${orig_pic})
 else()
