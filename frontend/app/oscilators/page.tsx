@@ -128,6 +128,7 @@ export default function Page() {
 
   useEffect(() => {
     setOscillator([oscilator1,oscilator2,oscilator3]);
+    savePreset(String(presetNr));
   }, [oscilator1, oscilator2, oscilator3]);
 
   const charts = oscillators.map(o => get_oscillator_chart(o));

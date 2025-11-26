@@ -105,10 +105,7 @@ export default function Home() {
     value: volumeValueVis,
     setValue: setVolumeValueVis,
     setEndValue: setVolumeValue,
-    onEnd: (v: number) => {
-      window.synthAPI.setAmplitude(v/100);
-      savePreset(String(presetNr));
-    },
+    onEnd: (v: number) => window.synthAPI.setAmplitude(v/100)
   },
 
   {
@@ -116,10 +113,7 @@ export default function Home() {
     value: attackValueVis,
     setValue: setAttackValueVis,
     setEndValue: setAttackValue,
-    onEnd: (v: number) => {
-      window.synthAPI.setAttack(10 ** (-v / 10));
-      savePreset(String(presetNr));
-    },
+    onEnd: (v: number) => window.synthAPI.setAttack(10 ** (-v / 10))
   },
 
   {
@@ -127,10 +121,7 @@ export default function Home() {
     value: sustainValueVis,
     setValue: setSustainValueVis,
     setEndValue: setSustainValue,
-    onEnd: (v: number) => {
-      window.synthAPI.setSustain(v / 100);
-      savePreset(String(presetNr));
-    },
+    onEnd: (v: number) => window.synthAPI.setSustain(v / 100)
   },
 
   {
@@ -138,10 +129,7 @@ export default function Home() {
     value: decayValueVis,
     setValue: setDecayValueVis,
     setEndValue: setDecayValue,
-    onEnd: (v: number) => {
-      window.synthAPI.setDecay(10 ** (-v / 10));
-      savePreset(String(presetNr));
-    },
+    onEnd: (v: number) => window.synthAPI.setDecay(10 ** (-v / 10))
   },
 
   {
@@ -149,10 +137,7 @@ export default function Home() {
     value: releaseValueVis,
     setValue: setReleaseValueVis,
     setEndValue: setReleaseValue,
-    onEnd: (v: number) => {
-      window.synthAPI.setRelease(10 ** (-v / 10));
-      savePreset(String(presetNr));
-    },
+    onEnd: (v: number) => window.synthAPI.setRelease(10 ** (-v / 10))
   }
 ]
 
@@ -162,6 +147,7 @@ export default function Home() {
     setDecayValueVis(decayValue);
     setSustainValueVis(sustainValue);
     setReleaseValueVis(releaseValue);
+    savePreset(String(presetNr));
   }, [volumeValue, attackValue, decayValue, sustainValue, releaseValue]);
 
 
