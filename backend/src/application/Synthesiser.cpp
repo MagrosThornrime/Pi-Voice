@@ -147,18 +147,18 @@ std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name, i32 len
 	std::unique_ptr<oscillators::Oscillator> oscillator;
 	auto lock = std::lock_guard(_mutex);
 	if (name == "empty") {
-		oscillator = std::make_unique<oscillators::Oscillator>(_sampleRate, note);
+		oscillator = std::make_unique<oscillators::Oscillator>((f32)_sampleRate, note);
 	} else if (name == "sine") {
-		oscillator = std::make_unique<oscillators::SineOscillator>(_sampleRate, note);
+		oscillator = std::make_unique<oscillators::SineOscillator>((f32)_sampleRate, note);
 	} else if (name == "sawtooth") {
-		oscillator = std::make_unique<oscillators::SawtoothOscillator>(_sampleRate, note);
+		oscillator = std::make_unique<oscillators::SawtoothOscillator>((f32)_sampleRate, note);
 	} else if (name == "square") {
-		oscillator = std::make_unique<oscillators::SquareOscillator>(_sampleRate, note);
+		oscillator = std::make_unique<oscillators::SquareOscillator>((f32)_sampleRate, note);
 	} else if (name == "triangle") {
-		oscillator = std::make_unique<oscillators::TriangleOscillator>(_sampleRate, note);
+		oscillator = std::make_unique<oscillators::TriangleOscillator>((f32)_sampleRate, note);
 	} else {
 		const std::vector<f32>& sample = _sampleManager->getSample(name);
-		oscillator = std::make_unique<oscillators::ModulatedOscillator>(_sampleRate, note, sample);
+		oscillator = std::make_unique<oscillators::ModulatedOscillator>((f32)_sampleRate, note, sample);
 	}
 	std::vector<f32> plot;
 	for (i32 i = 0; i < length; i++) {
