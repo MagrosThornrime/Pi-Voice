@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   Box,
   Heading,
@@ -140,6 +140,7 @@ export default function Home() {
     onEnd: (v: number) => window.synthAPI.setRelease(10 ** (-v / 10))
   }
 ]
+  const isFirstRender = useRef(0);
 
   useEffect(() => {
     setVolumeValueVis(volumeValue);
@@ -147,7 +148,12 @@ export default function Home() {
     setDecayValueVis(decayValue);
     setSustainValueVis(sustainValue);
     setReleaseValueVis(releaseValue);
-    savePreset(String(presetNr));
+    if (isFirstRender.current<2){
+      isFirstRender.current = isFirstRender.current+1;
+    }else{
+      savePreset(String(presetNr));
+      console.log("saved adsr");
+    }
   }, [volumeValue, attackValue, decayValue, sustainValue, releaseValue]);
 
 
@@ -257,6 +263,7 @@ export default function Home() {
                   onValueChangeEnd={(e) => {
                     ctrl.setEndValue(e.value);
                     ctrl.onEnd(e.value[0]);
+                    console.log(presetNr);
                   }} >
 
                   <Slider.Control>
