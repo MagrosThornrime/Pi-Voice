@@ -2,12 +2,13 @@
 #include <application/Synthesiser.hpp>
 #include <napi.h>
 #include <Types.hpp>
+#include <application/BackendApp.hpp>
+#include <application/PipelineAPI.hpp>
 #include <range/v3/all.hpp>
 
-
-std::shared_ptr<application::Synthesiser> synthesiser;
-std::shared_ptr<application::MidiManager> midiApp;
-std::mutex mutex;
+std::shared_ptr<application::Synthesiser> synthesiser{};
+std::shared_ptr<application::MidiManager> midiApp{};
+std::mutex mutex{};
 
 void initializeApplication(){
     synthesiser = std::make_shared<application::Synthesiser>("capture_in.wav", 2, 44100, "res/samples");
@@ -16,9 +17,9 @@ void initializeApplication(){
 }
 
 void destroyApplication(void*) {
-    synthesiser->stop();
-    midiApp.reset();
-    synthesiser.reset();
+	synthesiser->stop();
+	midiApp.reset();
+	synthesiser.reset();
 }
 
 Napi::Array getMidiPorts(const Napi::CallbackInfo& info) {
@@ -27,16 +28,16 @@ Napi::Array getMidiPorts(const Napi::CallbackInfo& info) {
     auto ports = midiApp->listMidiPorts();
     auto result = Napi::Array::New(env);
 
-    if (ports.empty()) {
-        result.Set(0u, Napi::String::New(env, "NO DEVICES"));
-        return result;
-    }
+	if (ports.empty()) {
+		result.Set(0u, Napi::String::New(env, "NO DEVICES"));
+		return result;
+	}
 
     for (auto&& [i, port] : ports | ranges::views::enumerate) {
         result.Set(i, Napi::String::New(env, fmt::format("{}: '{}'", port.num, port.name)));
     }
 
-    return result;
+	return result;
 }
 
 void openMidiPort(const Napi::CallbackInfo& info) {
@@ -62,7 +63,7 @@ void setAmplitude(const Napi::CallbackInfo& info) {
         return;
     }
 
-    f32 amp = info[0].As<Napi::Number>().FloatValue();
+	f32 amp = info[0].As<Napi::Number>().FloatValue();
 	try {
     	auto lock = std::lock_guard(mutex);
     	synthesiser->setAmplitude(amp);
@@ -70,7 +71,7 @@ void setAmplitude(const Napi::CallbackInfo& info) {
 		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
 		return;
 	}
-    fmt::println("Amplitude set to {}", amp);
+	fmt::println("Amplitude set to {}", amp);
 }
 
 // Set oscillator type (0,1,2)
@@ -116,7 +117,7 @@ void setOscillatorAmplitude(const Napi::CallbackInfo& info) {
 		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
 		return;
 	}
-    fmt::println("Oscillator {} amplitude set to {}", index, amp);
+	fmt::println("Oscillator {} amplitude set to {}", index, amp);
 }
 
 // ADSR controls
@@ -134,7 +135,7 @@ void setAttack(const Napi::CallbackInfo& info) {\
 		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
 		return;
 	}
-    fmt::println("Attack set to {}", attack);
+	fmt::println("Attack set to {}", attack);
 }
 
 void setDecay(const Napi::CallbackInfo& info) {
@@ -213,16 +214,15 @@ void stopRecording(const Napi::CallbackInfo& info) {
 
 void setRecordingPath(const Napi::CallbackInfo& info) {
 	auto env = info.Env();
-    if (info.Length() != 1 || !info[0].IsString()) {
-        Napi::TypeError::New(env, "Expected type:string").ThrowAsJavaScriptException();
-        return;
-    }
+	if (info.Length() != 1 || !info[0].IsString()) {
+		Napi::TypeError::New(env, "Expected type:string").ThrowAsJavaScriptException();
+		return;
+	}
 	std::string path = info[0].As<Napi::String>().ToString();
 	try {
 		auto lock = std::lock_guard(mutex);
 		synthesiser->setRecordingPath(path);
-	}
-	catch (const std::exception& e) {
+	} catch (const std::exception& e) {
 		Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
 		return;
 	}
@@ -288,31 +288,33 @@ Napi::Array getOscillatorPlot(const Napi::CallbackInfo& info) {
 
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-    initializeApplication();
+	initializeApplication();
 
-    exports.Set("midiPorts", Napi::Function::New(env, getMidiPorts));
-    exports.Set("openMidi", Napi::Function::New(env, openMidiPort));
+	exports.Set("midiPorts", Napi::Function::New(env, getMidiPorts));
+	exports.Set("openMidi", Napi::Function::New(env, openMidiPort));
 
-    exports.Set("setAmplitude", Napi::Function::New(env, setAmplitude));
-    exports.Set("setOscillatorType", Napi::Function::New(env, setOscillatorType));
-    exports.Set("setOscillatorAmplitude", Napi::Function::New(env, setOscillatorAmplitude));
-    exports.Set("setAttack", Napi::Function::New(env, setAttack));
-    exports.Set("setDecay", Napi::Function::New(env, setDecay));
-    exports.Set("setSustain", Napi::Function::New(env, setSustain));
-    exports.Set("setRelease", Napi::Function::New(env, setRelease));
+	exports.Set("setAmplitude", Napi::Function::New(env, setAmplitude));
+	exports.Set("setOscillatorType", Napi::Function::New(env, setOscillatorType));
+	exports.Set("setOscillatorAmplitude", Napi::Function::New(env, setOscillatorAmplitude));
+	exports.Set("setAttack", Napi::Function::New(env, setAttack));
+	exports.Set("setDecay", Napi::Function::New(env, setDecay));
+	exports.Set("setSustain", Napi::Function::New(env, setSustain));
+	exports.Set("setRelease", Napi::Function::New(env, setRelease));
 
-    exports.Set("startRecording", Napi::Function::New(env, startRecording));
-    exports.Set("stopRecording", Napi::Function::New(env, stopRecording));
+	exports.Set("startRecording", Napi::Function::New(env, startRecording));
+	exports.Set("stopRecording", Napi::Function::New(env, stopRecording));
 	exports.Set("setRecordingPath", Napi::Function::New(env, setRecordingPath));
 
+	pipelineAPI::init(env, exports);
+	
 	exports.Set("setSamplesPath", Napi::Function::New(env, setSamplesPath));
 	exports.Set("getOscillatorsNames", Napi::Function::New(env, getOscillatorNames));
 	exports.Set("getOscillatorPlot", Napi::Function::New(env, getOscillatorPlot));
 
     env.AddCleanupHook(destroyApplication, (void*)nullptr);
 
-    fmt::println("SynthModule initialized successfully");
-    return exports;
+	fmt::println("SynthModule initialized successfully");
+	return exports;
 }
 
 NODE_API_MODULE(SynthModule, Init);

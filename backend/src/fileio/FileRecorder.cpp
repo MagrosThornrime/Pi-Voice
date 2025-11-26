@@ -28,7 +28,7 @@ int FileRecorder::paCallbackFun(const void* inputBuffer, void* outputBuffer, uns
 	const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) {
 	auto lock = std::lock_guard(_mutex);
 
-	if(_isRunning) {
+	if (_isRunning) {
 		const float* in = (const float*)inputBuffer;
 		float* out = (float*)outputBuffer;
 
@@ -43,7 +43,7 @@ int FileRecorder::paCallbackFun(const void* inputBuffer, void* outputBuffer, uns
 	return paContinue;
 }
 
-std::string FileRecorder::_getFilename(){
+std::string FileRecorder::_getFilename() {
 	auto now = std::chrono::system_clock::now();
 	auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
@@ -54,7 +54,7 @@ std::string FileRecorder::_getFilename(){
 
 void FileRecorder::start() {
 	auto lock = std::lock_guard(_mutex);
-	if(_isRunning) {
+	if (_isRunning) {
 		return;
 	}
 	SF_INFO sfInfo{
@@ -86,7 +86,7 @@ void FileRecorder::start() {
 
 void FileRecorder::stop() {
 	auto lock = std::lock_guard(_mutex);
-	if(!_isRunning) {
+	if (!_isRunning) {
 		return;
 	}
 	_thread.request_stop();
@@ -118,31 +118,39 @@ void FileRecorder::_threadFn(std::stop_token stopToken, std::unique_ptr<SNDFILE,
 }
 
 bool FileRecorder::_canWriteToDirectory(const std::string& dir) {
-    std::string test_file = fmt::format("{}/.__write_test__", dir);
-    std::ofstream ofs(test_file);
-    if (!ofs){
+	std::string test_file = fmt::format("{}/.__write_test__", dir);
+	std::ofstream ofs(test_file);
+	if (!ofs) {
 		return false;
 	}
-    ofs.close();
-    std::filesystem::remove(test_file);
-    return true;
+	ofs.close();
+	std::filesystem::remove(test_file);
+	return true;
 };
 
 void FileRecorder::setOutputDirectory(const std::string& dir) {
-	if(!fs::exists(dir)) {
+	if (!fs::exists(dir)) {
 		try {
 			fs::create_directory(dir);
 		} catch (const std::exception& e) {
 			throw std::invalid_argument(fmt::format("Can't create directory '{}'", dir));
 		}
 	}
-	if(!fs::is_directory(dir)) {
+	if (!fs::is_directory(dir)) {
 		throw std::invalid_argument(fmt::format("Directory '{}' is not a directory", dir));
 	}
-	if(!_canWriteToDirectory(dir)) {
+	if (!_canWriteToDirectory(dir)) {
 		throw std::invalid_argument(fmt::format("Directory '{}' is not writable", dir));
 	}
 	_outputDirectory = dir;
+}
+
+pipeline::Layer& FileRecorder::setParam(const u32, std::any) {
+	return *this;
+}
+
+std::any FileRecorder::getParam(const u32) {
+	return {};
 }
 
 }

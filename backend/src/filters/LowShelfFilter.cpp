@@ -4,15 +4,14 @@
 #include <range/v3/view/concat.hpp>
 
 namespace filters {
-LowShelfFilter::LowShelfFilter(const u32 order, const u32 channels, const f32 cutoffFrequency, const f32 samplingRate, const f32 quality, const f32 gainDB) {
-	_prev = decltype(_prev)(channels);
-	_channels = channels;
+void LowShelfFilter::refresh() {
+	_prev.resize(_channels);
 
 	constexpr auto pi = std::numbers::pi_v<f32>;
 
-	if (order == 1) {
-		const auto alpha = std::tan(pi * cutoffFrequency / samplingRate);
-		const auto A = std::pow(10.f, gainDB / 20);
+	if (_order == 1) {
+		const auto alpha = std::tan(pi * _cutoff / _sampleRate);
+		const auto A = std::pow(10.f, _gainDB / 20);
 		const auto sqrtA = std::sqrt(A);
 		const auto a0 = 1 + alpha;
 
@@ -33,11 +32,11 @@ LowShelfFilter::LowShelfFilter(const u32 order, const u32 channels, const f32 cu
 			b /= a0;
 		}
 	} else {
-		const auto omega = (2 * pi) * cutoffFrequency / samplingRate;
+		const auto omega = (2 * pi) * _cutoff / _sampleRate;
 		const auto cosOmega = std::cos(omega);
 		const auto sinOmega = std::sin(omega);
-		const auto alpha = sinOmega / (2 * quality);
-		const auto A = std::pow(10.f, gainDB / 40);
+		const auto alpha = sinOmega / (2 * _quality);
+		const auto A = std::pow(10.f, _gainDB / 40);
 		const auto beta = 2 * std::sqrt(A) * alpha;
 
 		const auto a0 = A + 1 + (A - 1) * cosOmega + beta;

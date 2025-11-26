@@ -4,15 +4,14 @@
 #include <range/v3/view/concat.hpp>
 
 namespace filters {
-PeakingEQFilter::PeakingEQFilter(const u32 channels, const f32 cutoffFrequency, const f32 samplingRate, const f32 quality, const f32 gainDB) {
-	_prev = decltype(_prev)(channels);
-	_channels = channels;
+void PeakingEQFilter::refresh() {
+	_prev.resize(_channels);
 
-	const auto omega = (2 * std::numbers::pi_v<f32>) * cutoffFrequency / samplingRate;
+	const auto omega = (2 * std::numbers::pi_v<f32>) * _cutoff / _sampleRate;
 	const auto cosOmega = std::cos(omega);
 	const auto sinOmega = std::sin(omega);
-	const auto alpha = sinOmega / (2 * quality);
-	const auto A = std::pow(10.f, gainDB / 40);
+	const auto alpha = sinOmega / (2 * _quality);
+	const auto A = std::pow(10.f, _gainDB / 40);
 
 	const auto a0 = 1 + alpha / A;
 

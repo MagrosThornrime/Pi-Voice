@@ -57,6 +57,15 @@ app.on("quit", () => {
 ipcMain.handle("synth-midiPorts", () => synth.midiPorts());
 ipcMain.handle("synth-openMidi", (e, port) => synth.openMidi(port));
 
+// pipelineAPI
+ipcMain.handle("synth-pipelineAddFilter", (e, filter, idx) => synth.pipelineAddFilter(filter, idx));
+ipcMain.handle("synth-pipelineRemove", (e, idx) => synth.pipelineRemove(idx));
+ipcMain.handle("synth-pipelineMove", (e, current, target) => synth.pipelineMove(current, target));
+ipcMain.handle("synth-pipelineSwap", (e, i1, i2) => synth.pipelineSwap(vi1, i2al));
+ipcMain.handle("synth-pipelineSetFilterParam", (e, idx, param, value) => synth.pipelineSetFilterParam(idx, param, value));
+ipcMain.handle("synth-pipelineGetFilterParam", (e, idx, param) => synth.pipelineGetFilterParam(idx, param));
+ipcMain.handle("synth-pipelineLength", (e) => synth.pipelineLength());
+
 // Synth parameters
 ipcMain.handle("synth-setAmplitude", (e, v) => synth.setAmplitude(v));
 ipcMain.handle("synth-setOscillatorType", (e, type, index) =>
