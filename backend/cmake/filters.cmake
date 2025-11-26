@@ -15,5 +15,5 @@ else()
   unset(CMAKE_POSITION_INDEPENDENT_CODE CACHE)
 endif()
 
-target_include_directories(filters PUBLIC include ${rtmidi_SOURCE_DIR}/include)
+target_include_directories(filters PUBLIC include ${rtmidi_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/../frontend/node_modules/node-api-headers/include ${PROJECT_SOURCE_DIR}/../frontend/node_modules/node-addon-api/include)
 target_link_libraries(filters PUBLIC fmt::fmt range-v3::range-v3 portaudio portaudiocpp)

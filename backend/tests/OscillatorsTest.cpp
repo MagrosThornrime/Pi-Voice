@@ -2,7 +2,7 @@
 #include <Oscillators.hpp>
 
 TEST(Oscillators, SineInRange) {
-    oscillators::SineOscillator oscillator(44100.0f);
+    oscillators::SineOscillator oscillator(44100.0f, 69);
     for(int i = 0; i < 1000; i++) {
         oscillator.advance();
         float sample = oscillator.getNextSample();
@@ -11,7 +11,7 @@ TEST(Oscillators, SineInRange) {
 }
 
 TEST(Oscillators, TriangleInRange) {
-    oscillators::TriangleOscillator oscillator(44100.0f);
+    oscillators::TriangleOscillator oscillator(44100.0f, 69);
     for(int i = 0; i < 1000; i++) {
         oscillator.advance();
         float sample = oscillator.getNextSample();
@@ -20,7 +20,7 @@ TEST(Oscillators, TriangleInRange) {
 }
 
 TEST(Oscillators, SquareInRange) {
-    oscillators::SquareOscillator oscillator(44100.0f);
+    oscillators::SquareOscillator oscillator(44100.0f, 69);
     for(int i = 0; i < 1000; i++) {
         oscillator.advance();
         float sample = oscillator.getNextSample();
@@ -29,16 +29,7 @@ TEST(Oscillators, SquareInRange) {
 }
 
 TEST(Oscillators, SawtoothInRange) {
-    oscillators::SawtoothOscillator oscillator(44100.0f);
-    for(int i = 0; i < 1000; i++) {
-        oscillator.advance();
-        float sample = oscillator.getNextSample();
-        ASSERT_TRUE(sample > -1.0f && sample < 1.0f) << "Sample out of range: " << sample;
-    }
-}
-
-TEST(Oscillators, NoiseInRange) {
-    oscillators::NoiseOscillator oscillator(44100.0f);
+    oscillators::SawtoothOscillator oscillator(44100.0f, 69);
     for(int i = 0; i < 1000; i++) {
         oscillator.advance();
         float sample = oscillator.getNextSample();

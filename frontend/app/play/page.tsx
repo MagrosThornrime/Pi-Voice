@@ -22,6 +22,17 @@ declare global {
             start: () => Promise<void>;
             stop: () => Promise<void>;
             cleanup: () => Promise<void>;
+            startRecording: () => Promise<void>;
+            stopRecording: () => Promise<void>;
+
+            // pipelineAPI
+            pipelineAddFilter: (filter: number, idx: number) => Promise<void>;
+            pipelineRemove: (idx: number) => Promise<void>;
+            pipelineMove: (current: number, target: number) => Promise<void>;
+            pipelineSwap: (i1: number, i2: number) => Promise<void>;
+            pipelineSetFilterParam: (idx: number, param: number, value: number) => Promise<void>;
+            pipelineGetFilterParam: (idx: number, param: number) => Promise<number>;
+            pipelineLength: () => Promise<number>;
         };
     }
 }
@@ -48,7 +59,7 @@ export default function PlayPage() {
 
     return (
         <Box minH="100vh" bg="gray.200" p={10}>
-        
+
             <Heading size="2xl" textAlign="center" mb={10} color="teal.600">
             🎛️ Simple Synth Controller
             </Heading>
@@ -89,7 +100,28 @@ export default function PlayPage() {
                     )
                 }
                 </List.Root>
-                <Button bg={"red"} onClick={()=>{if(buttonText=="Start"){setButtonText("Stop")}else{setButtonText("Start")}}}>{buttonText+" Recording"}</Button>
+                <Button
+                    bg={buttonText === "Start" ? "green.400" : "red.400"}
+                    onClick={async () => {
+                        try {
+                            if (buttonText === "Start") {
+                                setButtonText("Stop");
+                                setStatus("Recording...");
+                                await window.synthAPI.startRecording();
+                            } else {
+                                setButtonText("Start");
+                                setStatus("Recording stopped.");
+                                await window.synthAPI.stopRecording();
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            setStatus("Error controlling recording.");
+                        }
+                    }}
+                >
+                    {buttonText} Recording
+                </Button>
+
             </Box>
         </Box>
     );

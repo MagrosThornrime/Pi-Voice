@@ -4,14 +4,13 @@
 #include <range/v3/view/concat.hpp>
 
 namespace filters {
-HighPassFilter::HighPassFilter(const u32 order, const u32 channels, const f32 cutoffFrequency, const f32 samplingRate, const f32 quality) {
-	_prev = decltype(_prev)(channels);
-	_channels = channels;
+void HighPassFilter::refresh() {
+	_prev.resize(_channels);
 
 	constexpr auto pi = std::numbers::pi_v<f32>;
 
-	if (order == 1) {
-		const auto alpha = std::tan(pi * cutoffFrequency / samplingRate);
+	if (_order == 1) {
+		const auto alpha = std::tan(pi * _cutoff / _sampleRate);
 		const auto a0 = 1 + alpha;
 
 		_b = {
@@ -31,10 +30,10 @@ HighPassFilter::HighPassFilter(const u32 order, const u32 channels, const f32 cu
 			b /= a0;
 		}
 	} else {
-		const auto omega = (2 * pi) * cutoffFrequency / samplingRate;
+		const auto omega = (2 * pi) * _cutoff / _sampleRate;
 		const auto cosOmega = std::cos(omega);
 		const auto sinOmega = std::sin(omega);
-		const auto alpha = sinOmega / (2 * quality);
+		const auto alpha = sinOmega / (2 * _quality);
 
 		const auto a0 = 1 + alpha;
 
