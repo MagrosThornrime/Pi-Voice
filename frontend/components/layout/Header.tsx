@@ -40,6 +40,11 @@ const Links: readonly SimpleLink[] = [
     external: false,
   },
   {
+    name: "Effects Filters",
+    href: "/effects_filters",
+    external: false
+  },
+  {
     name: "Adsr",
     href: "/.",
     external: false,
