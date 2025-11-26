@@ -10,7 +10,7 @@
 
 namespace oscillators {
 inline const std::unordered_set<std::string> reservedOscillators = {
-    "sine", "square", "triangle", "sawtooth",
+    "sine", "square", "triangle", "sawtooth", "empty"
 };
 
 }
