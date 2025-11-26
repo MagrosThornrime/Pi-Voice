@@ -32,7 +32,7 @@ void LowShelfFilter::refresh() {
 			b /= a0;
 		}
 	} else {
-		const auto omega = (2 * pi) * _cutoff / sampleRate;
+		const auto omega = (2 * pi) * _cutoff / _sampleRate;
 		const auto cosOmega = std::cos(omega);
 		const auto sinOmega = std::sin(omega);
 		const auto alpha = sinOmega / (2 * _quality);

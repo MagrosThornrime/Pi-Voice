@@ -9,3 +9,5 @@
 #include <filters/LowShelfFilter.hpp>
 #include <filters/NotchFilter.hpp>
 #include <filters/PeakingEQFilter.hpp>
+#include <filters/FilterTypes.hpp>
+#include <filters/FilterParams.hpp>

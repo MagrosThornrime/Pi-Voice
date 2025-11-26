@@ -2,8 +2,7 @@
 #include <pipeline/Pipeline.hpp>
 #include <application/BackendApp.hpp>
 #include <tuple>
-#include <filters/BwFilter.hpp>
-#include <filters/FilterParams.hpp>
+#include <Filters.hpp>
 
 namespace pipelineAPI {
 
@@ -43,7 +42,7 @@ Napi::Value addFilter(const Napi::CallbackInfo& info) {
 
 	auto&& [lock, p] = lockPipeline();
 
-	p.add(filters::BwFilter::create((filters::FilterTypes::Value)type), idx);
+	p.add(filters::BwFilter::create((filters::FilterType::Value)type), idx);
 
 	return env.Null();
 }
