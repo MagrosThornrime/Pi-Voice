@@ -1,10 +1,14 @@
 "use client";
 import { Chart, useChart } from "@chakra-ui/charts";
-import { Box,createListCollection,Flex,Group, Grid, Portal,Select,Stack,Text } from "@chakra-ui/react";
+import { Box,createListCollection,Flex,Group, Grid, Portal,Select,Stack,Text, ListCollection } from "@chakra-ui/react";
 import {useState, useMemo, useEffect, memo} from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { usePreset } from "@/components/ui/presetsProvider";
 
+type OscillatorItem = {
+  value: string;
+  label: string;
+};
 
 function get_example_data(n: number, domain: number[], func : (X:number) => number) {
   return Array.from({ length: n }, (_, i) => ({
@@ -12,20 +16,6 @@ function get_example_data(n: number, domain: number[], func : (X:number) => numb
     y: func(domain[0] + i * (domain[1] - domain[0])/n),
   }));
 }
-
-
-const oscilatorTypes = createListCollection(
-  {
-  items: [
-    { label: "Sine", value: "sine" },
-    { label: "Square", value: "square" },
-    { label: "Sawtooth", value: "sawtooth" },
-    { label: "Triangle", value: "triangle" },
-    { label: "Noise", value: "noise" },
-    { label: "No oscilator", value: "empty" },
-  ],
-  }
-)
 
 
 function square_wave(x:number, interv: number){
@@ -189,6 +179,25 @@ export default function Page() {
     });
   }
 
+const [oscillatorTypes, setOscillatorTypes] = useState<ListCollection<OscillatorItem>>(
+  createListCollection<OscillatorItem>({ items: [] })
+);
+
+  useEffect(() => {
+    const load = async () => {
+      const names = await window.synthAPI.getOscillatorNames();
+      const formatted = names.map((name) => ({
+        value: name,
+        label: name,
+      }));
+      setOscillatorTypes(
+        createListCollection({ items: formatted })
+      );
+    };
+
+    load();
+  }, []);
+
   useEffect(() => {
     setOscillator([oscilator1,oscilator2,oscilator3]);
     savePreset(String(presetNr));
@@ -211,7 +220,7 @@ export default function Page() {
             <Box key={i}>
               <MemoFunctionChart func = {oscillatorsFuncMapping[o]} />
 
-              <Select.Root collection={oscilatorTypes} variant={"subtle"}
+              <Select.Root collection={oscillatorTypes} variant={"subtle"}
                 onValueChange={(e) => {
                   changeOscillators(i, e.value[0]);
                   window.synthAPI.setOscillatorType(e.value[0], i);
@@ -231,7 +240,7 @@ export default function Page() {
                 <Portal>
                   <Select.Positioner>
                     <Select.Content>
-                      {oscilatorTypes.items.map((oscilator) => (
+                      {oscillatorTypes.items.map((oscilator) => (
                         <Select.Item color="black" item={oscilator} key={oscilator.value}>
                           {oscilator.label}
                           <Select.ItemIndicator />
