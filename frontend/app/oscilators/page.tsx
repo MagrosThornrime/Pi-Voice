@@ -151,6 +151,10 @@ function FunctionChart({func, domain = [0, 10], n = 1000}: FunctionChartProps){
 
 const MemoFunctionChart = memo(FunctionChart);
 
+function getOscillatorFunction(name: string){
+  return oscillatorsFuncMapping[name] ?? oscillatorsFuncMapping["empty"]
+}
+
 
 export default function Page() {
   
@@ -218,7 +222,7 @@ const [oscillatorTypes, setOscillatorTypes] = useState<ListCollection<Oscillator
         {
           oscillators.map((o, i) => (
             <Box key={i}>
-              <MemoFunctionChart func = {oscillatorsFuncMapping[o]} />
+              <MemoFunctionChart func = {getOscillatorFunction(o)} />
 
               <Select.Root collection={oscillatorTypes} variant={"subtle"}
                 onValueChange={(e) => {
@@ -231,7 +235,7 @@ const [oscillatorTypes, setOscillatorTypes] = useState<ListCollection<Oscillator
 
                 <Select.Control>
                   <Select.Trigger>
-                    <Select.ValueText color={"black"} placeholder="Select oscillator" />
+                    <Select.ValueText color={"grey.100"} placeholder="Select oscillator" />
                   </Select.Trigger>
                   <Select.IndicatorGroup>
                     <Select.Indicator />
@@ -241,7 +245,7 @@ const [oscillatorTypes, setOscillatorTypes] = useState<ListCollection<Oscillator
                   <Select.Positioner>
                     <Select.Content>
                       {oscillatorTypes.items.map((oscilator) => (
-                        <Select.Item color="black" item={oscilator} key={oscilator.value}>
+                        <Select.Item color="grey.100" item={oscilator} key={oscilator.value}>
                           {oscilator.label}
                           <Select.ItemIndicator />
                         </Select.Item>
