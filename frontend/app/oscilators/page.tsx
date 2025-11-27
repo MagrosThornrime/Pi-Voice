@@ -151,6 +151,10 @@ function FunctionChart({func, domain = [0, 10], n = 1000}: FunctionChartProps){
 
 const MemoFunctionChart = memo(FunctionChart);
 
+function getOscillatorFunction(name: string){
+  return oscillatorsFuncMapping[name] ?? oscillatorsFuncMapping["empty"]
+}
+
 
 export default function Page() {
   
@@ -218,7 +222,7 @@ const [oscillatorTypes, setOscillatorTypes] = useState<ListCollection<Oscillator
         {
           oscillators.map((o, i) => (
             <Box key={i}>
-              <MemoFunctionChart func = {oscillatorsFuncMapping[o]} />
+              <MemoFunctionChart func = {getOscillatorFunction(o)} />
 
               <Select.Root collection={oscillatorTypes} variant={"subtle"}
                 onValueChange={(e) => {
