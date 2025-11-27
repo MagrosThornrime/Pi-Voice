@@ -1,11 +1,54 @@
 const path = require("path");
 const { app, BrowserWindow, ipcMain } = require("electron");
 const { spawn, exec } = require("child_process");
+const fs = require("fs");
+
+const presetFile = path.join(app.getPath("userData"), "presets.json");
+
+function ensurePresetFile() {
+  if (!fs.existsSync(presetFile)) {
+    fs.writeFileSync(
+      presetFile,
+      JSON.stringify({ presets: {}, lastUsed: null }, null, 2)
+    );
+  }
+}
+
+ensurePresetFile();
+
+ipcMain.handle("presets:read", () => {
+  ensurePresetFile();
+  const raw = fs.readFileSync(presetFile, "utf-8");
+  return JSON.parse(raw);
+});
+
+ipcMain.handle("presets:write", (event, data) => {
+  fs.writeFileSync(presetFile, JSON.stringify(data, null, 2));
+  return true;
+});
+
+ipcMain.handle("presets:saveOne", (event, { name, preset }) => {
+  const data = JSON.parse(fs.readFileSync(presetFile, "utf-8"));
+  data.presets[name] = preset;
+  data.lastUsed = name;
+  fs.writeFileSync(presetFile, JSON.stringify(data, null, 2));
+  return true;
+});
+
+ipcMain.handle("presets:delete", (event, name) => {
+  const data = JSON.parse(fs.readFileSync(presetFile, "utf-8"));
+  delete data.presets[name];
+
+  if (data.lastUsed === name) {
+    data.lastUsed = null;
+  }
+
+  fs.writeFileSync(presetFile, JSON.stringify(data, null, 2));
+  return true;
+});
 
 let nextProcess;
 let synth;
-
-// Load native module
 try {
   synth = require(path.join(__dirname, "lib", "BackendApp.node"));
   console.log("Loaded synth addon");
@@ -27,17 +70,23 @@ function createWindow() {
   win.loadURL("http://localhost:3000");
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async() => {
   nextProcess = spawn("npm", ["run", "dev"], {
     cwd: path.join(process.cwd(), "./frontend"),
     shell: true,
     stdio: "inherit",
   });
 
-  setTimeout(createWindow, 100);
+  try {
+    setTimeout(() => {
+      createWindow();
+    }, 100);
+  } catch (err) {
+    console.error(err);
+    app.quit();
+  }
 });
 
-// Kill frontend dev server on exit
 app.on("quit", () => {
   if (nextProcess) {
     if (process.platform === "win32") {

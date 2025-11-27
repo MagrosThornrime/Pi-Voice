@@ -50,3 +50,10 @@ contextBridge.exposeInMainWorld("synthAPI", {
     getOscillatorPlot: (name, length) =>
         ipcRenderer.invoke("synth-getOscillatorPlot", name, length),
 });
+
+contextBridge.exposeInMainWorld("presetsAPI", {
+  read: () => ipcRenderer.invoke("presets:read"),
+  write: (data) => ipcRenderer.invoke("presets:write", data),
+  saveOne: (name, preset) => ipcRenderer.invoke("presets:saveOne", { name, preset }),
+  delete: (name) => ipcRenderer.invoke("presets:delete", name)
+});
