@@ -28,7 +28,7 @@ const FiltersContext = createContext<FiltersContextType | undefined>(undefined);
 
 export function FiltersProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<FiltersData>({
-    filters: [],
+    filters: ["AllPass", "BandPass"],
     effects: []
   });
 
@@ -183,6 +183,68 @@ function CheckboxesWithHeading({
 }
 
 
+function SlidersItems() {
+
+    const { data } = useFilters();
+
+    const filteredItems = items.filter(item =>
+        data.filters.includes(item.label)
+    );
+
+    const [Values, setValues] = useState<Record<string, any>>(buildInitialState);
+    const [EndValues, setEndValues] = useState<Record<string, any>>(buildInitialEndState);
+
+    const setSliderValue = (itemValue: string, opt: string, newValue: number) => {
+        setValues(prev => ({
+            ...prev,
+            [`${itemValue}.${opt}`]: newValue
+        }));
+    };
+
+    const setEndSliderValue = (itemValue: string, opt: string, newValue: number) => {
+        setEndValues(prev => ({
+            ...prev,
+            [`${itemValue}.${opt}`]: newValue
+        }));
+    };
+
+    return (
+        <Box>
+            {
+                filteredItems.map(obj => obj.opts.map(
+                        opt => {
+                            const key = `${obj.value}.${opt}`;
+                            const Value = Values[key];
+                            console.log(key, Value)
+                            return (
+                                <Slider.Root key={key}
+                                    value={[Value]}
+                                    onValueChange={(details) => setSliderValue(obj.value, opt, details.value[0])}
+                                    onValueChangeEnd={(details) => {
+                                        console.log("ustawiam dla ", obj.label);
+                                        setEndSliderValue(obj.value, `${opt}_end`, details.value[0]);
+                                        // ctrl.onEnd(e.value[0]);
+                                    }} >
+
+                                    <Slider.Control>
+                                        <Slider.Track>
+                                            <Slider.Range />
+                                        </Slider.Track>
+                                        <Slider.Thumbs />
+                                    </Slider.Control>
+                                </Slider.Root>
+                            )
+
+                        }
+                    )
+                )
+            }
+        </Box>
+    )
+
+}
+
+
 function Page(){
 
     const { handleSubmit, control, formState: { errors } } = useForm<FiltersData>({
@@ -199,22 +261,6 @@ function Page(){
 
    const { data, setData } = useFilters();
 
-   const [Values, setValues] = useState<Record<string, any>>(buildInitialState);
-   const [EndValues, setEndValues] = useState<Record<string, any>>(buildInitialEndState);
-
-   const setSliderValue = (itemValue: string, opt: string, newValue: number) => {
-        setValues(prev => ({
-        ...prev,
-        [`${itemValue}.${opt}`]: newValue
-        }));
-    };
-
-     const setEndSliderValue = (itemValue: string, opt: string, newValue: number) => {
-        setEndValues(prev => ({
-        ...prev,
-        [`${itemValue}.${opt}`]: newValue
-        }));
-    };
 
     const invalid = !!errors.filters
     const invalid_eff = !!errors.effects
@@ -238,8 +284,7 @@ function Page(){
                         : errors.filters
                     }
                     ifButton={false}
-                    headerText="Select filters"
-                    buttonText="HAHAHA">
+                    headerText="Select filters" >
 
                 </CheckboxesWithHeading>
 
@@ -257,36 +302,9 @@ function Page(){
                 </CheckboxesWithHeading>
                 {/* </Stack> */}
             </form>
-            {
-                items.filter(item => data.filters.includes(item.label))
-                    .map(obj => obj.opts.map(
-                        opt => {
-                            const key = `${obj.value}.${opt}`;
-                            const Value = Values[key];
 
-                            return (
-                                <Slider.Root
-                                    key = {key}
-                                    value={Value}
-                                    onValueChange={(details) => setSliderValue(obj.value, opt, details.value[0])}
-                                    onValueChangeEnd={(details) => {
-                                        setEndSliderValue(obj.value, `${opt}_end`, details.value[0]);
-                                        console.log("ustawiam dla ", obj.label);
-                                        // ctrl.onEnd(e.value[0]);
-                                    }} >
+            <SlidersItems/>
 
-                                    <Slider.Control>
-                                        <Slider.Track>
-                                            <Slider.Range />
-                                        </Slider.Track>
-                                        <Slider.Thumbs />
-                                    </Slider.Control>
-                                </Slider.Root>
-                            )
-
-                        }
-                    ) )
-            }
         </Box>
     )
 }
