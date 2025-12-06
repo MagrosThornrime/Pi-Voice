@@ -6,6 +6,7 @@
 #include <oscillators/Oscillator.hpp>
 #include <Portaudio.hpp>
 #include "Layer.hpp"
+#include <utils/SPSCQueue.hpp>
 
 namespace pipeline {
 class Pipeline: public pa::CallbackInterface {
@@ -20,7 +21,16 @@ public:
 	int paCallbackFun(const void* inputBuffer, void* outputBuffer, unsigned long numFrames,
 		const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
 
+	Pipeline();
+
 private:
 	std::vector<std::shared_ptr<Layer>> _layers;
+
+	std::shared_ptr<std::jthread> _producerThread;
+	utils::SPSCQueue<f32> _outputQueue;
+
+	void _generateSound(const void* inputBuffer, void* outputBuffer, unsigned long numFrames,
+		const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
+
 };
 }

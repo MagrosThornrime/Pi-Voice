@@ -66,11 +66,35 @@ u32 Pipeline::length() const {
 int Pipeline::paCallbackFun(const void* inputBuffer, void* outputBuffer, unsigned long numFrames,
 	const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) {
 
-	_layers.front()->paCallbackFun(inputBuffer, outputBuffer, numFrames, timeInfo, statusFlags);
-
-	for (auto&& layer : _layers | ranges::views::drop(1)) {
-		layer->paCallbackFun(outputBuffer, outputBuffer, numFrames, timeInfo, statusFlags);
+	// get data from the output queue if available (wait if not)
+	for (i32 i = 0; i < numFrames; i++) {
+		sound = _outputQueue.pop();
+		outputBuffer[i] = sound[i];
 	}
+	// push data to the recorder
+	_recorder->paCallbackFun(outputBuffer, outputBuffer, numFrames, timeInfo, statusFlags);
 	return paContinue;
+}
+
+void _generateSound(std::stop_token stopToken, u32 framesPerCall){
+	// avoid calling the functions too often by using a buffer
+	std::vector<f32> tempBuffer(framesPerCall);
+	while(!stop_token.stop_requested()) {
+		// generate the starting sound
+		_voiceManager->generateSound(tempBuffer, framesPerCall);
+		// process it using filters/effects
+		for (auto&& layer : _layers) {
+			layer->processSound(tempBuffer, tempBuffer, framesPerCall);
+		}
+		// return the sound
+		for (auto&& sound : tempBuffer) {
+			_outputQueue.put(sound);
+		}
+	}
+
+}
+
+Pipeline::Pipeline() {
+	// initialize the thread
 }
 }
