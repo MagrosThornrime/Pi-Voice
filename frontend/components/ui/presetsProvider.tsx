@@ -1,10 +1,10 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 const PresetContext = createContext(null);
 
-export function PresetProvider({ children }) {
+export function PresetProvider({ children }: { children: ReactNode }) {
   const [presetNr, setPresetNr] = useState(1);
   const maxPresets = 5;
 
@@ -27,7 +27,7 @@ export function PresetProvider({ children }) {
     });
   }, []);
 
-  function savePreset(name) {
+  function savePreset(name:string) {
     const preset = {
       attack: attackValue[0] / 100,
       decay: decayValue[0] / 100,
@@ -42,7 +42,7 @@ export function PresetProvider({ children }) {
     window.presetsAPI.saveOne(name, preset);
   }
 
-  function loadPreset(name) {
+  function loadPreset(name:string) {
     window.presetsAPI.read().then((data) => {
       const preset = data.presets[name];
       if (!preset) return;

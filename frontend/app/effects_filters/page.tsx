@@ -2,7 +2,7 @@
 import { Box, Checkbox, Button, Fieldset, Stack, Text, CheckboxGroup, Heading, Collapsible, Flex, Grid, Slider } from "@chakra-ui/react";
 import { useContext, ReactNode, useEffect, createContext, useState, Fragment} from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
-import { useController, ControllerRenderProps, SubmitHandler, useForm, FieldError } from "react-hook-form"
+import { useController, ControllerRenderProps, useForm, FieldError } from "react-hook-form"
 import { LuChevronRight } from "react-icons/lu"
 import { z } from "zod"
 
@@ -97,7 +97,7 @@ const buildInitialState = () => {
 
     items.forEach(item => {
         item.opts.forEach(opt => {
-            state[`${item.value}.${opt}`] = [10]
+            state[`${item.value}.${opt}`] = [30]
         });
     });
 
@@ -192,12 +192,12 @@ function CheckboxesWithHeading({
 
 
 type SlidersItemsProps = {
-  neededItems: MyItems[];
-  attr: "filters" | "effects"; 
+    neededItems: MyItems[];
+    attr: "filters" | "effects";
 };
 
 
-function SlidersItems({neededItems, attr} : SlidersItemsProps) {
+function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
 
     const { data } = useFilters();
 
@@ -222,43 +222,55 @@ function SlidersItems({neededItems, attr} : SlidersItemsProps) {
         }));
     };
 
-    const sliders = filteredItems.flatMap(obj =>
-    {
+    const sliders = filteredItems.flatMap(obj => {
         return (
-              <Fragment key={obj.value}>
+            <Fragment key={obj.value}>
                 <Box p={5} bg="grey" rounded="2xl" maxW="100%" shadow="md">
-                        <Text mb={2} fontWeight="medium" textAlign="center">{obj.value}</Text>
-                {
-                    obj.opts.map(opt => {
-                        const key = `${obj.value}.${opt}`;
-                        const Value = Values[key] ?? 0; // upewniamy się, że to liczba
-                        return (
-                            <Slider.Root
-                                key={key}
-                                value={[Value]} // slider wymaga tablicy
-                                onValueChange={(details) =>
-                                    setSliderValue(obj.value, opt, details.value[0])
-                                }
-                                onValueChangeEnd={(details) => {
-                                    setEndSliderValue(obj.value, `${opt}_end`, details.value[0]);
-                                }}
-                            >
-                                <Slider.Label color="white"> {`${opt}`} </Slider.Label>
-                                <Slider.Control>
-                                    <Slider.Track>
-                                        <Slider.Range />
-                                    </Slider.Track>
-                                    <Slider.Thumbs />
-                                </Slider.Control>
-                            </Slider.Root>
-                        );
-                    })
-                }
+                    <Text mb={2} fontWeight="medium" textAlign="center">{obj.value}</Text>
+                    {
+                        obj.opts.map(opt => {
+                            const key = `${obj.value}.${opt}`;
+                            const Value = Values[key] ?? 0; // upewniamy się, że to liczba
+                            return (
+                                <Fragment key={`${obj.value}.${opt}`}>
+                                    <Slider.Root
+                                        key={key}
+                                        value={[Value]} // slider wymaga tablicy
+
+                                        onValueChange={(details) => {
+                                            setSliderValue(obj.value, opt, details.value[0])
+                                            console.log("SLIDER VALUE: ", Values[key])
+                                        }}
+
+                                        onValueChangeEnd={(details) => {
+                                            setEndSliderValue(obj.value, `${opt}_end`, details.value[0]);
+                                            console.log("SLIDER END VALUE: ", EndValues[`${key}_end`])
+                                            // integration with backend will be here
+                                        }} >
+
+                                        <Slider.Label color="white"> {`${opt}`} </Slider.Label>
+                                        <Slider.Control>
+                                            <Slider.Track>
+                                                <Slider.Range />
+                                            </Slider.Track>
+                                            <Slider.Thumbs />
+                                        </Slider.Control>
+                                    </Slider.Root>
+
+                                    <Stack mt="3" gap="1">
+                                        <Text> Wartość: <b>{Math.round(EndValues[`${key}_end`] * 100) / 100}</b> </Text>
+                                    </Stack>
+                                    <Box h="5" />
+
+                                </Fragment>
+                            );
+                        })
+                    }
                 </Box>
                 {/* <Box h="10" /> */}
             </Fragment>
         )
-    }) ;
+    });
 
     return (
         <Box>
@@ -266,25 +278,25 @@ function SlidersItems({neededItems, attr} : SlidersItemsProps) {
 
                 <Collapsible.Trigger paddingY="3" display="flex" gap="2" alignItems="center" justifyItems={"center"}>
 
-                <Collapsible.Indicator
-                    transition="transform 0.2s"
-                    _open={{ transform: "rotate(90deg)" }} >
-                    <LuChevronRight size={24} color = "black" />
-                </Collapsible.Indicator>
+                    <Collapsible.Indicator
+                        transition="transform 0.2s"
+                        _open={{ transform: "rotate(90deg)" }} >
+                        <LuChevronRight size={24} color="black" />
+                    </Collapsible.Indicator>
 
-                <Box maxW = "100%">
-                    <Text textStyle="2xl" mb={2} color = "teal.600" fontWeight="semibold" textAlign="center"> Toggle {attr} </Text>
-                </Box>
+                    <Box maxW="100%">
+                        <Text textStyle="2xl" mb={2} color="teal.600" fontWeight="semibold" textAlign="center"> Toggle {attr} </Text>
+                    </Box>
 
                 </Collapsible.Trigger>
 
-                <Collapsible.Content maxW = "100%" minW="70%">
+                <Collapsible.Content maxW="100%" minW="70%">
 
                     <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)", lg: "repeat(3, 1fr)", }} gap={10} maxW="1000px" mx="auto">
                         {sliders}
                     </Grid>
 
-              </Collapsible.Content>
+                </Collapsible.Content>
 
             </Collapsible.Root>
 
@@ -315,7 +327,7 @@ function Page() {
 
 
     return (
-        <Box minH="100vh" bg="gray.50" p={10}>
+        <Box minH="100vh" bg="gray.50" p={10} justifyItems={"center"} alignItems="center">
             <form onSubmit={
                 handleSubmit((formData) => {
                     console.log("SUBMITTED", formData);
@@ -323,40 +335,48 @@ function Page() {
                 }
                 )
             } >
-                {/* <Stack direction="row" gap={60} justifyContent="center" alignItems="center" > */}
-                <CheckboxesWithHeading field={filtersField.field}
-                    formItems={items}
-                    invalid={invalid}
-                    error={Array.isArray(errors.filters)
-                        ? errors.filters[0]
-                        : errors.filters
-                    }
-                    ifButton={false}
-                    headerText="Select filters" >
+                <Stack direction="row" gap={40} >
+                    <CheckboxesWithHeading field={filtersField.field}
+                        formItems={items}
+                        invalid={invalid}
+                        error={Array.isArray(errors.filters)
+                            ? errors.filters[0]
+                            : errors.filters
+                        }
+                        ifButton={false}
+                        headerText="Select filters" >
 
-                </CheckboxesWithHeading>
+                    </CheckboxesWithHeading>
 
-                <CheckboxesWithHeading field={effectsField.field}
-                    formItems={effects}
-                    invalid={invalid_eff}
-                    error={Array.isArray(errors.effects)
-                        ? errors.effects[0]
-                        : errors.effects
-                    }
-                    ifButton={true}
-                    headerText="Select effects"
-                    buttonText="HAHAHA">
+                    <CheckboxesWithHeading field={effectsField.field}
+                        formItems={effects}
+                        invalid={invalid_eff}
+                        error={Array.isArray(errors.effects)
+                            ? errors.effects[0]
+                            : errors.effects
+                        }
+                        ifButton={false}
+                        headerText="Select effects" >
+                        {/* buttonText="HAHAHA" */}
 
-                </CheckboxesWithHeading>
-                {/* </Stack> */}
+                    </CheckboxesWithHeading>
+                </Stack>
+
+                <Box display="flex" justifyContent="center" minW="60%">
+                    <Button size="sm" type="submit">
+                        Submit
+                    </Button>
+                </Box>
+
             </form>
 
             <Box h="10" />
 
-            <SlidersItems neededItems = {items} attr = "filters"/>
-            <Box h="10" />
-            <SlidersItems neededItems = {effects} attr = "effects"/>
-
+            <Box minW = "80%">
+                <SlidersItems neededItems = {items} attr = "filters"/>
+                <Box h="10" />
+                <SlidersItems neededItems = {effects} attr = "effects"/>
+            </Box>
         </Box>
     )
 }

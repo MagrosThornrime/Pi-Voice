@@ -15,7 +15,6 @@ import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts"
 import { usePreset } from "@/components/ui/presetsProvider";
 
 
-
 export interface Point {
   x: number
   y: number
@@ -276,7 +275,7 @@ export default function Home() {
 
                 <Stack mt="3" gap="1">
                   <Text>
-                    Wartość: <b>{ctrl.value}</b>
+                    Wartość: <b>{Math.round(ctrl.value * 100) / 100}</b>
                   </Text>
                 </Stack>
 
