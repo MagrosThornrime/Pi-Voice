@@ -1,6 +1,6 @@
 "use client";
 import { Box, Checkbox, Button, Fieldset, Stack, Text, CheckboxGroup, Heading, Collapsible, Flex, Grid, Slider } from "@chakra-ui/react";
-import React, { useContext, ReactNode, useEffect, createContext, useState, Fragment} from "react";
+import { useContext, ReactNode, useEffect, createContext, useState, Fragment} from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { useController, ControllerRenderProps, SubmitHandler, useForm, FieldError } from "react-hook-form"
 import { LuChevronRight } from "react-icons/lu"
@@ -225,7 +225,7 @@ function SlidersItems({neededItems, attr} : SlidersItemsProps) {
     const sliders = filteredItems.flatMap(obj =>
     {
         return (
-              <React.Fragment key={obj.value}>
+              <Fragment key={obj.value}>
                 <Box p={5} bg="grey" rounded="2xl" maxW="100%" shadow="md">
                         <Text mb={2} fontWeight="medium" textAlign="center">{obj.value}</Text>
                 {
@@ -256,7 +256,7 @@ function SlidersItems({neededItems, attr} : SlidersItemsProps) {
                 }
                 </Box>
                 {/* <Box h="10" /> */}
-            </React.Fragment>
+            </Fragment>
         )
     }) ;
 
