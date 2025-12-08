@@ -1,6 +1,6 @@
 "use client";
-import { Box, Checkbox, Button, Fieldset, Stack, CheckboxGroup, Heading, Flex, Grid, Slider } from "@chakra-ui/react";
-import React, { useContext, ReactNode, useEffect, createContext, useState } from "react";
+import { Box, Checkbox, Button, Fieldset, Stack, Text, CheckboxGroup, Heading, Flex, Grid, Slider } from "@chakra-ui/react";
+import React, { useContext, ReactNode, useEffect, createContext, useState, Fragment} from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { useController, ControllerRenderProps, SubmitHandler, useForm, FieldError } from "react-hook-form"
 import { z } from "zod"
@@ -209,34 +209,49 @@ function SlidersItems() {
     };
 
     const sliders = filteredItems.flatMap(obj =>
-        obj.opts.map(opt => {
-            const key = `${obj.value}.${opt}`;
-            const Value = Values[key] ?? 0; // upewniamy się, że to liczba
-            return (
-                <Slider.Root
-                    key={key}
-                    value={[Value]} // slider wymaga tablicy
-                    onValueChange={(details) =>
-                        setSliderValue(obj.value, opt, details.value[0])
-                    }
-                    onValueChangeEnd={(details) => {
-                        setEndSliderValue(obj.value, `${opt}_end`, details.value[0]);
-                    }}
-                >
-                    <Slider.Label color="black"> {`${obj.value} - ${opt}`} </Slider.Label>
-                    <Slider.Control>
-                        <Slider.Track>
-                            <Slider.Range />
-                        </Slider.Track>
-                        <Slider.Thumbs />
-                    </Slider.Control>
-                </Slider.Root>
-            );
-        })
-    );
+    {
+        return (
+              <React.Fragment key={obj.value}>
+                <Box p={5} bg="grey" rounded="2xl" maxW="300px" shadow="md">
+                        <Text mb={2} fontWeight="medium" textAlign="center">{obj.value}</Text>
+                {
+                    obj.opts.map(opt => {
+                        const key = `${obj.value}.${opt}`;
+                        const Value = Values[key] ?? 0; // upewniamy się, że to liczba
+                        return (
+                            <Slider.Root
+                                key={key}
+                                value={[Value]} // slider wymaga tablicy
+                                onValueChange={(details) =>
+                                    setSliderValue(obj.value, opt, details.value[0])
+                                }
+                                onValueChangeEnd={(details) => {
+                                    setEndSliderValue(obj.value, `${opt}_end`, details.value[0]);
+                                }}
+                            >
+                                <Slider.Label color="white"> {`${opt}`} </Slider.Label>
+                                <Slider.Control>
+                                    <Slider.Track>
+                                        <Slider.Range />
+                                    </Slider.Track>
+                                    <Slider.Thumbs />
+                                </Slider.Control>
+                            </Slider.Root>
+                        );
+                    })
+                }
+                </Box>
+                <Box h="10" />
+            </React.Fragment>
+        )
+    }) ;
 
     return (
-        <Box>{sliders}</Box>
+        <Box>
+            <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)", lg: "repeat(3, 1fr)", }} gap={10} maxW="1000px" mx="auto">
+                {sliders}
+            </Grid>
+        </Box>
     )
 
 }
@@ -298,6 +313,8 @@ function Page() {
                 </CheckboxesWithHeading>
                 {/* </Stack> */}
             </form>
+
+            <Box h="10" />
 
             <SlidersItems />
 
