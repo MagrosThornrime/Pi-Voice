@@ -1,6 +1,6 @@
 "use client";
-import { Box, Checkbox, Button, Fieldset, Stack, CheckboxGroup, Heading, Flex, Grid, Slider} from "@chakra-ui/react";
-import React, { useContext, ReactNode, createContext, useState} from "react";
+import { Box, Checkbox, Button, Fieldset, Stack, CheckboxGroup, Heading, Flex, Grid, Slider } from "@chakra-ui/react";
+import React, { useContext, ReactNode, useEffect, createContext, useState } from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { useController, ControllerRenderProps, SubmitHandler, useForm, FieldError } from "react-hook-form"
 import { z } from "zod"
@@ -8,105 +8,105 @@ import { z } from "zod"
 
 const FiltersFormSchema = z.object({
     filters: z.array(z.string()).max(3, {
-    message: "You cannot select more than 3 filters.",
-  }),
-  effects: z.array(z.string()).max(3, {
-    message: "You cannot select more than 3 effects.",
-  })
+        message: "You cannot select more than 3 filters.",
+    }),
+    effects: z.array(z.string()).max(3, {
+        message: "You cannot select more than 3 effects.",
+    })
 })
 
 
 type FiltersData = z.infer<typeof FiltersFormSchema>
 
 type FiltersContextType = {
-  data: FiltersData;
-  setData: (value: FiltersData) => void;
+    data: FiltersData;
+    setData: (value: FiltersData) => void;
 };
 
 const FiltersContext = createContext<FiltersContextType | undefined>(undefined);
 
 
 export function FiltersProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<FiltersData>({
-    filters: ["AllPass", "BandPass"],
-    effects: []
-  });
+    const [data, setData] = useState<FiltersData>({
+        filters: ["allpass", "bandpass"],
+        effects: []
+    });
 
-  return (
-    <FiltersContext.Provider value={{ data, setData }}>
-      {children}
-    </FiltersContext.Provider>
-  );
+    return (
+        <FiltersContext.Provider value={{ data, setData }}>
+            {children}
+        </FiltersContext.Provider>
+    );
 }
 
 
 export function useFilters() {
-  const ctx = useContext(FiltersContext);
-  if (!ctx) {
-    throw new Error("useFilters must be used inside FiltersProvider");
-  }
-  return ctx;
+    const ctx = useContext(FiltersContext);
+    if (!ctx) {
+        throw new Error("useFilters must be used inside FiltersProvider");
+    }
+    return ctx;
 }
 
 
 const items = [
-  { label: "AllPass", value: "allpass", opts: ["a", "aa"] },
-  { label: "BandPass", value: "bandpass" , opts: ["b", "bb"]},
-  { label: "ButterWorth", value: "butterworth", opts: ["c", "cc"] },
-  { label: "HighPass", value: "highpass", opts: ["d", "dd"] },
-  { label: "HighShelf", value: "highshelf" , opts: ["e", "ee"] },
-  { label: "LowPass", value: "lowpass", opts: ["f", "ff"]  },
-  { label: "LowShelf", value: "lowshelf", opts: ["g", "gg"] },
-  { label: "Notch", value: "notch", opts: ["h", "hh"] },
+    { label: "AllPass", value: "allpass", opts: ["a", "aa"] },
+    { label: "BandPass", value: "bandpass", opts: ["b", "bb"] },
+    { label: "ButterWorth", value: "butterworth", opts: ["c", "cc"] },
+    { label: "HighPass", value: "highpass", opts: ["d", "dd"] },
+    { label: "HighShelf", value: "highshelf", opts: ["e", "ee"] },
+    { label: "LowPass", value: "lowpass", opts: ["f", "ff"] },
+    { label: "LowShelf", value: "lowshelf", opts: ["g", "gg"] },
+    { label: "Notch", value: "notch", opts: ["h", "hh"] },
 ]
 
 
 const effects = [
-  { label: "aaa", value: "aaa", opts: ["a", "aa"] },
-  { label: "bbb", value: "bbb", opts: ["b", "bb"] },
-  { label: "ccc", value: "ccc", opts: ["c", "cc"] },
-  { label: "ddd", value: "ddd", opts: ["d", "dd"] },
-  { label: "eee", value: "eee", opts: ["e", "ee"] },
-  { label: "fff", value: "fff", opts: ["f", "ff"] },
-  { label: "ggg", value: "ggg", opts: ["g", "gg"] },
-  { label: "hhh", value: "hhh", opts: ["h", "hh"] }
+    { label: "aaa", value: "aaa", opts: ["a", "aa"] },
+    { label: "bbb", value: "bbb", opts: ["b", "bb"] },
+    { label: "ccc", value: "ccc", opts: ["c", "cc"] },
+    { label: "ddd", value: "ddd", opts: ["d", "dd"] },
+    { label: "eee", value: "eee", opts: ["e", "ee"] },
+    { label: "fff", value: "fff", opts: ["f", "ff"] },
+    { label: "ggg", value: "ggg", opts: ["g", "gg"] },
+    { label: "hhh", value: "hhh", opts: ["h", "hh"] }
 ]
 
 
 type FormWithHeadingProps = {
-  formItems: { label: string; value: string }[];
-  field: ControllerRenderProps<any, any>;
-  ifButton:boolean;
-  headerText: string;
-  buttonText?: string;
-  error?: FieldError;
-  invalid?: boolean;
+    formItems: { label: string; value: string }[];
+    field: ControllerRenderProps<any, any>;
+    ifButton: boolean;
+    headerText: string;
+    buttonText?: string;
+    error?: FieldError;
+    invalid?: boolean;
 };
 
 
 const buildInitialState = () => {
-  const state: Record<string, any> = {};
+    const state: Record<string, any> = {};
 
-  items.forEach(item => {
-    item.opts.forEach(opt => {
-      state[`${item.value}.${opt}`] = [10]
+    items.forEach(item => {
+        item.opts.forEach(opt => {
+            state[`${item.value}.${opt}`] = [10]
+        });
     });
-  });
 
-  return state;
+    return state;
 };
 
 
 const buildInitialEndState = () => {
-  const state: Record<string, any> = {};
+    const state: Record<string, any> = {};
 
-  items.forEach(item => {
-    item.opts.forEach(opt => {
-      state[`${item.value}.${opt}_end`] = [30]
+    items.forEach(item => {
+        item.opts.forEach(opt => {
+            state[`${item.value}.${opt}_end`] = [30]
+        });
     });
-  });
 
-  return state;
+    return state;
 };
 
 
@@ -119,7 +119,7 @@ function CheckboxesWithHeading({
     error,
     invalid,
 }: FormWithHeadingProps
-){
+) {
     return (
         <Box>
             <Heading size="3xl" textAlign="center" mb={10} color="teal.600">
@@ -131,15 +131,15 @@ function CheckboxesWithHeading({
                 <CheckboxGroup color={"black"}
                     invalid={invalid}
                     value={field.value}
-                    onValueChange={field.onChange}
+                    onValueChange={(vals: string[]) => field.onChange(vals)}
                     name={field.name}
                 >
                     <Fieldset.Content>
                         <Grid templateColumns={{
-                                base: "2fr",
-                                md: "repeat(4, 1fr)",
-                                lg: "repeat(4, 1fr)",
-                            }}
+                            base: "2fr",
+                            md: "repeat(4, 1fr)",
+                            lg: "repeat(4, 1fr)",
+                        }}
                             gap={10} maxW="800px" mx="auto">
 
                             {
@@ -156,7 +156,7 @@ function CheckboxesWithHeading({
 
                     </Fieldset.Content>
 
-                <Box h="5" />
+                    <Box h="5" />
 
                 </CheckboxGroup>
 
@@ -188,7 +188,7 @@ function SlidersItems() {
     const { data } = useFilters();
 
     const filteredItems = items.filter(item =>
-        data.filters.includes(item.label)
+        data.filters.includes(item.value)
     );
 
     const [Values, setValues] = useState<Record<string, any>>(buildInitialState);
@@ -208,72 +208,67 @@ function SlidersItems() {
         }));
     };
 
+    const sliders = filteredItems.flatMap(obj =>
+        obj.opts.map(opt => {
+            const key = `${obj.value}.${opt}`;
+            const Value = Values[key] ?? 0; // upewniamy się, że to liczba
+            return (
+                <Slider.Root
+                    key={key}
+                    value={[Value]} // slider wymaga tablicy
+                    onValueChange={(details) =>
+                        setSliderValue(obj.value, opt, details.value[0])
+                    }
+                    onValueChangeEnd={(details) => {
+                        setEndSliderValue(obj.value, `${opt}_end`, details.value[0]);
+                    }}
+                >
+                    <Slider.Control>
+                        <Slider.Track>
+                            <Slider.Range />
+                        </Slider.Track>
+                        <Slider.Thumbs />
+                    </Slider.Control>
+                </Slider.Root>
+            );
+        })
+    );
+
     return (
-        <Box>
-            {
-                filteredItems.map(obj => obj.opts.map(
-                        opt => {
-                            const key = `${obj.value}.${opt}`;
-                            const Value = Values[key];
-                            console.log(key, Value)
-                            return (
-                                <Slider.Root key={key}
-                                    value={[Value]}
-                                    onValueChange={(details) => setSliderValue(obj.value, opt, details.value[0])}
-                                    onValueChangeEnd={(details) => {
-                                        console.log("ustawiam dla ", obj.label);
-                                        setEndSliderValue(obj.value, `${opt}_end`, details.value[0]);
-                                        // ctrl.onEnd(e.value[0]);
-                                    }} >
-
-                                    <Slider.Control>
-                                        <Slider.Track>
-                                            <Slider.Range />
-                                        </Slider.Track>
-                                        <Slider.Thumbs />
-                                    </Slider.Control>
-                                </Slider.Root>
-                            )
-
-                        }
-                    )
-                )
-            }
-        </Box>
+        <Box>{sliders}</Box>
     )
 
 }
 
 
-function Page(){
+function Page() {
 
     const { handleSubmit, control, formState: { errors } } = useForm<FiltersData>({
         resolver: standardSchemaResolver(FiltersFormSchema),
         defaultValues: {
-            filters: [],  
-            effects: [],  
+            filters: [],
+            effects: [],
         }
     })
 
 
-   const filtersField = useController({ control, name: "filters" });
-   const effectsField = useController({ control, name: "effects" });
+    const filtersField = useController({ control, name: "filters" });
+    const effectsField = useController({ control, name: "effects" });
 
-   const { data, setData } = useFilters();
-
+    const { data, setData } = useFilters();
 
     const invalid = !!errors.filters
     const invalid_eff = !!errors.effects
 
 
-    return(
+    return (
         <Box minH="100vh" bg="gray.50" p={10}>
             <form onSubmit={
-                handleSubmit((data) => {
-                    setData(data);
-                    console.log(data.filters, data.effects)
+                handleSubmit((formData) => {
+                    console.log("SUBMITTED", formData);
+                    setData(formData);
                 }
-            )
+                )
             } >
                 {/* <Stack direction="row" gap={60} justifyContent="center" alignItems="center" > */}
                 <CheckboxesWithHeading field={filtersField.field}
@@ -303,7 +298,7 @@ function Page(){
                 {/* </Stack> */}
             </form>
 
-            <SlidersItems/>
+            <SlidersItems />
 
         </Box>
     )
@@ -313,7 +308,7 @@ function Page(){
 export default function Home() {
     return (
         <FiltersProvider>
-           <Page/>
+            <Page />
         </FiltersProvider>
     )
 }
