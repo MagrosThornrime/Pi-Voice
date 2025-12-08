@@ -1,8 +1,9 @@
 "use client";
-import { Box, Checkbox, Button, Fieldset, Stack, Text, CheckboxGroup, Heading, Flex, Grid, Slider } from "@chakra-ui/react";
+import { Box, Checkbox, Button, Fieldset, Stack, Text, CheckboxGroup, Heading, Collapsible, Flex, Grid, Slider } from "@chakra-ui/react";
 import React, { useContext, ReactNode, useEffect, createContext, useState, Fragment} from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { useController, ControllerRenderProps, SubmitHandler, useForm, FieldError } from "react-hook-form"
+import { LuChevronRight } from "react-icons/lu"
 import { z } from "zod"
 
 
@@ -48,8 +49,13 @@ export function useFilters() {
     return ctx;
 }
 
+type MyItems = {
+    label: string;
+    value: string;
+    opts: string[];
+};
 
-const items = [
+const items:MyItems[] = [
     { label: "AllPass", value: "allpass", opts: ["a", "aa"] },
     { label: "BandPass", value: "bandpass", opts: ["b", "bb"] },
     { label: "ButterWorth", value: "butterworth", opts: ["c", "cc"] },
@@ -61,7 +67,7 @@ const items = [
 ]
 
 
-const effects = [
+const effects:MyItems[] = [
     { label: "aaa", value: "aaa", opts: ["a", "aa"] },
     { label: "bbb", value: "bbb", opts: ["b", "bb"] },
     { label: "ccc", value: "ccc", opts: ["c", "cc"] },
@@ -71,6 +77,8 @@ const effects = [
     { label: "ggg", value: "ggg", opts: ["g", "gg"] },
     { label: "hhh", value: "hhh", opts: ["h", "hh"] }
 ]
+
+
 
 
 type FormWithHeadingProps = {
@@ -183,12 +191,18 @@ function CheckboxesWithHeading({
 }
 
 
-function SlidersItems() {
+type SlidersItemsProps = {
+  neededItems: MyItems[];
+  attr: "filters" | "effects"; 
+};
+
+
+function SlidersItems({neededItems, attr} : SlidersItemsProps) {
 
     const { data } = useFilters();
 
-    const filteredItems = items.filter(item =>
-        data.filters.includes(item.value)
+    const filteredItems = neededItems.filter(item =>
+        data[attr].includes(item.value)
     );
 
     const [Values, setValues] = useState<Record<string, any>>(buildInitialState);
@@ -212,7 +226,7 @@ function SlidersItems() {
     {
         return (
               <React.Fragment key={obj.value}>
-                <Box p={5} bg="grey" rounded="2xl" maxW="300px" shadow="md">
+                <Box p={5} bg="grey" rounded="2xl" maxW="100%" shadow="md">
                         <Text mb={2} fontWeight="medium" textAlign="center">{obj.value}</Text>
                 {
                     obj.opts.map(opt => {
@@ -241,16 +255,39 @@ function SlidersItems() {
                     })
                 }
                 </Box>
-                <Box h="10" />
+                {/* <Box h="10" /> */}
             </React.Fragment>
         )
     }) ;
 
     return (
         <Box>
-            <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)", lg: "repeat(3, 1fr)", }} gap={10} maxW="1000px" mx="auto">
-                {sliders}
-            </Grid>
+            <Collapsible.Root defaultOpen justifyItems={"center"}>
+
+                <Collapsible.Trigger paddingY="3" display="flex" gap="2" alignItems="center" justifyItems={"center"}>
+
+                <Collapsible.Indicator
+                    transition="transform 0.2s"
+                    _open={{ transform: "rotate(90deg)" }} >
+                    <LuChevronRight size={24} color = "black" />
+                </Collapsible.Indicator>
+
+                <Box maxW = "100%">
+                    <Text textStyle="2xl" mb={2} color = "teal.600" fontWeight="semibold" textAlign="center"> Toggle {attr} </Text>
+                </Box>
+
+                </Collapsible.Trigger>
+
+                <Collapsible.Content maxW = "100%" minW="70%">
+
+                    <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)", lg: "repeat(3, 1fr)", }} gap={10} maxW="1000px" mx="auto">
+                        {sliders}
+                    </Grid>
+
+              </Collapsible.Content>
+
+            </Collapsible.Root>
+
         </Box>
     )
 
@@ -316,7 +353,9 @@ function Page() {
 
             <Box h="10" />
 
-            <SlidersItems />
+            <SlidersItems neededItems = {items} attr = "filters"/>
+            <Box h="10" />
+            <SlidersItems neededItems = {effects} attr = "effects"/>
 
         </Box>
     )
