@@ -28,7 +28,7 @@ const FiltersContext = createContext<FiltersContextType | undefined>(undefined);
 
 export function FiltersProvider({ children }: { children: ReactNode }) {
     const [data, setData] = useState<FiltersData>({
-        filters: ["allpass", "bandpass"],
+        filters: [],
         effects: []
     });
 
@@ -223,6 +223,7 @@ function SlidersItems() {
                         setEndSliderValue(obj.value, `${opt}_end`, details.value[0]);
                     }}
                 >
+                    <Slider.Label color="black"> {`${obj.value} - ${opt}`} </Slider.Label>
                     <Slider.Control>
                         <Slider.Track>
                             <Slider.Range />
