@@ -5,6 +5,7 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { useController, ControllerRenderProps, useForm, FieldError } from "react-hook-form"
 import { LuChevronRight } from "react-icons/lu"
 import { z } from "zod"
+import { Truculenta } from "next/font/google";
 
 
 const FiltersFormSchema = z.object({
@@ -19,10 +20,12 @@ const FiltersFormSchema = z.object({
 
 type FiltersData = z.infer<typeof FiltersFormSchema>
 
+
 type FiltersContextType = {
     data: FiltersData;
     setData: (value: FiltersData) => void;
 };
+
 
 const FiltersContext = createContext<FiltersContextType | undefined>(undefined);
 
@@ -49,36 +52,81 @@ export function useFilters() {
     return ctx;
 }
 
+
+type Opt = {
+    mutable: boolean;
+    continuos?: boolean;
+    logScale?: boolean;
+    range?: number[];
+    step?: number; // log scale will not require step, neither continuos parameters
+}
+
+
 type MyItems = {
     label: string;
     value: string;
-    opts: string[];
+    opts: Record<string, Opt> [];
 };
 
+
+let defaultOpts: Record<string, Opt>[] = [
+    { order: { mutable: true, continuos: false, logScale: false, range: [0, 1], step: 1 } },
+    { cutoff: { mutable: true, continuos: false, logScale: true, range: [10, 20000] } },
+    { sampleRate: { mutable: false, range: [1000] } },
+    { channels: { mutable: false, range: [2] } }
+]
+
+
 const items:MyItems[] = [
-    { label: "AllPass", value: "allpass", opts: ["a", "aa"] },
-    { label: "BandPass", value: "bandpass", opts: ["b", "bb"] },
-    { label: "ButterWorth", value: "butterworth", opts: ["c", "cc"] },
-    { label: "HighPass", value: "highpass", opts: ["d", "dd"] },
-    { label: "HighShelf", value: "highshelf", opts: ["e", "ee"] },
-    { label: "LowPass", value: "lowpass", opts: ["f", "ff"] },
-    { label: "LowShelf", value: "lowshelf", opts: ["g", "gg"] },
-    { label: "Notch", value: "notch", opts: ["h", "hh"] },
+    { 
+        label: "AllPass", 
+        value: "allpass", 
+        opts: defaultOpts
+    },
+    { 
+        label: "BandPass",
+        value: "bandpass",
+        opts: defaultOpts
+    },
+    { 
+        label: "ButterWorth", 
+        value: "butterworth", 
+        opts: defaultOpts
+    },
+    { 
+        label: "HighPass",
+        value: "highpass",
+        opts: defaultOpts
+    },
+    { 
+        label: "HighShelf",
+        value: "highshelf",
+        opts: defaultOpts },
+    { 
+        label: "LowPass",
+        value: "lowpass",
+        opts: defaultOpts },
+    { 
+        label: "LowShelf",
+        value: "lowshelf",
+        opts: defaultOpts },
+    { 
+        label: "Notch",
+        value: "notch",
+        opts: defaultOpts },
 ]
 
 
 const effects:MyItems[] = [
-    { label: "aaa", value: "aaa", opts: ["a", "aa"] },
-    { label: "bbb", value: "bbb", opts: ["b", "bb"] },
-    { label: "ccc", value: "ccc", opts: ["c", "cc"] },
-    { label: "ddd", value: "ddd", opts: ["d", "dd"] },
-    { label: "eee", value: "eee", opts: ["e", "ee"] },
-    { label: "fff", value: "fff", opts: ["f", "ff"] },
-    { label: "ggg", value: "ggg", opts: ["g", "gg"] },
-    { label: "hhh", value: "hhh", opts: ["h", "hh"] }
+    { label: "aaa", value: "aaa", opts: defaultOpts },
+    { label: "bbb", value: "bbb", opts: defaultOpts },
+    { label: "ccc", value: "ccc", opts: defaultOpts },
+    { label: "ddd", value: "ddd", opts: defaultOpts },
+    { label: "eee", value: "eee", opts: defaultOpts },
+    { label: "fff", value: "fff", opts: defaultOpts },
+    { label: "ggg", value: "ggg", opts: defaultOpts },
+    { label: "hhh", value: "hhh", opts: defaultOpts }
 ]
-
-
 
 
 type FormWithHeadingProps = {
@@ -92,28 +140,14 @@ type FormWithHeadingProps = {
 };
 
 
-const buildInitialState = () => {
+const buildInitialState = (ifEnd:boolean, initial:number = 0) => {
     const state: Record<string, any> = {};
 
     items.forEach(item => {
         item.opts.forEach(opt => {
-            state[`${item.value}.${opt}`] = [30]
+            state[`${item.value}.${Object.keys(opt)[0]}${ifEnd && "_end"}`] = [initial]
         });
     });
-
-    return state;
-};
-
-
-const buildInitialEndState = () => {
-    const state: Record<string, any> = {};
-
-    items.forEach(item => {
-        item.opts.forEach(opt => {
-            state[`${item.value}.${opt}_end`] = [30]
-        });
-    });
-
     return state;
 };
 
@@ -205,8 +239,8 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
         data[attr].includes(item.value)
     );
 
-    const [Values, setValues] = useState<Record<string, any>>(buildInitialState);
-    const [EndValues, setEndValues] = useState<Record<string, any>>(buildInitialEndState);
+    const [Values, setValues] = useState<Record<string, any>>(buildInitialState(false));
+    const [EndValues, setEndValues] = useState<Record<string, any>>(buildInitialState(true));
 
     const setSliderValue = (itemValue: string, opt: string, newValue: number) => {
         setValues(prev => ({
@@ -218,7 +252,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
     const setEndSliderValue = (itemValue: string, opt: string, newValue: number) => {
         setEndValues(prev => ({
             ...prev,
-            [`${itemValue}.${opt}`]: newValue
+            [`${itemValue}.${opt}_end`]: newValue
         }));
     };
 
@@ -229,26 +263,27 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                     <Text mb={2} fontWeight="medium" textAlign="center">{obj.value}</Text>
                     {
                         obj.opts.map(opt => {
-                            const key = `${obj.value}.${opt}`;
-                            const Value = Values[key] ?? 0; // upewniamy się, że to liczba
+                            const opt_key = Object.keys(opt)[0];
+                            const state_key = `${obj.value}.${opt_key}`;
+                            const Value = Values[state_key] ?? 0; // upewniamy się, że to liczba
                             return (
-                                <Fragment key={`${obj.value}.${opt}`}>
+                                <Fragment key={`${obj.value}.${opt_key}`}>
                                     <Slider.Root
-                                        key={key}
+                                        key={state_key}
                                         value={[Value]} // slider wymaga tablicy
 
                                         onValueChange={(details) => {
-                                            setSliderValue(obj.value, opt, details.value[0])
-                                            console.log("SLIDER VALUE: ", Values[key])
+                                            setSliderValue(obj.value, opt_key, details.value[0])
+                                            console.log("SLIDER VALUE: ", Values[state_key])
                                         }}
 
                                         onValueChangeEnd={(details) => {
-                                            setEndSliderValue(obj.value, `${opt}_end`, details.value[0]);
-                                            console.log("SLIDER END VALUE: ", EndValues[`${key}_end`])
+                                            setEndSliderValue(obj.value, opt_key, details.value[0]);
+                                            console.log("SLIDER END VALUE: ", EndValues[`${state_key}_end`])
                                             // integration with backend will be here
                                         }} >
 
-                                        <Slider.Label color="white"> {`${opt}`} </Slider.Label>
+                                        <Slider.Label color="white"> {`${opt_key}`} </Slider.Label>
                                         <Slider.Control>
                                             <Slider.Track>
                                                 <Slider.Range />
@@ -258,7 +293,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                     </Slider.Root>
 
                                     <Stack mt="3" gap="1">
-                                        <Text> Wartość: <b>{Math.round(EndValues[`${key}_end`] * 100) / 100}</b> </Text>
+                                        <Text> Wartość: <b>{Math.round(EndValues[`${state_key}_end`] * 100) / 100}</b> </Text>
                                     </Stack>
                                     <Box h="5" />
 
