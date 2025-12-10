@@ -5,7 +5,6 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { useController, ControllerRenderProps, useForm, FieldError } from "react-hook-form"
 import { LuChevronRight } from "react-icons/lu"
 import { z } from "zod"
-import { Truculenta } from "next/font/google";
 
 
 const FiltersFormSchema = z.object({
@@ -101,19 +100,23 @@ const items:MyItems[] = [
     { 
         label: "HighShelf",
         value: "highshelf",
-        opts: defaultOpts },
+        opts: defaultOpts 
+    },
     { 
         label: "LowPass",
         value: "lowpass",
-        opts: defaultOpts },
+        opts: defaultOpts 
+    },
     { 
         label: "LowShelf",
         value: "lowshelf",
-        opts: defaultOpts },
+        opts: defaultOpts 
+    },
     { 
         label: "Notch",
         value: "notch",
-        opts: defaultOpts },
+        opts: defaultOpts 
+    },
 ]
 
 
@@ -150,6 +153,17 @@ const buildInitialState = (ifEnd:boolean, initial:number = 0) => {
     });
     return state;
 };
+
+
+function calcLogarithmicScale(x:number, lims:number[]){
+    if (x == 0){
+        return 0;
+    }
+    console.log(x, lims[0], lims[1]);
+    let res = Math.log10(lims[0]) + x/100 * ( Math.log10(lims[1]) - Math.log10(lims[0]) )
+    console.log("RES:", res)
+    return res;
+}
 
 
 function CheckboxesWithHeading({
@@ -256,6 +270,8 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
         }));
     };
 
+    const [status, setStatus] = useState<string>("logarithmic");
+
     const sliders = filteredItems.flatMap(obj => {
         return (
             <Fragment key={obj.value}>
@@ -265,12 +281,12 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                         obj.opts.map(opt => {
                             const opt_key = Object.keys(opt)[0];
                             const state_key = `${obj.value}.${opt_key}`;
-                            const Value = Values[state_key] ?? 0; // upewniamy się, że to liczba
+                            const Value = Values[state_key] ?? 0;
                             return (
                                 <Fragment key={`${obj.value}.${opt_key}`}>
                                     <Slider.Root
                                         key={state_key}
-                                        value={[Value]} // slider wymaga tablicy
+                                        value={[Value]}
 
                                         onValueChange={(details) => {
                                             setSliderValue(obj.value, opt_key, details.value[0])
@@ -279,6 +295,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
 
                                         onValueChangeEnd={(details) => {
                                             setEndSliderValue(obj.value, opt_key, details.value[0]);
+
                                             console.log("SLIDER END VALUE: ", EndValues[`${state_key}_end`])
                                             // integration with backend will be here
                                         }} >
@@ -292,11 +309,27 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                         </Slider.Control>
                                     </Slider.Root>
 
-                                    <Stack mt="3" gap="1">
-                                        <Text> Wartość: <b>{Math.round(EndValues[`${state_key}_end`] * 100) / 100}</b> </Text>
-                                    </Stack>
-                                    <Box h="5" />
+                                    <Flex gap={10}>
+                                        <Text> Wartość:
+                                            {
+                                                ("logScale" in opt[opt_key] && opt[opt_key].logScale && status === "logarithmic") ?
+                                                (
+                                                    Math.round(Math.pow(10,
+                                                     calcLogarithmicScale(EndValues[`${state_key}_end`], opt[opt_key].range ?? [1, 1]))*100)/100
+                                                ):
+                                                (<b>{Math.round(EndValues[`${state_key}_end`] * 100) / 100}</b>)
+                                            }   
+                                         </Text>
+                                        {
+                                           "logScale" in opt[opt_key] && opt[opt_key].logScale &&
+                                           <Button bg={status === "linear" ? "green.400" : "red.400"}
+                                            onClick={() => setStatus(v => v === "linear" ? "logarithmic" : "linear")}>
+                                                {status}
+                                            </Button>
+                                        }
+                                    </Flex>
 
+                                    <Box h="5" />
                                 </Fragment>
                             );
                         })

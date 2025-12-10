@@ -1,7 +1,7 @@
 "use client";
 import { Chart, useChart } from "@chakra-ui/charts";
-import { Box,createListCollection,Flex,Group, Grid, Portal,Select,Stack,Text, ListCollection } from "@chakra-ui/react";
-import {useState, useMemo, useEffect, memo} from "react";
+import { Box,createListCollection, Grid, Portal,Select,Text, ListCollection } from "@chakra-ui/react";
+import {useState, useEffect, memo} from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { usePreset } from "@/components/ui/presetsProvider";
 
