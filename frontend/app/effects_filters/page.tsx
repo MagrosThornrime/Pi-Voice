@@ -56,7 +56,7 @@ type Opt = {
     mutable: boolean;
     continuos?: boolean;
     logScale?: boolean;
-    range?: number[];
+    range: number[];
     step?: number; // log scale will not require step, neither continuos parameters
 }
 
@@ -156,13 +156,50 @@ const buildInitialState = (ifEnd:boolean, initial:number = 0) => {
 
 
 function calcLogarithmicScale(x:number, lims:number[]){
+    // changes position on slider to log10 value of number, which bound are in lims
     if (x == 0){
         return 0;
     }
     console.log(x, lims[0], lims[1]);
-    let res = Math.log10(lims[0]) + x/100 * ( Math.log10(lims[1]) - Math.log10(lims[0]) )
+    let res = Math.log10( lims[0] ) + x/100 * ( Math.log10(lims[1]) - Math.log10(lims[0]) )
     console.log("RES:", res)
+    console.log("x:", x, "RES POW: ", Math.pow(10, res))
     return res;
+}
+
+
+type linearAtrr = {
+    percent: number;
+    closestPowers: number[];
+}
+
+
+function calcLinearScale(x:number, lims:number[]):number {
+    let lower_bound = Math.pow(10, Math.floor(Math.log10(x)))
+    let upper_bound = Math.pow(10, Math.ceil(Math.log10(x)))
+
+    if (lower_bound === upper_bound){
+        if (lower_bound == lims[1]){
+            return 100;
+        }
+        return 0;
+    }
+    console.log(x, lower_bound, upper_bound);
+    return x/(upper_bound - lower_bound) * 100;
+}
+
+
+function getBounds(x:number, lims: number[]):number[] {
+    let lower_bound = Math.pow(10, Math.floor(Math.log10(x)))
+    let upper_bound = Math.pow(10, Math.ceil(Math.log10(x)))
+    console.log("BOUNDS", x, lower_bound, upper_bound)
+    if (lower_bound === upper_bound){
+        if (lower_bound == lims[1]){
+            [lims[1]/10, lims[1]]
+        }
+        return [lower_bound, lower_bound*10]
+    }
+    return [lower_bound, upper_bound]
 }
 
 
@@ -197,7 +234,6 @@ function CheckboxesWithHeading({
                             lg: "repeat(4, 1fr)",
                         }}
                             gap={10} maxW="800px" mx="auto">
-
                             {
                                 formItems.map((item) => (
                                     <Checkbox.Root key={item.value} value={item.value}>
@@ -270,6 +306,12 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
         }));
     };
 
+    useEffect(() => {
+        console.log("EndValues changed:", EndValues);
+    } , [EndValues]);
+
+
+
     const [status, setStatus] = useState<string>("logarithmic");
 
     const sliders = filteredItems.flatMap(obj => {
@@ -281,7 +323,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                         obj.opts.map(opt => {
                             const opt_key = Object.keys(opt)[0];
                             const state_key = `${obj.value}.${opt_key}`;
-                            const Value = Values[state_key] ?? 0;
+                            const Value = Values[state_key];
                             return (
                                 <Fragment key={`${obj.value}.${opt_key}`}>
                                     <Slider.Root
@@ -295,7 +337,6 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
 
                                         onValueChangeEnd={(details) => {
                                             setEndSliderValue(obj.value, opt_key, details.value[0]);
-
                                             console.log("SLIDER END VALUE: ", EndValues[`${state_key}_end`])
                                             // integration with backend will be here
                                         }} >
@@ -315,7 +356,8 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                                 ("logScale" in opt[opt_key] && opt[opt_key].logScale && status === "logarithmic") ?
                                                 (
                                                     Math.round(Math.pow(10,
-                                                     calcLogarithmicScale(EndValues[`${state_key}_end`], opt[opt_key].range ?? [1, 1]))*100)/100
+                                                     calcLogarithmicScale(EndValues[`${state_key}_end`], opt[opt_key].range)))
+                                                     // round is for now, because it currenly only concerns Cuttof filter parameter
                                                 ):
                                                 (<b>{Math.round(EndValues[`${state_key}_end`] * 100) / 100}</b>)
                                             }   
@@ -323,7 +365,42 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                         {
                                            "logScale" in opt[opt_key] && opt[opt_key].logScale &&
                                            <Button bg={status === "linear" ? "green.400" : "red.400"}
-                                            onClick={() => setStatus(v => v === "linear" ? "logarithmic" : "linear")}>
+                                            onClick={() => {
+                                                setStatus(prev => {
+
+                                                const newStatus = prev === "linear" ? "logarithmic" : "linear";
+
+                                                let actRange = getBounds(
+                                                    EndValues[`${state_key}_end`],
+                                                    opt[opt_key].range
+                                                );
+
+                                                let logVal = calcLogarithmicScale(actRange[0] +(EndValues[`${state_key}_end`] / 100) * (actRange[1] - actRange[0]),
+                                                opt[opt_key].range );
+
+                                                let linVal = calcLinearScale(
+                                                    Math.pow( 10, calcLogarithmicScale( EndValues[`${state_key}_end`], opt[opt_key].range )),
+                                                    opt[opt_key].range );
+                                                
+                                                console.log("logval", logVal, "linval", linVal);
+                                                
+                                                setSliderValue(
+                                                    obj.value,
+                                                    opt_key,
+                                                    newStatus === "logarithmic" ? logVal : linVal
+                                                );
+
+                                                setEndSliderValue(
+                                                    obj.value,
+                                                    opt_key,
+                                                    newStatus === "logarithmic" ? logVal : linVal
+                                                );
+
+                                                return newStatus;
+                                                } 
+                                                )
+                                                }
+                                            }>
                                                 {status}
                                             </Button>
                                         }
