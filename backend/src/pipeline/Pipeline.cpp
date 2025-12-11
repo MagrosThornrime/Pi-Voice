@@ -15,6 +15,7 @@ LayerRef Pipeline::add(const LayerRef& layer, u32 i) {
 		i = _layers.size() - 1;
 	}
 
+	std::unique_lock lock(_layersMutex);
 	_layers.insert(_layers.begin() + i, layer);
 	return layer;
 }
@@ -24,6 +25,7 @@ LayerRef Pipeline::remove(const u32 i) {
 		return nullptr;
 	}
 
+	std::unique_lock lock(_layersMutex);
 	LayerRef result = std::move(_layers[i]);
 	_layers.erase(_layers.begin() + i);
 	return result;
@@ -75,26 +77,32 @@ int Pipeline::paCallbackFun(const void* /*inputBuffer*/, void* outputBuffer,
 	return paContinue;
 }
 
-void Pipeline::_generateSound(std::stop_token stopToken, u32 framesPerCall)
+	void Pipeline::_generateSound(std::stop_token stopToken, u32 framesPerCall)
 {
-	std::vector<f32> tempBuffer(framesPerCall);
+	const u32 samplesPerCall = framesPerCall * _channels;
+	std::vector<f32> tempBuffer(samplesPerCall);
 
 	while (!stopToken.stop_requested()) {
-		_voiceManager->generateSound(tempBuffer, framesPerCall);
+		// VoiceManager must fill 'samplesPerCall' floats (interleaved channels)
+		_voiceManager->generateSound(tempBuffer, framesPerCall); // or change signature to accept samplesPerCall
 
-		for (auto&& layer : _layers) {
-			layer->processSound(tempBuffer, tempBuffer, framesPerCall);
+		// process it using filters/effects; they must expect interleaved samples
+		{
+			std::shared_lock lock(_layersMutex); // snapshot or lock layers
+			for (auto&& layer : _layers) {
+				layer->processSound(tempBuffer, tempBuffer, framesPerCall);
+			}
 		}
 
 		for (float sample : tempBuffer) {
-			while (!_outputQueue.push(sample))
+			while (!_outputQueue.push(sample)) // wait until there's space
 				std::this_thread::yield();
 		}
 	}
 }
 
-Pipeline::Pipeline(u32 framesPerCall,
-				   u32 channels,
+
+Pipeline::Pipeline(u32 framesPerCall, u32 channels,
 				   std::shared_ptr<polyphonic::VoiceManager> voiceManager,
 				   std::shared_ptr<fileio::FileRecorder> recorder)
 	: _channels(channels),
@@ -102,11 +110,17 @@ Pipeline::Pipeline(u32 framesPerCall,
 	  _voiceManager(voiceManager),
 	  _recorder(recorder)
 {
-	_producerThread = std::make_shared<std::jthread>(
-		&Pipeline::_generateSound,
-		this,
-		framesPerCall
-	);
-
+	_producerThread = std::jthread(&Pipeline::_generateSound, this, framesPerCall);
+	_running.store(true);
 }
+
+
+Pipeline::~Pipeline() {
+	if (_producerThread.joinable()) {
+		_producerThread.request_stop(); // asks thread to stop
+		_producerThread.join();         // wait for finish
+	}
+	_running.store(false);
+}
+
 } // namespace pipeline

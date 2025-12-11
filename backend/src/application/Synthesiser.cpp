@@ -36,7 +36,7 @@ void Synthesiser::start() {
 		256,
 		paClipOff
 	);
-	_voiceManager->setOscillatorType("square", 0);
+	_voiceManager->setOscillatorType("empty", 0);
 
 	auto& pipelineRef = *_pipeline.get();
 	_stream = std::make_unique<portaudio::InterfaceCallbackStream>(streamParams, pipelineRef);

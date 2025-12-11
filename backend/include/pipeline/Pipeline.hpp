@@ -9,6 +9,7 @@
 #include <utils/SPSCQueue.hpp>
 #include <polyphonic/VoiceManager.hpp>
 #include <fileio/FileRecorder.hpp>
+#include <shared_mutex>
 
 namespace pipeline {
 class Pipeline: public pa::CallbackInterface {
@@ -30,14 +31,19 @@ public:
 		std::shared_ptr<fileio::FileRecorder> recorder
 	);
 
+	~Pipeline();
+
 private:
 	std::vector<std::shared_ptr<Layer>> _layers;
     std::shared_ptr<polyphonic::VoiceManager> _voiceManager;
     std::shared_ptr<fileio::FileRecorder> _recorder;
 
-	std::shared_ptr<std::jthread> _producerThread;
+	std::jthread _producerThread;
+	std::atomic<bool> _running{false};
+	std::shared_mutex _layersMutex; // readers-writer to protect _layers
 	utils::SPSCQueue<f32> _outputQueue;
 	const u32 _channels;
+
 
 	void _generateSound(std::stop_token stopToken, u32 framesPerCall);
 };
