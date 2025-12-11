@@ -6,7 +6,7 @@
 
 namespace polyphonic {
 /// @brief Controls all Voices in the synthesiser and mixes their outputs
-class VoiceManager: public pipeline::Layer {
+class VoiceManager {
 	/// @brief Used Voices
 	std::vector<Voice> _voices;
 
@@ -21,6 +21,8 @@ class VoiceManager: public pipeline::Layer {
 
 	/// @brief Sound's sampling rate
 	f32 _sampleRate;
+
+	u32 _channels;
 
 	/// @brief Oscillator types of the next sound
 	std::string _oscillatorTypes[3] = {"empty", "empty", "empty"};
@@ -48,13 +50,11 @@ public:
 	/// @param voicesNumber the number of notes used by keyboard
 	/// @param sampleRate sound's sample rate
 	/// @param sampleManager sample manager
-	VoiceManager(i32 voicesNumber, f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager);
+	VoiceManager(i32 voicesNumber, f32 sampleRate, u32 channels,
+		 std::shared_ptr<fileio::SampleManager> sampleManager);
 
-	/// @brief PortAudio callback used for streaming the audio
-	int paCallbackFun(const void* input, void* output,
-		unsigned long frameCount,
-		const PaStreamCallbackTimeInfo* timeInfo,
-		PaStreamCallbackFlags statusFlags);
+	/// @brief Callback used for streaming the audio
+	void generateSound(std::vector<f32>& out, u32 frames);
 
 	/// @brief Change the global amplitude
 	/// @param amplitude new global amplitude (between 0 and 1)
@@ -98,9 +98,5 @@ public:
 
 	/// @brief Tells if at least one voice is turned on
 	bool hasActiveVoices();
-
-	// dummy Layer methods
-	pipeline::Layer& setParam(const u32 param, std::any value);
-	std::any getParam(const u32 param);
 };
 }

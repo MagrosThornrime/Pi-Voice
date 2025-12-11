@@ -9,22 +9,16 @@
 #include <mutex>
 
 namespace fileio {
-class FileRecorder: public pipeline::Layer {
+class FileRecorder {
 public:
 	FileRecorder(const u32 sampleRate, const u32 channels = 2, const float seconds = 1, const bool skip = true);
 
-	int paCallbackFun(const void* inputBuffer, void* outputBuffer, unsigned long numFrames,
-		const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) override;
+	void write(const float* buffer, u32 numFrames);
 
 	void setOutputDirectory(const std::string& dir);
 
 	void start();
 	void stop();
-
-	// dummies
-	pipeline::Layer& setParam(const u32, std::any);
-	std::any getParam(const u32);
-
 private:
 	std::string _getFilename();
 	bool _canWriteToDirectory(const std::string& dir);

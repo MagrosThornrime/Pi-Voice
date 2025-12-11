@@ -4,11 +4,12 @@ namespace application {
 
 Synthesiser::Synthesiser(const std::string& recordingPath, i32 channels, i32 sampleRate,
 	const std::string& samplesPath): _sampleRate(sampleRate), _channels(channels) {
-	_pipeline = std::make_shared<pipeline::Pipeline>();
 	_recorder = std::make_shared<fileio::FileRecorder>((u32)sampleRate, (u32)channels);
 	_autoSys = std::make_unique<portaudio::AutoSystem>();
 	_sampleManager = std::make_shared<fileio::SampleManager>(samplesPath, _sampleRate);
-	_voiceManager = std::make_shared<polyphonic::VoiceManager>(128, (f32)sampleRate, _sampleManager);
+	_voiceManager = std::make_shared<polyphonic::VoiceManager>(128, (f32)sampleRate, channels, _sampleManager);
+	_pipeline = std::make_shared<pipeline::Pipeline>(256, channels, _voiceManager, _recorder);
+
 }
 
 void Synthesiser::start() {
@@ -38,8 +39,6 @@ void Synthesiser::start() {
 	_voiceManager->setOscillatorType("square", 0);
 
 	auto& pipelineRef = *_pipeline.get();
-	pipelineRef.add(_voiceManager, 0);
-	pipelineRef.add(_recorder);
 	_stream = std::make_unique<portaudio::InterfaceCallbackStream>(streamParams, pipelineRef);
 	_stream->start();
 	_running = true;

@@ -3,21 +3,21 @@
 
 namespace polyphonic {
 
-int VoiceManager::paCallbackFun(const void* input, void* output,
-	unsigned long frameCount,
-	const PaStreamCallbackTimeInfo* timeInfo,
-	PaStreamCallbackFlags statusFlags) {
-	f32* out = (f32*)output;
-	for (i32 i = 0; i < frameCount; i++) {
+void VoiceManager::generateSound(std::vector<f32>& out, u32 frames)
+{
+	f32* ptr = out.data();
+	for (i32 i = 0; i < frames; i++) {
 		update();
 		f32 sample = _amplitude * _getNextSample();
-		*out++ = sample;
-		*out++ = sample;
+		for (i32 ch = 0; ch < _channels; ch++) {
+			*ptr++ = sample;
+		}
 	}
-	return 0;
 }
 
-VoiceManager::VoiceManager(i32 voicesNumber, f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager) {
+
+VoiceManager::VoiceManager(i32 voicesNumber, f32 sampleRate, u32 channels,
+	std::shared_ptr<fileio::SampleManager> sampleManager): _channels(channels) {
 	for (i32 i = 0; i < voicesNumber; i++) {
 		_voices.emplace_back(sampleRate, sampleManager);
 	}
@@ -143,13 +143,6 @@ bool VoiceManager::hasActiveVoices() {
 		}
 	}
 	return false;
-}
-
-pipeline::Layer& VoiceManager::setParam(const u32 param, std::any value) {
-	return *this;
-}
-std::any VoiceManager::getParam(const u32 param) {
-	return {};
 }
 
 }

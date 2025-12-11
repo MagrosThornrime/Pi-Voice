@@ -35,19 +35,25 @@ std::shared_ptr<BwFilter> BwFilter::create(FilterType::Value filter) {
 	return nullptr;
 }
 
-int BwFilter::paCallbackFun(const void* inputBuffer, void* outputBuffer, unsigned long numFrames,
-	const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) {
-	auto in = (const float*)inputBuffer;
-	auto out = (float*)outputBuffer;
-
+void BwFilter::processSound(std::vector<f32>& inputBuffer,
+							std::vector<f32>& outputBuffer,
+							u32 frames)
+{
+	const float* in  = inputBuffer.data();
+	float* out       = outputBuffer.data();
 
 	u32 idx = 0;
-	for (u32 i = 0; i < numFrames; ++i) {
+	for (u32 i = 0; i < frames; ++i) {
 		for (u32 ch = 0; ch < _channels; ++ch, ++idx) {
-			auto&& prev = _prev[ch];
 
-			float y = _b[0] * in[idx] + _b[1] * prev.x1 + _b[2] * prev.x2
-				- _a[0] * prev.y1 - _a[1] * prev.y2;
+			auto& prev = _prev[ch];
+
+			float y =
+				_b[0] * in[idx] +
+				_b[1] * prev.x1 +
+				_b[2] * prev.x2 -
+				_a[0] * prev.y1 -
+				_a[1] * prev.y2;
 
 			prev.x2 = prev.x1;
 			prev.x1 = in[idx];
@@ -58,9 +64,8 @@ int BwFilter::paCallbackFun(const void* inputBuffer, void* outputBuffer, unsigne
 			out[idx] = y;
 		}
 	}
-
-	return paContinue;
 }
+
 
 void BwFilter::_set(const u32 channels, const std::array<float, 2>& a, const std::array<float, 3>& b) {
 	_channels = channels;
