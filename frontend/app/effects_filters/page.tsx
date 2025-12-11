@@ -54,10 +54,10 @@ export function useFilters() {
 
 type Opt = {
     mutable: boolean;
-    continuos?: boolean;
+    continuous?: boolean;
     logScale?: boolean;
     range: number[];
-    step?: number; // log scale will not require step, neither continuos parameters
+    step?: number; // log scale will not require step, neither continuous parameters
 }
 
 
@@ -69,10 +69,12 @@ type MyItems = {
 
 
 let defaultOpts: Record<string, Opt>[] = [
-    { order: { mutable: true, continuos: false, logScale: false, range: [0, 1], step: 1 } },
-    { cutoff: { mutable: true, continuos: false, logScale: true, range: [10, 20000] } },
-    { sampleRate: { mutable: false, range: [1000, 1000] } },
-    { channels: { mutable: false, range: [2, 2] } }
+    { order: { mutable: true, continuous: false, logScale: false, range: [0, 1], step: 1 } },
+    { cutoff: { mutable: true, continuous: true, logScale: true, range: [10, 20000] } },
+    { gainDB: {mutable: true, continuous: true, logScale: false, range: [-24, 24] } },
+    { quality: {mutable: true, continuous: true, logScale: false, range: [0.1, 20.0] } }
+    // { sampleRate: { mutable: false, range: [1000, 1000] } },
+    // { channels: { mutable: false, range: [2, 2] } }
 ]
 
 
