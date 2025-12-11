@@ -71,8 +71,8 @@ type MyItems = {
 let defaultOpts: Record<string, Opt>[] = [
     { order: { mutable: true, continuos: false, logScale: false, range: [0, 1], step: 1 } },
     { cutoff: { mutable: true, continuos: false, logScale: true, range: [10, 20000] } },
-    { sampleRate: { mutable: false, range: [1000] } },
-    { channels: { mutable: false, range: [2] } }
+    { sampleRate: { mutable: false, range: [1000, 1000] } },
+    { channels: { mutable: false, range: [2, 2] } }
 ]
 
 
@@ -184,7 +184,7 @@ function calcLinearScale(x:number, lims:number[]):number {
         }
         return 0;
     }
-    console.log(x, lower_bound, upper_bound);
+    console.log("LINEAR SCALE:", x, lower_bound, upper_bound);
     return x/(upper_bound - lower_bound) * 100;
 }
 
@@ -350,8 +350,13 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                         </Slider.Control>
                                     </Slider.Root>
 
-                                    <Flex gap={10}>
-                                        <Text> Wartość:
+                                    <Flex justify="space-between" align="center" mb={2} w="100%">
+                                
+                                        <Text> 
+                                            {opt[opt_key].range[0]}
+                                        </Text>
+
+                                        <Text> Val:
                                             {
                                                 ("logScale" in opt[opt_key] && opt[opt_key].logScale && status === "logarithmic") ?
                                                 (
@@ -359,51 +364,53 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                                      calcLogarithmicScale(EndValues[`${state_key}_end`], opt[opt_key].range)))
                                                      // round is for now, because it currenly only concerns Cuttof filter parameter
                                                 ):
-                                                (<b>{Math.round(EndValues[`${state_key}_end`] * 100) / 100}</b>)
+                                                (<b>{Math.round(EndValues[`${state_key}_end`])}</b>)
                                             }   
-                                         </Text>
+                                        </Text>
+
                                         {
                                            "logScale" in opt[opt_key] && opt[opt_key].logScale &&
                                            <Button bg={status === "linear" ? "green.400" : "red.400"}
-                                            onClick={() => {
-                                                setStatus(prev => {
+                                                onClick={() => {
+                                                    setStatus(prev => {
+                                                        const newStatus = prev === "linear" ? "logarithmic" : "linear";
 
-                                                const newStatus = prev === "linear" ? "logarithmic" : "linear";
+                                                        let actRange = getBounds(
+                                                            EndValues[`${state_key}_end`],
+                                                            opt[opt_key].range
+                                                        );
 
-                                                let actRange = getBounds(
-                                                    EndValues[`${state_key}_end`],
-                                                    opt[opt_key].range
-                                                );
+                                                        let logVal = calcLogarithmicScale(
+                                                            actRange[0] + (EndValues[`${state_key}_end`] / 100) * (actRange[1] - actRange[0]),
+                                                            opt[opt_key].range );
 
-                                                let logVal = calcLogarithmicScale(actRange[0] +(EndValues[`${state_key}_end`] / 100) * (actRange[1] - actRange[0]),
-                                                opt[opt_key].range );
+                                                        let linVal = calcLinearScale(
+                                                            Math.pow( 10, calcLogarithmicScale( EndValues[`${state_key}_end`], opt[opt_key].range )),
+                                                            opt[opt_key].range );
+                                                        
+                                                        console.log("logval", logVal, "linval", linVal);
+                                                        
+                                                        setSliderValue(
+                                                            obj.value,
+                                                            opt_key,
+                                                            newStatus === "logarithmic" ? logVal : linVal
+                                                        );
 
-                                                let linVal = calcLinearScale(
-                                                    Math.pow( 10, calcLogarithmicScale( EndValues[`${state_key}_end`], opt[opt_key].range )),
-                                                    opt[opt_key].range );
-                                                
-                                                console.log("logval", logVal, "linval", linVal);
-                                                
-                                                setSliderValue(
-                                                    obj.value,
-                                                    opt_key,
-                                                    newStatus === "logarithmic" ? logVal : linVal
-                                                );
+                                                        setEndSliderValue(
+                                                            obj.value,
+                                                            opt_key,
+                                                            newStatus === "logarithmic" ? logVal : linVal
+                                                        );
 
-                                                setEndSliderValue(
-                                                    obj.value,
-                                                    opt_key,
-                                                    newStatus === "logarithmic" ? logVal : linVal
-                                                );
-
-                                                return newStatus;
-                                                } 
-                                                )
+                                                        return newStatus;
+                                                        } 
+                                                    )
                                                 }
                                             }>
-                                                {status}
+                                            {status}
                                             </Button>
                                         }
+                                        <Text> {opt[opt_key].range[1]}</Text>
                                     </Flex>
 
                                     <Box h="5" />
@@ -435,7 +442,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
 
                 </Collapsible.Trigger>
 
-                <Collapsible.Content maxW="100%" minW="70%">
+                <Collapsible.Content maxW="100%" minW="100%">
 
                     <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)", lg: "repeat(3, 1fr)", }} gap={10} maxW="1000px" mx="auto">
                         {sliders}
