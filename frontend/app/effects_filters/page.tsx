@@ -123,14 +123,14 @@ const items:MyItems[] = [
 
 
 const effects:MyItems[] = [
-    { label: "aaa", value: "aaa", opts: defaultOpts },
-    { label: "bbb", value: "bbb", opts: defaultOpts },
-    { label: "ccc", value: "ccc", opts: defaultOpts },
-    { label: "ddd", value: "ddd", opts: defaultOpts },
-    { label: "eee", value: "eee", opts: defaultOpts },
-    { label: "fff", value: "fff", opts: defaultOpts },
-    { label: "ggg", value: "ggg", opts: defaultOpts },
-    { label: "hhh", value: "hhh", opts: defaultOpts }
+    { label: "echo", value: "echo", opts: defaultOpts },
+    { label: "chorus", value: "chorus", opts: defaultOpts },
+    { label: "delay", value: "delay", opts: defaultOpts },
+    { label: "glitches", value: "glitches", opts: defaultOpts },
+    { label: "reverb", value: "reverb", opts: defaultOpts },
+    { label: "equalizer", value: "equalizer", opts: defaultOpts },
+    { label: "fades", value: "fades", opts: defaultOpts },
+    { label: "noise reduction", value: "noise reduction", opts: defaultOpts }
 ]
 
 
