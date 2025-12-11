@@ -314,8 +314,6 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
 
 
 
-    const [status, setStatus] = useState<string>("logarithmic");
-
     const sliders = filteredItems.flatMap(obj => {
         return (
             <Fragment key={obj.value}>
@@ -360,58 +358,18 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
 
                                         <Text> Val:
                                             {
-                                                ("logScale" in opt[opt_key] && opt[opt_key].logScale && status === "logarithmic") ?
-                                                (
-                                                    Math.round(Math.pow(10,
-                                                     calcLogarithmicScale(EndValues[`${state_key}_end`], opt[opt_key].range)))
-                                                     // round is for now, because it currenly only concerns Cuttof filter parameter
-                                                ):
-                                                (<b>{Math.round(EndValues[`${state_key}_end`])}</b>)
-                                            }   
+                                                opt[opt_key].logScale
+                                                    ? (() => {
+                                                        const logVal = Math.pow(10, calcLogarithmicScale(EndValues[`${state_key}_end`], opt[opt_key].range));
+                                                        console.log(`LOG SCALE for ${obj.value}.${opt_key}: slider=${EndValues[`${state_key}_end`]} → value=${logVal}`);
+                                                        return Math.round(logVal);
+                                                    })()
+                                                    : Math.round(EndValues[`${state_key}_end`])
+                                            }
+
+
                                         </Text>
 
-                                        {
-                                           "logScale" in opt[opt_key] && opt[opt_key].logScale &&
-                                           <Button bg={status === "linear" ? "green.400" : "red.400"}
-                                                onClick={() => {
-                                                    setStatus(prev => {
-                                                        const newStatus = prev === "linear" ? "logarithmic" : "linear";
-
-                                                        let actRange = getBounds(
-                                                            EndValues[`${state_key}_end`],
-                                                            opt[opt_key].range
-                                                        );
-
-                                                        let logVal = calcLogarithmicScale(
-                                                            actRange[0] + (EndValues[`${state_key}_end`] / 100) * (actRange[1] - actRange[0]),
-                                                            opt[opt_key].range );
-
-                                                        let linVal = calcLinearScale(
-                                                            Math.pow( 10, calcLogarithmicScale( EndValues[`${state_key}_end`], opt[opt_key].range )),
-                                                            opt[opt_key].range );
-                                                        
-                                                        console.log("logval", logVal, "linval", linVal);
-                                                        
-                                                        setSliderValue(
-                                                            obj.value,
-                                                            opt_key,
-                                                            newStatus === "logarithmic" ? logVal : linVal
-                                                        );
-
-                                                        setEndSliderValue(
-                                                            obj.value,
-                                                            opt_key,
-                                                            newStatus === "logarithmic" ? logVal : linVal
-                                                        );
-
-                                                        return newStatus;
-                                                        } 
-                                                    )
-                                                }
-                                            }>
-                                            {status}
-                                            </Button>
-                                        }
                                         <Text> {opt[opt_key].range[1]}</Text>
                                     </Flex>
 
