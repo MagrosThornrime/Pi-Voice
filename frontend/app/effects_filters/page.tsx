@@ -69,7 +69,7 @@ type MyItems = {
 
 
 let defaultOpts: Record<string, Opt>[] = [
-    { order: { mutable: true, continuous: false, logScale: false, range: [0, 1], step: 1 } },
+    // { order: { mutable: true, continuous: false, logScale: false, range: [0, 1], step: 1 } },
     { cutoff: { mutable: true, continuous: true, logScale: true, range: [10, 20000] } },
     { gainDB: {mutable: true, continuous: true, logScale: false, range: [-24, 24] } },
     { quality: {mutable: true, continuous: true, logScale: false, range: [0.1, 20.0] } }
