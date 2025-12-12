@@ -81,11 +81,6 @@ void Synthesiser::setOscillatorType(const std::string& type, i32 index) {
 	_voiceManager->setOscillatorType(type, index);
 }
 
-void Synthesiser::setOscillatorAmplitude(f32 amplitude, i32 index) {
-	auto lock = std::lock_guard(_mutex);
-	_voiceManager->setOscillatorAmplitude(amplitude, index);
-}
-
 void Synthesiser::setAttack(f32 attack) {
 	auto lock = std::lock_guard(_mutex);
 	_voiceManager->setAttack(attack);

@@ -10,7 +10,7 @@ int VoiceManager::paCallbackFun(const void* input, void* output,
 	f32* out = (f32*)output;
 	for (i32 i = 0; i < frameCount; i++) {
 		update();
-		f32 sample = _amplitude * _getNextSample();
+		f32 sample = _getNextSample();
 		*out++ = sample;
 		*out++ = sample;
 	}
@@ -28,18 +28,13 @@ void VoiceManager::setOscillatorType(const std::string& type, i32 index) {
 		throw std::invalid_argument(fmt::format("Invalid index value of: {}", index));
 	}
 	auto lock = std::lock_guard(_oscillatorMutex);
+    if(_oscillatorTypes[index] == "empty" && type != "empty") {
+        _nonEmpty++;
+    }
+    else if(_oscillatorTypes[index] != "empty" && type == "empty") {
+        _nonEmpty--;
+    }
 	_oscillatorTypes[index] = type;
-}
-
-void VoiceManager::setOscillatorAmplitude(f32 amplitude, i32 index) {
-	if (index < 0 || index > 2) {
-		throw std::invalid_argument(fmt::format("Invalid index value of: {}", index));
-	}
-	if (amplitude < 0.0f || amplitude > 1.0f) {
-		throw std::invalid_argument(fmt::format("Invalid amplitude value of: {}", amplitude));
-	}
-	auto lock = std::lock_guard(_oscillatorMutex);
-	_oscillatorAmplitudes[index] = amplitude;
 }
 
 void VoiceManager::setAmplitude(f32 amplitude) {
@@ -58,7 +53,7 @@ f32 VoiceManager::_getNextSample() {
 		}
 		sample += voice.getNextSample();
 	}
-	return sample;
+	return _amplitude * sample / _nonEmpty / _voices.size();
 }
 
 void VoiceManager::update() {
@@ -86,7 +81,6 @@ void VoiceManager::turnOn(i32 voiceNumber) {
 	_voices[index].setNote(voiceNumber);
 	for (i32 i = 0; i < 3; i++) {
 		_voices[index].setOscillatorType(_oscillatorTypes[i], i);
-		_voices[index].setOscillatorAmplitude(_amplitude, i);
 	}
 	_voices[index].setAttack(_attack);
 	_voices[index].setDecay(_decay);

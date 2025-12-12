@@ -27,7 +27,7 @@ void Voice::setOscillatorType(const std::string& oscillatorType, i32 index) {
 f32 Voice::getNextSample(){
     f32 sample = 0.0f;
     for (i32 i=0; i<3; i++){
-        sample += _amplitudes[i] * _oscillators[i]->getNextSample();
+        sample += _oscillators[i]->getNextSample();
     }
 	return _adsr.getAmplitude(isPressed) * sample;
 }
@@ -38,15 +38,10 @@ void Voice::update(){
     }
 }
 
-void Voice::setOscillatorAmplitude(f32 amplitude, i32 index){
-    _amplitudes[index] = amplitude;
-}
-
 Voice::Voice(f32 sampleRate, std::shared_ptr<fileio::SampleManager> sampleManager)
 : _sampleRate(sampleRate), _sampleManager(sampleManager) {
     for (i32 i=0; i<3; i++){
         setOscillatorType("empty", i);
-        setOscillatorAmplitude(1.0, i);
     }
 }
 
