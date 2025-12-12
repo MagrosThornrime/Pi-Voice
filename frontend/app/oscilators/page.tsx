@@ -1,14 +1,16 @@
 "use client";
 import { Chart, useChart } from "@chakra-ui/charts";
-import { Box,createListCollection,Flex,Group, Grid, Portal,Select,Stack,Text, ListCollection } from "@chakra-ui/react";
-import {useState, useMemo, useEffect, memo} from "react";
+import { Box,createListCollection, Grid, Portal,Select,Text, ListCollection } from "@chakra-ui/react";
+import {useState, useEffect, memo} from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { usePreset } from "@/components/ui/presetsProvider";
+
 
 type OscillatorItem = {
   value: string;
   label: string;
 };
+
 
 function get_example_data(n: number, domain: number[], func : (X:number) => number) {
   return Array.from({ length: n }, (_, i) => ({
@@ -73,10 +75,10 @@ const oscillatorsFuncMapping: Record<string, (X:number) => number> = {
   sine: ((x) => Math.sin(3 * x)),
   square: ((x => square_wave(x, 2.0))),
   triangle: ((x) => triangle_wave(x, 2.0)),
-  noise: ((x) => Math.sin(3 * x) + Math.random()/2),
   empty: (() => 0.0),
   sawtooth: ((x) => sawtooth_func(x, 2.0))
 }
+
 
 type FunctionChartProps = {
   func: (x: number) => number;
@@ -150,7 +152,6 @@ function FunctionChart({func, domain = [0, 10], n = 1000}: FunctionChartProps){
 
 
 const MemoFunctionChart = memo(FunctionChart);
-
 function getOscillatorFunction(name: string){
   return oscillatorsFuncMapping[name] ?? oscillatorsFuncMapping["empty"]
 }
@@ -183,9 +184,9 @@ export default function Page() {
     });
   }
 
-const [oscillatorTypes, setOscillatorTypes] = useState<ListCollection<OscillatorItem>>(
-  createListCollection<OscillatorItem>({ items: [] })
-);
+  const [oscillatorTypes, setOscillatorTypes] = useState<ListCollection<OscillatorItem>>(
+    createListCollection<OscillatorItem>({ items: [] })
+  );
 
   useEffect(() => {
     const load = async () => {

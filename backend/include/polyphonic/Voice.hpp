@@ -11,9 +11,6 @@ class Voice {
 	/// @brief Current oscillators
     std::shared_ptr<oscillators::Oscillator> _oscillators[3];
 
-	/// @brief Oscillators' amplitudes
-	f32 _amplitudes[3];
-
 	/// @brief The note's index
 	i32 _voiceNumber;
 
@@ -40,11 +37,6 @@ public:
 	/// @param oscillatorType type of the new oscillator
 	/// @param index id of the oscillator (0, 1 or 2)
     void setOscillatorType(const std::string& oscillatorType, i32 index);
-
-	/// @brief Sets amplitude for a given oscillator
-	/// @param amplitude value of the amplitude (between 0 and 1)
-	/// @param index id of the oscillator (0, 1 or 2)
-	void setOscillatorAmplitude(f32 amplitude, i32 index);
 
 	/// @brief Gets current sample of the sound
     f32 getNextSample();

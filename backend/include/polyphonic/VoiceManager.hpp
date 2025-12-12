@@ -27,6 +27,8 @@ class VoiceManager {
 	/// @brief Oscillator types of the next sound
 	std::string _oscillatorTypes[3] = {"empty", "empty", "empty"};
 
+	i32 _nonEmpty = 0;
+
 	/// @brief Oscillator amplitudes of the next sound
 	f32 _oscillatorAmplitudes[3] = {1.0f, 1.0f, 1.0f};
 
@@ -64,11 +66,6 @@ public:
 	/// @param type type of the new oscillator
 	/// @param index id of the new oscillator (0, 1 or 2)
 	void setOscillatorType(const std::string& type, i32 index);
-
-	/// @brief Changes amplitude of a given oscillator for all Voices
-	/// @param amplitude amplitude of the oscillator (between 0 and 1)
-	/// @param index id of the new oscillator (0, 1 or 2)
-	void setOscillatorAmplitude(f32 amplitude, i32 index);
 
 	/// @brief Advance all oscillators
 	void update();

@@ -7,7 +7,7 @@ Synthesiser::Synthesiser(const std::string& recordingPath, i32 channels, i32 sam
 	_recorder = std::make_shared<fileio::FileRecorder>((u32)sampleRate, (u32)channels);
 	_autoSys = std::make_unique<portaudio::AutoSystem>();
 	_sampleManager = std::make_shared<fileio::SampleManager>(samplesPath, _sampleRate);
-	_voiceManager = std::make_shared<polyphonic::VoiceManager>(128, (f32)sampleRate, channels, _sampleManager);
+	_voiceManager = std::make_shared<polyphonic::VoiceManager>(6, (f32)sampleRate, channels, _sampleManager);
 	_pipeline = std::make_shared<pipeline::Pipeline>(256, channels, _voiceManager, _recorder);
 
 }
@@ -78,11 +78,6 @@ void Synthesiser::setAmplitude(f32 amplitude) {
 void Synthesiser::setOscillatorType(const std::string& type, i32 index) {
 	auto lock = std::lock_guard(_mutex);
 	_voiceManager->setOscillatorType(type, index);
-}
-
-void Synthesiser::setOscillatorAmplitude(f32 amplitude, i32 index) {
-	auto lock = std::lock_guard(_mutex);
-	_voiceManager->setOscillatorAmplitude(amplitude, index);
 }
 
 void Synthesiser::setAttack(f32 attack) {
