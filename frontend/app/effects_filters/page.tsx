@@ -78,48 +78,17 @@ let defaultOpts: Record<string, Opt>[] = [
 ]
 
 
-const items:MyItems[] = [
-    { 
-        label: "AllPass", 
-        value: "allpass", 
-        opts: defaultOpts
-    },
-    { 
-        label: "BandPass",
-        value: "bandpass",
-        opts: defaultOpts
-    },
-    { 
-        label: "ButterWorth", 
-        value: "butterworth", 
-        opts: defaultOpts
-    },
-    { 
-        label: "HighPass",
-        value: "highpass",
-        opts: defaultOpts
-    },
-    { 
-        label: "HighShelf",
-        value: "highshelf",
-        opts: defaultOpts 
-    },
-    { 
-        label: "LowPass",
-        value: "lowpass",
-        opts: defaultOpts 
-    },
-    { 
-        label: "LowShelf",
-        value: "lowshelf",
-        opts: defaultOpts 
-    },
-    { 
-        label: "Notch",
-        value: "notch",
-        opts: defaultOpts 
-    },
-]
+const items: MyItems[] = [
+    { label: "AllPass", value: "allpass", opts: defaultOpts },
+    { label: "BandPass", value: "bandpass", opts: defaultOpts },
+    { label: "HighPass", value: "highpass", opts: defaultOpts },
+    { label: "LowPass", value: "lowpass", opts: defaultOpts },
+    { label: "HighShelf", value: "highshelf", opts: defaultOpts },
+    { label: "LowShelf", value: "lowshelf", opts: defaultOpts },
+    { label: "Notch", value: "notch", opts: defaultOpts },
+    { label: "Peaking EQ", value: "peakingeq", opts: defaultOpts }
+];
+
 
 
 const effects:MyItems[] = [
@@ -417,6 +386,20 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
 
 }
 
+let currentFilters : string[] = [];
+
+async function clearFilters(filtersNumber: number) {
+    for(let i=filtersNumber-1; i>=0; i--){
+        await window.synthAPI.pipelineRemove(i);
+    }
+}
+
+async function addFilters(filters: string[]) {
+    for (let [index, filter] of filters.entries()) {
+        const filterNumber = items.findIndex(i => i.value === filter);
+        await window.synthAPI.pipelineAddFilter(filterNumber, index+1);
+    }
+}
 
 function Page() {
 
@@ -440,13 +423,19 @@ function Page() {
 
     return (
         <Box minH="100vh" bg="gray.50" p={10} justifyItems={"center"} alignItems="center">
-            <form onSubmit={
-                handleSubmit((formData) => {
-                    console.log("SUBMITTED", formData);
+            <form
+                onSubmit={handleSubmit(async (formData) => {
                     setData(formData);
-                }
-                )
-            } >
+
+                    await clearFilters(currentFilters.length);
+                    currentFilters = formData.filters;
+
+                    await addFilters(currentFilters);
+
+                    console.log("SUBMITTED", formData);
+                })}
+            >
+
                 <Stack direction="row" gap={40} >
                     <CheckboxesWithHeading field={filtersField.field}
                         formItems={items}
