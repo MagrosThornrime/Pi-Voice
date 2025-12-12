@@ -43,6 +43,8 @@ void addFilter(const Napi::CallbackInfo& info) {
 	auto&& [lock, p] = lockPipeline();
 
 	p.add(filters::BwFilter::create((filters::FilterType::Value)type), idx);
+
+	fmt::println("Added filter {} to index {}", type, idx);
 }
 
 void remove(const Napi::CallbackInfo& info) {
@@ -61,6 +63,7 @@ void remove(const Napi::CallbackInfo& info) {
 
 	auto&& [lock, p] = lockPipeline();
 	(void)p.remove(idx);
+	fmt::println("Removed filter from index {}", idx);
 }
 
 void move(const Napi::CallbackInfo& info) {
@@ -86,6 +89,8 @@ void move(const Napi::CallbackInfo& info) {
 	auto&& [lock, p] = lockPipeline();
 
 	p.move(curr, target);
+
+	fmt::println("Moved filter from {} to {}", curr, target);
 }
 
 void swap(const Napi::CallbackInfo& info) {
@@ -111,6 +116,7 @@ void swap(const Napi::CallbackInfo& info) {
 	auto&& [lock, p] = lockPipeline();
 
 	p.swap(i1, i2);
+	fmt::println("Swapped filter with {} to {}", i1, i2);
 }
 
 void setFilterParam(const Napi::CallbackInfo& info) {

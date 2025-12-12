@@ -39,8 +39,7 @@ private:
     std::shared_ptr<fileio::FileRecorder> _recorder;
 
 	std::jthread _producerThread;
-	std::atomic<bool> _running{false};
-	std::shared_mutex _layersMutex; // readers-writer to protect _layers
+	mutable std::shared_mutex _layersMutex; // readers-writer to protect _layers
 	utils::SPSCQueue<f32> _outputQueue;
 	const u32 _channels;
 
