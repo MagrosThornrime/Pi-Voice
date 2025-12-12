@@ -8,7 +8,7 @@ Synthesiser::Synthesiser(const std::string& recordingPath, i32 channels, i32 sam
 	_recorder = std::make_shared<fileio::FileRecorder>((u32)sampleRate, (u32)channels);
 	_autoSys = std::make_unique<portaudio::AutoSystem>();
 	_sampleManager = std::make_shared<fileio::SampleManager>(samplesPath, _sampleRate);
-	_voiceManager = std::make_shared<polyphonic::VoiceManager>(128, (f32)sampleRate, _sampleManager);
+	_voiceManager = std::make_shared<polyphonic::VoiceManager>(6, (f32)sampleRate, _sampleManager);
 }
 
 void Synthesiser::start() {
