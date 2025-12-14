@@ -170,8 +170,8 @@ function calcLogarithmicScale(x:number, lims:number[]){
     }
     console.log(x, lims[0], lims[1]);
     let res = Math.log10( lims[0] ) + x/100 * ( Math.log10(lims[1]) - Math.log10(lims[0]) )
-    console.log("RES:", res)
-    console.log("x:", x, "RES POW: ", Math.pow(10, res))
+    // console.log("RES:", res)
+    // console.log("x:", x, "RES POW: ", Math.pow(10, res))
     return res;
 }
 
@@ -179,8 +179,13 @@ function calcLogaritmicPosFromLinear(x:number, linLims:number[], lims:number[]){
     // changes position on slider for linear scale into logarithmic scale
 
     const actVal = linLims[0] + (linLims[1] - linLims[0]) * x/100
-    const logPos = Math.log10(x) - Math.log10(lims[0])/(Math.log10(lims[1]) - Math.log10(lims[0]))
+    const logMin = Math.log10(lims[0]);
+    const logMax = Math.log10(lims[1]);
+    const logVal = Math.log10(actVal);
 
+    const logPos = (logVal - logMin) / (logMax - logMin);
+    
+    console.log("logPos:", logPos, "power:", Math.pow(10, calcLogarithmicScale(logPos, lims)))
     return Math.round(logPos * 100);
 }
 
@@ -201,7 +206,7 @@ function calcLinearScale(x:number, lims:number[]):number {
         }
         return 0;
     }
-    console.log("LINEAR SCALE:", x, lower_bound, upper_bound);
+    // console.log("LINEAR SCALE:", x, lower_bound, upper_bound);
     return Math.round(x/(upper_bound - lower_bound) * 100);
 }
 
@@ -209,7 +214,7 @@ function calcLinearScale(x:number, lims:number[]):number {
 function getBounds(x:number, lims: number[]):number[] {
     let lower_bound = Math.pow(10, Math.floor(Math.log10(x)))
     let upper_bound = Math.pow(10, Math.ceil(Math.log10(x)))
-    console.log("BOUNDS", x, lower_bound, upper_bound)
+    // console.log("BOUNDS", x, lower_bound, upper_bound)
     if (lower_bound === upper_bound){
         if (lower_bound == lims[1]){
             [lims[1]/10, lims[1]]
@@ -361,9 +366,22 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                         value={[Value]}
 
                                         onValueChange={(details) => {
-                                            setSliderValue(obj.value, opt_key, details.value[0])
-                                            console.log("SLIDER VALUE: ", Values[state_key])
-                                        }}
+                                            const sliderVal = details.value[0]
+
+                                            setSliderValue(obj.value, opt_key, sliderVal)
+
+                                            setSliderProps(obj.value, opt_key, {
+                                                bounds: Props[state_key].bounds,
+                                                actValue: ("logScale" in opt)
+                                                    ? (status === "logarithmic"
+                                                        ? Math.round(Math.pow(10, calcLogarithmicScale(sliderVal, opt.range)))
+                                                        : Props[state_key].bounds[0] +
+                                                        (Props[state_key].bounds[1] - Props[state_key].bounds[0]) * sliderVal / 100 
+                                                    )
+                                                    : opt.range[0] + sliderVal / 100 * (opt.range[1] - opt.range[0])
+                                            })
+                                        }
+                                        }
 
                                         onValueChangeEnd={(details) => {
                                             setEndSliderValue(obj.value, opt_key, details.value[0]);
@@ -409,24 +427,8 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                         </Text>
 
                                         <Text> Val:
-                                            {
-                                                // ("logScale" in opt && opt.logScale && status === "logarithmic") ?
-                                                // (
-                                                //     Math.round(Math.pow(10,
-                                                //      calcLogarithmicScale(EndValues[`${state_key}_end`], opt.range)))
-                                                //      // round is for now, because it currenly only concerns Cuttof filter parameter
-                                                // ):
-                                                // (<b>{Math.round(EndValues[`${state_key}_end`])}</b>)
-
-                                                ("logScale" in opt) ?
-                                                (
-                                                    Math.round(Props[`${state_key}`].actValue)
-                                                ):
-                                                (
-                                                    <b>{Math.round(EndValues[`${state_key}_end`])}</b>
-                                                )
-                                            }   
-                                        </Text>
+                                            {Math.round(Props[`${state_key}`].actValue)}  {/* Props is in useState */}
+                                        </Text> 
 
                                         {
                                            "logScale" in opt && opt.logScale &&
