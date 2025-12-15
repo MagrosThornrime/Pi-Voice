@@ -152,10 +152,20 @@ const buildInitialState = (ifEnd:boolean, initial:number|number[] = 0, ifBounds 
     items.forEach(item => {
         (Object.entries(item.opts) as [OptKey, Opt][]).map(([key, opt]) => {
             if (!ifBounds){
-                state[`${item.value}.${key}${ifEnd && "_end"}`] = [initial]
+                if (defaultOpts[key].mutable){
+                    state[`${item.value}.${key}${ifEnd ? "_end" : ""}`] = [initial]
+                }
+                else{
+                    state[`${item.value}.${key}${ifEnd ? "_end" : ""}`] = [50]
+                }
             }
             else{
-                state[`${item.value}.${key}`] = {bounds: defaultOpts[key].range, actValue: initial}
+                if (defaultOpts[key].mutable){
+                    state[`${item.value}.${key}`] = {bounds: defaultOpts[key].range, actValue: initial}
+                }
+                else{
+                    state[`${item.value}.${key}`] = {bounds: defaultOpts[key].range, actValue: 50}
+                }
             }
         });
     });
@@ -355,60 +365,66 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                             const opt_key = key;
                             const state_key = `${obj.value}.${opt_key}`;
                             const Value = Values[state_key];
+                            console.log(Values)
                             return (
                                 <Fragment key={`${obj.value}.${opt_key}`}>
+
                                     <Slider.Root
                                         key={state_key}
                                         value={[Value]}
 
                                         onValueChange={(details) => {
                                             const sliderVal = details.value[0]
+                                            if (opt.mutable) {
+                                                setSliderValue(obj.value, opt_key, sliderVal)
 
-                                            setSliderValue(obj.value, opt_key, sliderVal)
-
-                                            setSliderProps(obj.value, opt_key, {
-                                                bounds: Props[state_key].bounds,
-                                                actValue: ("logScale" in opt)
-                                                    ? (status === "logarithmic"
-                                                        ? Math.round(Math.pow(10, calcLogarithmicScale(sliderVal, opt.range)))
-                                                        : Props[state_key].bounds[0] + (Props[state_key].bounds[1] - Props[state_key].bounds[0])
-                                                         * sliderVal / 100 
-                                                    )
-                                                    : opt.range[0] + sliderVal / 100 * (opt.range[1] - opt.range[0])
-                                            })
+                                                setSliderProps(obj.value, opt_key, {
+                                                    bounds: Props[state_key].bounds,
+                                                    actValue: ("logScale" in opt)
+                                                        ? (status === "logarithmic"
+                                                            ? Math.round(Math.pow(10, calcLogarithmicScale(sliderVal, opt.range)))
+                                                            : Props[state_key].bounds[0] + (Props[state_key].bounds[1] - Props[state_key].bounds[0])
+                                                            * sliderVal / 100
+                                                        )
+                                                        : opt.range[0] + sliderVal / 100 * (opt.range[1] - opt.range[0])
+                                                })
+                                            }
                                         }
                                         }
 
+                                        
                                         onValueChangeEnd={(details) => {
                                             const sliderVal = details.value[0]
+                                            if (opt.mutable) {
+                                                setEndSliderValue(obj.value, opt_key, sliderVal);
 
-                                            setEndSliderValue(obj.value, opt_key, sliderVal);
+                                                setSliderProps(obj.value, opt_key,
+                                                    {
+                                                        bounds: Props[`${state_key}`].bounds,
+                                                        actValue: ("logScale" in opt) ?
+                                                            (
+                                                                status === "logarithmic" ?
+                                                                    (
+                                                                        Math.round(Math.pow(10, calcLogarithmicScale(sliderVal, opt.range)))
+                                                                    )
+                                                                    :
+                                                                    (
+                                                                        Props[`${state_key}`].bounds[0] + (Props[`${state_key}`].bounds[1] - Props[`${state_key}`].bounds[0])
+                                                                        * sliderVal / 100
+                                                                    )
+                                                            )
+                                                            :
+                                                            (
+                                                                opt.range[0] + EndValues[`${state_key}_end`] / 100 * (opt.range[1] - opt.range[0])
+                                                            )
 
-                                            setSliderProps(obj.value, opt_key, 
-                                                {
-                                                    bounds: Props[`${state_key}`].bounds,
-                                                    actValue:  ("logScale" in opt) ? 
-                                                    (
-                                                        status === "logarithmic" ?
-                                                        (
-                                                            Math.round(Math.pow( 10, calcLogarithmicScale(sliderVal , opt.range )))
-                                                        )
-                                                        : 
-                                                        (
-                                                        Props[`${state_key}`].bounds[0] + (Props[`${state_key}`].bounds[1] - Props[`${state_key}`].bounds[0]) 
-                                                         * sliderVal/100
-                                                        )
-                                                    ) 
-                                                    : 
-                                                    (
-                                                        opt.range[0] + EndValues[`${state_key}_end`]/100 * (opt.range[1] - opt.range[0])
-                                                    )
-                                                }
-                                            )
+                                                    }
+                                                )
+                                            }
 
                                             console.log("SLIDER END VALUE: ", EndValues[`${state_key}_end`])
                                             // integration with backend will be here
-                                        }} >
+                                        }}>
 
                                         <Slider.Label color="white"> {`${opt_key}`} </Slider.Label>
                                         <Slider.Control>
@@ -422,7 +438,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                     <Flex justify="space-between" align="center" mb={2} w="100%">
                                 
                                         <Text> 
-                                            {Props[`${state_key}`].bounds[0]}
+                                            {opt.mutable && Props[`${state_key}`].bounds[0]}
                                         </Text>
 
                                         <Text> Val:
@@ -474,11 +490,15 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                                             opt_key,
                                                             newStatus === "logarithmic" ? 
                                                             (
-                                                                {bounds: opt.range, actValue: actVal}
+                                                                {
+                                                                    bounds: opt.range, actValue: actVal
+                                                                }
 
                                                             ):
                                                             (
-                                                                {bounds: getBounds(actVal, opt.range), actValue: actVal}
+                                                                {
+                                                                    bounds: getBounds(actVal, opt.range), actValue: actVal
+                                                                }
                                                             )
                                                         );
 
@@ -494,11 +514,11 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                             </Button>
                                         }
 
-                                        <Text> {Props[`${state_key}`].bounds[1]} </Text>
+                                        <Text> {opt.mutable && Props[`${state_key}`].bounds[1]} </Text>
                                     </Flex>
 
                                     <Box h="5" />
-                                    
+
                                 </Fragment>
                             );
                         })
