@@ -380,7 +380,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
 
                                                 setSliderProps(obj.value, opt_key, {
                                                     bounds: Props[state_key].bounds,
-                                                    actValue: ("logScale" in opt)
+                                                    actValue: ("logScale" in opt && opt.logScale)
                                                         ? (status === "logarithmic"
                                                             ? Math.round(Math.pow(10, calcLogarithmicScale(sliderVal, opt.range)))
                                                             : Props[state_key].bounds[0] + (Props[state_key].bounds[1] - Props[state_key].bounds[0])
@@ -392,7 +392,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                         }
                                         }
 
-                                        
+
                                         onValueChangeEnd={(details) => {
                                             const sliderVal = details.value[0]
                                             if (opt.mutable) {
@@ -401,7 +401,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                                 setSliderProps(obj.value, opt_key,
                                                     {
                                                         bounds: Props[`${state_key}`].bounds,
-                                                        actValue: ("logScale" in opt) ?
+                                                        actValue: ("logScale" in opt && opt.logScale) ?
                                                             (
                                                                 status === "logarithmic" ?
                                                                     (
@@ -415,7 +415,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                                             )
                                                             :
                                                             (
-                                                                opt.range[0] + EndValues[`${state_key}_end`] / 100 * (opt.range[1] - opt.range[0])
+                                                                opt.range[0] + sliderVal / 100 * (opt.range[1] - opt.range[0])
                                                             )
 
                                                     }
@@ -442,7 +442,9 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                         </Text>
 
                                         <Text> Val:
-                                            {Math.round(Props[`${state_key}`].actValue)}  {/* Props is in useState */}
+                                            {
+                                                opt.mutable ? Math.round(Props[`${state_key}`].actValue) : opt.range[0] 
+                                            } 
                                         </Text> 
 
                                         {
