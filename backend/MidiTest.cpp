@@ -1,19 +1,15 @@
 #include <fmt/core.h>
-#include <RtMidi.h>
+#include <midi/Ports.hpp>
 
 int main() {
-	RtMidiIn midiIn;
-	std::vector<unsigned char> msg;
-	int n;
-	int i;
-	double stamp;
-
-	n = midiIn.getPortCount();
-	if (n == 0) {
-		fmt::println("No ports");
-		return 1;
-	}
-
-	midiIn.openPort(0);
-	midiIn.ignoreTypes(false, false, false);
+	getchar();
+	fmt::println("dupa1");
+	midi::Ports::refresh();
+	fmt::println("dupa2");
+	midi::Ports::refresh();
+	fmt::println("dupa3");
+	midi::Ports::refresh();
+	fmt::println("dupa4");
+	midi::Ports::refresh();
+	fmt::println("dupa5");
 }
