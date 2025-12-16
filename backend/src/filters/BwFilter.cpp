@@ -23,14 +23,14 @@ BwFilter::BwFilter(const u32 channels, const std::array<float, 2>& a, const std:
 std::shared_ptr<BwFilter> BwFilter::create(FilterType::Value filter) {
 	std::shared_ptr<BwFilter> result = nullptr;
 	switch (filter) {
-		case FilterType::allPass: result = std::make_shared<AllPassFilter>();
-		case FilterType::bandPass: result = std::make_shared<BandPassFilter>();
-		case FilterType::highPass: result = std::make_shared<HighPassFilter>();
-		case FilterType::highShelf: result = std::make_shared<HighShelfFilter>();
-		case FilterType::lowPass: result = std::make_shared<LowPassFilter>();
-		case FilterType::lowShelf: result = std::make_shared<LowShelfFilter>();
-		case FilterType::notch: result = std::make_shared<NotchFilter>();
-		case FilterType::peakingEQ: result = std::make_shared<PeakingEQFilter>();
+		case FilterType::allPass: result = std::make_shared<AllPassFilter>(); break;
+		case FilterType::bandPass: result = std::make_shared<BandPassFilter>(); break;
+		case FilterType::highPass: result = std::make_shared<HighPassFilter>(); break;
+		case FilterType::highShelf: result = std::make_shared<HighShelfFilter>(); break;
+		case FilterType::lowPass: result = std::make_shared<LowPassFilter>(); break;
+		case FilterType::lowShelf: result = std::make_shared<LowShelfFilter>(); break;
+		case FilterType::notch: result = std::make_shared<NotchFilter>(); break;
+		case FilterType::peakingEQ: result = std::make_shared<PeakingEQFilter>(); break;
 	}
 	if (result) {
 		result->refresh();
