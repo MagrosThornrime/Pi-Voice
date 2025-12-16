@@ -9,13 +9,8 @@ CPMAddPackage(
     OPTIONS
     "BUILD_SHARED_LIBS OFF"
     "RTMIDI_BUILD_TESTING OFF"
+	"CMAKE_POSITION_INDEPENDENT_CODE ON"
 )
-
-if(orig_pic)
-  set_property(GLOBAL PROPERTY POSITION_INDEPENDENT_CODE ${orig_pic})
-else()
-  unset(CMAKE_POSITION_INDEPENDENT_CODE CACHE)
-endif()
 
 if(rtmidi_ADDED)
     find_package(rtmidi)
