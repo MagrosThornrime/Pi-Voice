@@ -135,7 +135,6 @@ export default function PlayPage() {
                 >
                     {buttonText} Recording
                 </Button>
-
             </Box>
         </Box>
     );
