@@ -11,6 +11,12 @@ CPMAddPackage(
     "RTMIDI_BUILD_TESTING OFF"
 )
 
+if(orig_pic)
+  set_property(GLOBAL PROPERTY POSITION_INDEPENDENT_CODE ${orig_pic})
+else()
+  unset(CMAKE_POSITION_INDEPENDENT_CODE CACHE)
+endif()
+
 if(rtmidi_ADDED)
     find_package(rtmidi)
 else()
