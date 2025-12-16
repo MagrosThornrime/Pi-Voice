@@ -21,26 +21,29 @@ BwFilter::BwFilter(const u32 channels, const std::array<float, 2>& a, const std:
 }
 
 std::shared_ptr<BwFilter> BwFilter::create(FilterType::Value filter) {
+	std::shared_ptr<BwFilter> result = nullptr;
 	switch (filter) {
-		case FilterType::allPass: return std::make_shared<AllPassFilter>();
-		case FilterType::bandPass: return std::make_shared<BandPassFilter>();
-		case FilterType::highPass: return std::make_shared<HighPassFilter>();
-		case FilterType::highShelf: return std::make_shared<HighShelfFilter>();
-		case FilterType::lowPass: return std::make_shared<LowPassFilter>();
-		case FilterType::lowShelf: return std::make_shared<LowShelfFilter>();
-		case FilterType::notch: return std::make_shared<NotchFilter>();
-		case FilterType::peakingEQ: return std::make_shared<PeakingEQFilter>();
+		case FilterType::allPass: result = std::make_shared<AllPassFilter>();
+		case FilterType::bandPass: result = std::make_shared<BandPassFilter>();
+		case FilterType::highPass: result = std::make_shared<HighPassFilter>();
+		case FilterType::highShelf: result = std::make_shared<HighShelfFilter>();
+		case FilterType::lowPass: result = std::make_shared<LowPassFilter>();
+		case FilterType::lowShelf: result = std::make_shared<LowShelfFilter>();
+		case FilterType::notch: result = std::make_shared<NotchFilter>();
+		case FilterType::peakingEQ: result = std::make_shared<PeakingEQFilter>();
+	}
+	if (result) {
+		result->refresh();
 	}
 
-	return nullptr;
+	return result;
 }
 
 void BwFilter::processSound(std::vector<f32>& inputBuffer,
-							std::vector<f32>& outputBuffer,
-							u32 frames)
-{
-	const float* in  = inputBuffer.data();
-	float* out       = outputBuffer.data();
+	std::vector<f32>& outputBuffer,
+	u32 frames) {
+	const float* in = inputBuffer.data();
+	float* out = outputBuffer.data();
 
 	u32 idx = 0;
 	for (u32 i = 0; i < frames; ++i) {
@@ -85,6 +88,7 @@ pipeline::Layer& BwFilter::setParam(const u32 param, std::any value) {
 		SET_PARAM(gainDB);
 		SET_PARAM(order);
 	}
+	refresh();
 	return *this;
 }
 

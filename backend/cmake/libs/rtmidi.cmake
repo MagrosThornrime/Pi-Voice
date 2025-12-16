@@ -7,7 +7,7 @@ CPMAddPackage(
     URL https://github.com/thestk/rtmidi/archive/6.0.0/rtmidi-6.0.0.tar.gz
     VERSION 6.0.0
     OPTIONS
-    "BUILD_SHARED_LIBS ON"
+    "BUILD_SHARED_LIBS OFF"
     "RTMIDI_BUILD_TESTING OFF"
 )
 
