@@ -68,14 +68,16 @@ type MyItems = {
 };
 
 
-type OptKey = "order" | "cutoff" | "sampleRate" | "channels";
+type OptKey = "order" | "cutoff" | "gainDB" | "quality";
 
 
 let defaultOpts: Record<OptKey, Opt> = {
     order: { mutable: true, continuos: false, logScale: false, range: [0, 1], step: 1 } ,
     cutoff: { mutable: true, continuos: false, logScale: true, range: [10, 20000] } ,
-    sampleRate: { mutable: false, range: [1000, 1000] },
-    channels: { mutable: false, range: [2, 2] }
+    gainDB: {mutable: true, continuos: true, logScale: false, range: [-24, 24] },
+    quality: {mutable: true, continuos: true, logScale: false, range: [0.1, 20.0] } 
+    // sampleRate: { mutable: false, range: [1000, 1000] },
+    // channels: { mutable: false, range: [2, 2] }
 }
 
 
@@ -88,11 +90,6 @@ const items:MyItems[] = [
     { 
         label: "BandPass",
         value: "bandpass",
-        opts: defaultOpts
-    },
-    { 
-        label: "ButterWorth", 
-        value: "butterworth", 
         opts: defaultOpts
     },
     { 
@@ -124,14 +121,14 @@ const items:MyItems[] = [
 
 
 const effects:MyItems[] = [
-    { label: "aaa", value: "aaa", opts: defaultOpts },
-    { label: "bbb", value: "bbb", opts: defaultOpts },
-    { label: "ccc", value: "ccc", opts: defaultOpts },
-    { label: "ddd", value: "ddd", opts: defaultOpts },
-    { label: "eee", value: "eee", opts: defaultOpts },
-    { label: "fff", value: "fff", opts: defaultOpts },
-    { label: "ggg", value: "ggg", opts: defaultOpts },
-    { label: "hhh", value: "hhh", opts: defaultOpts }
+    { label: "echo", value: "echo", opts: defaultOpts },
+    { label: "chorus", value: "chorus", opts: defaultOpts },
+    { label: "delay", value: "delay", opts: defaultOpts },
+    { label: "glitches", value: "glitches", opts: defaultOpts },
+    { label: "reverb", value: "reverb", opts: defaultOpts },
+    { label: "equalizer", value: "equalizer", opts: defaultOpts },
+    { label: "fades", value: "fades", opts: defaultOpts },
+    { label: "noise reduction", value: "noise reduction", opts: defaultOpts }
 ]
 
 
@@ -499,7 +496,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                                             ):
                                                             (
                                                                 {
-                                                                    bounds: getBounds(actVal, opt.range), actValue: actVal
+                                                                    bounds: linRange, actValue: actVal
                                                                 }
                                                             )
                                                         );
@@ -616,7 +613,6 @@ function Page() {
                         }
                         ifButton={false}
                         headerText="Select effects" >
-                        {/* buttonText="HAHAHA" */}
 
                     </CheckboxesWithHeading>
                 </Stack>
