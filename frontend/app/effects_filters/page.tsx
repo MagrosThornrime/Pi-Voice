@@ -170,7 +170,7 @@ const buildInitialState = (ifEnd:boolean, initial:number|number[] = 0, ifBounds 
 };
 
 
-function calcLogarithmicScale(x:number, lims:number[]){
+function calcLogValueFromScale(x:number, lims:number[]){
     // changes position on slider to log10 value of number, which bound are in lims
     if (x == 0){
         return 0;
@@ -179,53 +179,52 @@ function calcLogarithmicScale(x:number, lims:number[]){
     return res;
 }
 
-function calcLogaritmicPosFromLinear(x:number, linLims:number[], lims:number[]){
-    // changes position on slider for linear scale into logarithmic scale
 
+function calcLogaritmicPosFromLinear(x:number, linLims:number[], logLims:number[]){
+    // changes position on slider for linear scale into logarithmic scale
     const actVal = linLims[0] + (linLims[1] - linLims[0]) * x/100
-    const logMin = Math.log10(lims[0]);
-    const logMax = Math.log10(lims[1]);
+    const logMin = Math.log10(logLims[0]);
+    const logMax = Math.log10(logLims[1]);
     const logVal = Math.log10(actVal);
 
     const logPos = (logVal - logMin) / (logMax - logMin);
     
-    console.log("logPos:", logPos, "power:", Math.pow(10, calcLogarithmicScale(logPos, lims)))
+    console.log("logPos:", logPos, "power:", Math.pow(10, calcLogValueFromScale(logPos, logLims)))
     return Math.round(logPos * 100);
 }
 
 
-type linearAtrr = {
-    percent: number;
-    closestPowers: number[];
-}
-
-
-function calcLinearScale(x:number, lims:number[]):number {
-    let lower = Math.pow(10, Math.floor(Math.log10(x)))
-    let upper = Math.pow(10, Math.ceil(Math.log10(x)))
-
-    if (lower === upper){
-        if (lower == lims[1]){
-            return 100;
-        }
-        return 0;
-    }
-    return Math.round((x - lower)/(upper - lower) * 100);
+function calcLinearPosFromLogarithmic(x:number, logLims:number[], linLims:number[]){
+    const actVal = Math.pow(10, calcLogValueFromScale(x, logLims))
+    return Math.round((actVal - linLims[0])/(linLims[1] - linLims[0]) * 100);
 }
 
 
 function getBounds(x:number, lims: number[]):number[] {
     let lower_bound = Math.pow(10, Math.floor(Math.log10(x)))
     let upper_bound = Math.pow(10, Math.ceil(Math.log10(x)))
-    console.log("BOUNDS", x, lower_bound, upper_bound);
+
     if (lower_bound === upper_bound){
         if (lower_bound == lims[1]){
-            [lims[1]/10, lims[1]]
+            return [lower_bound/10, lower_bound]
         }
         return [lower_bound, lower_bound*10]
     }
+    if (upper_bound > lims[1]){
+        return [lower_bound, lims[1]]
+    }
 
     return [lower_bound, upper_bound]
+}
+
+
+function calcValueFromLogScale(x:number, lims: number[]){
+    return Math.pow(10, calcLogValueFromScale(x, lims));
+}
+
+
+function calcValueFromLinScale(x:number, lims:number[]){
+    return lims[0] + x/100 * (lims[1] - lims[0]);
 }
 
 
@@ -379,11 +378,10 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                                     bounds: Props[state_key].bounds,
                                                     actValue: ("logScale" in opt && opt.logScale)
                                                         ? (status === "logarithmic"
-                                                            ? Math.round(Math.pow(10, calcLogarithmicScale(sliderVal, opt.range)))
-                                                            : Props[state_key].bounds[0] + (Props[state_key].bounds[1] - Props[state_key].bounds[0])
-                                                            * sliderVal / 100
+                                                            ? calcValueFromLogScale(sliderVal, opt.range)
+                                                            : calcValueFromLinScale(sliderVal, Props[state_key].bounds)
                                                         )
-                                                        : opt.range[0] + sliderVal / 100 * (opt.range[1] - opt.range[0])
+                                                        : calcValueFromLinScale(sliderVal, opt.range)
                                                 })
                                             }
                                         }
@@ -401,19 +399,12 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                                         actValue: ("logScale" in opt && opt.logScale) ?
                                                             (
                                                                 status === "logarithmic" ?
-                                                                    (
-                                                                        Math.round(Math.pow(10, calcLogarithmicScale(sliderVal, opt.range)))
-                                                                    )
+                                                                    ( calcValueFromLogScale(sliderVal, opt.range) )
                                                                     :
-                                                                    (
-                                                                        Props[`${state_key}`].bounds[0] + (Props[`${state_key}`].bounds[1] - Props[`${state_key}`].bounds[0])
-                                                                        * sliderVal / 100
-                                                                    )
+                                                                    ( calcValueFromLinScale(sliderVal, Props[state_key].bounds) )
                                                             )
                                                             :
-                                                            (
-                                                                opt.range[0] + sliderVal / 100 * (opt.range[1] - opt.range[0])
-                                                            )
+                                                            ( calcValueFromLinScale(sliderVal, opt.range) )
 
                                                     }
                                                 )
@@ -449,67 +440,42 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                            <Button bg={status === "linear" ? "green.400" : "red.400"}
                                                 onClick={() => {
                                                     setStatus(prev => {
-
                                                         const newStatus = prev === "linear" ? "logarithmic" : "linear";
                                                         const SliderVal = EndValues[`${state_key}_end`]
 
-
-                                                        let logVal = calcLogaritmicPosFromLinear(SliderVal, Props[state_key].bounds, opt.range)
-
-                                                        let linVal = calcLinearScale(
-                                                            Math.pow( 10, calcLogarithmicScale( SliderVal, opt.range )),
-                                                            opt.range );
+                                                        let logPos = calcLogaritmicPosFromLinear(SliderVal, Props[state_key].bounds, opt.range)
 
                                                         let actVal = newStatus === "logarithmic" ? 
-                                                        (
-                                                            Props[state_key].bounds[0] + (SliderVal / 100) * (Props[state_key].bounds[1] - Props[state_key].bounds[0])
-                                                        ):
-                                                        (
-                                                            Math.pow( 10, calcLogarithmicScale( SliderVal, opt.range ))
-                                                        )
+                                                        ( calcValueFromLinScale(SliderVal, Props[state_key].bounds))
+                                                        :
+                                                        ( calcValueFromLogScale(SliderVal, opt.range) )
 
-                                                        let linRange = getBounds(actVal, opt.range)
-
-                                                        //console.log("logval", logVal, "linval", linVal, "bounds", linRange, "actVal", actVal);
+                                                        let linRange = getBounds(actVal, opt.range);
+                                                        let linPos = calcLinearPosFromLogarithmic(SliderVal, opt.range, linRange);
                                                         
                                                         setSliderValue(
-                                                            obj.value,
-                                                            opt_key,
-                                                            newStatus === "logarithmic" ? logVal : linVal
+                                                            obj.value, opt_key,
+                                                            newStatus === "logarithmic" ? logPos : linPos
                                                         );
 
                                                         setEndSliderValue(
-                                                            obj.value,
-                                                            opt_key,
-                                                            newStatus === "logarithmic" ? logVal : linVal
+                                                            obj.value, opt_key,
+                                                            newStatus === "logarithmic" ? logPos : linPos
                                                         );
 
                                                         setSliderProps(
-                                                            obj.value,
-                                                            opt_key,
+                                                            obj.value, opt_key,
                                                             newStatus === "logarithmic" ? 
-                                                            (
-                                                                {
-                                                                    bounds: opt.range, actValue: actVal
-                                                                }
-
-                                                            ):
-                                                            (
-                                                                {
-                                                                    bounds: linRange, actValue: actVal
-                                                                }
-                                                            )
+                                                            ({ bounds: opt.range, actValue: actVal })
+                                                            :
+                                                            ({ bounds: linRange, actValue: actVal })
                                                         );
 
                                                         return newStatus;
                                                     })
                                                 }
                                             }>
-
-                                            {
-                                                status
-                                            }
-
+                                            { status }
                                             </Button>
                                         }
 
@@ -523,7 +489,6 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                         })
                     }
                 </Box>
-                {/* <Box h="10" /> */}
             </Fragment>
         )
     });

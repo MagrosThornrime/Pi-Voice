@@ -71,6 +71,11 @@ function sawtooth_func(x:number, interv: number){
 }
 
 
+function dupa(){
+    window.synthAPI.getOscillatorPlot("triangle", 1000);
+}
+
+
 const oscillatorsFuncMapping: Record<string, (X:number) => number> = {
   sine: ((x) => Math.sin(3 * x)),
   square: ((x => square_wave(x, 2.0))),
