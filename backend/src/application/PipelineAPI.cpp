@@ -3,6 +3,23 @@
 #include <application/BackendApp.hpp>
 #include <tuple>
 #include <Filters.hpp>
+#include <typeinfo>
+#ifdef __GNUG__
+#include <cxxabi.h>
+#include <cstdlib>
+#endif
+
+std::string demangle(const char* typeName) {
+#if defined(__GNUG__)
+	int status = 0;
+	char* demangled = abi::__cxa_demangle(typeName, nullptr, nullptr, &status);
+	std::string result = (status == 0 && demangled != nullptr) ? demangled : typeName;
+	std::free(demangled);
+	return result;
+#else
+	return typeName;
+#endif
+}
 
 namespace pipelineAPI {
 
@@ -18,6 +35,13 @@ void init(Napi::Env env, Napi::Object exports) {
 
 auto lockPipeline() {
 	return std::make_pair(std::unique_lock(mutex), std::ref(synthesiser->getPipeline()));
+}
+
+void printState(pipeline::Pipeline& p) {
+	fmt::println("Pipeline state:");
+	for (auto i = 0; i != p.length(); ++i) {
+		fmt::println("\t{}: {}", i, demangle(typeid(*p.get(i)).name()));
+	}
 }
 
 void addFilter(const Napi::CallbackInfo& info) {
@@ -44,7 +68,8 @@ void addFilter(const Napi::CallbackInfo& info) {
 
 	p.add(filters::BwFilter::create((filters::FilterType::Value)type), idx);
 
-	fmt::println("Added filter {} to index {}", type, idx);
+	//fmt::println("Added filter {} to index {}", type, idx);
+	printState(p);
 }
 
 void remove(const Napi::CallbackInfo& info) {
@@ -63,7 +88,8 @@ void remove(const Napi::CallbackInfo& info) {
 
 	auto&& [lock, p] = lockPipeline();
 	(void)p.remove(idx);
-	fmt::println("Removed filter from index {}", idx);
+	//fmt::println("Removed filter from index {}", idx);
+	printState(p);
 }
 
 void move(const Napi::CallbackInfo& info) {
@@ -90,7 +116,8 @@ void move(const Napi::CallbackInfo& info) {
 
 	p.move(curr, target);
 
-	fmt::println("Moved filter from {} to {}", curr, target);
+	//fmt::println("Moved filter from {} to {}", curr, target);
+	printState(p);
 }
 
 void swap(const Napi::CallbackInfo& info) {
@@ -116,7 +143,8 @@ void swap(const Napi::CallbackInfo& info) {
 	auto&& [lock, p] = lockPipeline();
 
 	p.swap(i1, i2);
-	fmt::println("Swapped filter with {} to {}", i1, i2);
+	printState(p);
+	//fmt::println("Swapped filter with {} to {}", i1, i2);
 }
 
 void setFilterParam(const Napi::CallbackInfo& info) {
