@@ -8,28 +8,16 @@ namespace pipeline {
 
 using LayerRef = std::shared_ptr<Layer>;
 
-// CHANGED: Constructor unchanged semantics but note we do NOT use an atomic _running anymore.
 Pipeline::Pipeline(u32 framesPerCall, u32 channels,
 	std::shared_ptr<polyphonic::VoiceManager> voiceManager,
 	std::shared_ptr<fileio::FileRecorder> recorder)
 	: _channels(channels),
-	_outputQueue(framesPerCall* channels * 4),
+	_outputQueue(framesPerCall * channels * 4),
 	_voiceManager(std::move(voiceManager)),
 	_recorder(std::move(recorder)) {
-  // start producer thread; stop token provided automatically by jthread
 	_producerThread = std::jthread([this, framesPerCall](std::stop_token stopToken) {
 		_generateSound(stopToken, framesPerCall);
 	});
-	//_producerThread = std::jthread(&Pipeline::_generateSound, this, framesPerCall);
-	// CHANGED: removed _running atomic usage
-}
-
-Pipeline::~Pipeline() {
-	if (_producerThread.joinable()) {
-		_producerThread.request_stop();
-		_producerThread.join();
-	}
-	// CHANGED: no _running to clear
 }
 
 // CHANGED: Lock is acquired first; handle sentinel safely.
@@ -39,7 +27,7 @@ LayerRef Pipeline::add(const LayerRef& layer, u32 i) {
 		return nullptr;
 	}
 
-	std::unique_lock lock(_layersMutex); // CHANGED: acquire unique lock
+	std::unique_lock lock(_layersMutex);
 
 	const u32 size = static_cast<u32>(_layers.size());
 	// Treat u32(-1) as append; clamp out of range to append

@@ -31,8 +31,6 @@ public:
 		std::shared_ptr<fileio::FileRecorder> recorder
 	);
 
-	~Pipeline();
-
 private:
 	std::vector<std::shared_ptr<Layer>> _layers;
     std::shared_ptr<polyphonic::VoiceManager> _voiceManager;
