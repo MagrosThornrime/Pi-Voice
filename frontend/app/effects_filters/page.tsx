@@ -577,7 +577,7 @@ async function clearFilters(filtersNumber: number) {
 async function addFilters(filters: string[]) {
     for (let [index, filter] of filters.entries()) {
         const filterNumber = items.findIndex(i => i.value === filter);
-        await window.synthAPI.pipelineAddFilter(filterNumber, index+1);
+        await window.synthAPI.pipelineAddFilter(filterNumber, index);
     }
 }
 
