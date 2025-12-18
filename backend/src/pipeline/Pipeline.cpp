@@ -20,8 +20,6 @@ Pipeline::Pipeline(u32 framesPerCall, u32 channels,
 	});
 }
 
-// CHANGED: Lock is acquired first; handle sentinel safely.
-// Default param still uses -1 sentinel; normalized inside function.
 LayerRef Pipeline::add(const LayerRef& layer, u32 i) {
 	if (!layer) {
 		return nullptr;
@@ -30,11 +28,9 @@ LayerRef Pipeline::add(const LayerRef& layer, u32 i) {
 	auto lock = std::lock_guard(_layersMutex);
 
 	const u32 size = static_cast<u32>(_layers.size());
-	// Treat u32(-1) as append; clamp out of range to append
 	if (i == static_cast<u32>(-1) || i > size) {
-		i = size; // insert at end (begin() + size == end())
+		i = size;
 	}
-	// Now safe to insert at [0..size]
 	_layers.insert(_layers.begin() + i, layer);
 	return layer;
 }
@@ -53,7 +49,9 @@ LayerRef Pipeline::remove(const u32 i) {
 void Pipeline::move(const u32 curr, const u32 target) {
 	auto lock = std::lock_guard(_layersMutex);
 	const u32 n = static_cast<u32>(_layers.size());
-	if (curr >= n) return;
+	if (curr >= n){
+		return;
+	}
 
 	LayerRef item = std::move(_layers[curr]);
 	_layers.erase(_layers.begin() + curr);
@@ -67,13 +65,17 @@ void Pipeline::move(const u32 curr, const u32 target) {
 
 void Pipeline::swap(const u32 i1, const u32 i2) {
 	auto lock = std::lock_guard(_layersMutex);
-	if (i1 >= _layers.size() || i2 >= _layers.size()) return;
+	if (i1 >= _layers.size() || i2 >= _layers.size()){
+		return;
+	}
 	std::swap(_layers[i1], _layers[i2]);
 }
 
 LayerRef Pipeline::get(const u32 i) const {
 	auto lock = std::lock_guard(_layersMutex);
-	if (i >= _layers.size()) return nullptr;
+	if (i >= _layers.size()){
+		return nullptr;
+	}
 	return _layers[i];
 }
 
@@ -82,8 +84,6 @@ u32 Pipeline::length() const {
 	return static_cast<u32>(_layers.size());
 }
 
-// CHANGED: This callback now acquires the mutex to protect _layers/_outputQueue access.
-// NOTE: locking in the audio callback may affect latency; consider snapshotting if you need ultra low latency.
 int Pipeline::paCallbackFun(const void* /*inputBuffer*/, void* outputBuffer, unsigned long numFrames,
 	const PaStreamCallbackTimeInfo* /*timeInfo*/, PaStreamCallbackFlags /*statusFlags*/) {
 	auto lock = std::lock_guard(_layersMutex);
