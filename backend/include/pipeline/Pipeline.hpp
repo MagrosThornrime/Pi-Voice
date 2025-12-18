@@ -9,7 +9,7 @@
 #include <utils/SPSCQueue.hpp>
 #include <polyphonic/VoiceManager.hpp>
 #include <fileio/FileRecorder.hpp>
-#include <shared_mutex>
+#include <mutex>
 
 namespace pipeline {
 class Pipeline: public pa::CallbackInterface {
@@ -37,7 +37,7 @@ private:
     std::shared_ptr<fileio::FileRecorder> _recorder;
 
 	std::jthread _producerThread;
-	mutable std::shared_mutex _layersMutex; // readers-writer to protect _layers
+	mutable std::mutex _layersMutex;
 	utils::SPSCQueue<f32> _outputQueue;
 	const u32 _channels;
 

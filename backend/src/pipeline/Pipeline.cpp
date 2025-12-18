@@ -13,8 +13,8 @@ Pipeline::Pipeline(u32 framesPerCall, u32 channels,
 	std::shared_ptr<fileio::FileRecorder> recorder)
 	: _channels(channels),
 	_outputQueue(framesPerCall * channels * 4),
-	_voiceManager(std::move(voiceManager)),
-	_recorder(std::move(recorder)) {
+	_voiceManager(voiceManager),
+	_recorder(recorder) {
 	_producerThread = std::jthread([this, framesPerCall](std::stop_token stopToken) {
 		_generateSound(stopToken, framesPerCall);
 	});
@@ -27,7 +27,7 @@ LayerRef Pipeline::add(const LayerRef& layer, u32 i) {
 		return nullptr;
 	}
 
-	std::unique_lock lock(_layersMutex);
+	auto lock = std::lock_guard(_layersMutex);
 
 	const u32 size = static_cast<u32>(_layers.size());
 	// Treat u32(-1) as append; clamp out of range to append
@@ -40,7 +40,7 @@ LayerRef Pipeline::add(const LayerRef& layer, u32 i) {
 }
 
 LayerRef Pipeline::remove(const u32 i) {
-	std::unique_lock lock(_layersMutex); // CHANGED: lock first
+	auto lock = std::lock_guard(_layersMutex);
 	if (i >= _layers.size()) {
 		return nullptr;
 	}
@@ -51,7 +51,7 @@ LayerRef Pipeline::remove(const u32 i) {
 }
 
 void Pipeline::move(const u32 curr, const u32 target) {
-	std::unique_lock lock(_layersMutex); // CHANGED: single lock to make move atomic
+	auto lock = std::lock_guard(_layersMutex);
 	const u32 n = static_cast<u32>(_layers.size());
 	if (curr >= n) return;
 
@@ -66,19 +66,19 @@ void Pipeline::move(const u32 curr, const u32 target) {
 }
 
 void Pipeline::swap(const u32 i1, const u32 i2) {
-	std::unique_lock lock(_layersMutex); // CHANGED: lock first
+	auto lock = std::lock_guard(_layersMutex);
 	if (i1 >= _layers.size() || i2 >= _layers.size()) return;
 	std::swap(_layers[i1], _layers[i2]);
 }
 
 LayerRef Pipeline::get(const u32 i) const {
-	std::unique_lock lock(_layersMutex); // CHANGED: lock first
+	auto lock = std::lock_guard(_layersMutex);
 	if (i >= _layers.size()) return nullptr;
 	return _layers[i];
 }
 
 u32 Pipeline::length() const {
-	std::unique_lock lock(_layersMutex); // CHANGED: lock to read size safely
+	auto lock = std::lock_guard(_layersMutex);
 	return static_cast<u32>(_layers.size());
 }
 
@@ -86,7 +86,7 @@ u32 Pipeline::length() const {
 // NOTE: locking in the audio callback may affect latency; consider snapshotting if you need ultra low latency.
 int Pipeline::paCallbackFun(const void* /*inputBuffer*/, void* outputBuffer, unsigned long numFrames,
 	const PaStreamCallbackTimeInfo* /*timeInfo*/, PaStreamCallbackFlags /*statusFlags*/) {
-	std::unique_lock lock(_layersMutex); // CHANGED: protect reading queue and recorder
+	auto lock = std::lock_guard(_layersMutex);
 
 	float* out = static_cast<float*>(outputBuffer);
 	const u32 samplesNeeded = static_cast<u32>(numFrames) * _channels;
@@ -99,38 +99,28 @@ int Pipeline::paCallbackFun(const void* /*inputBuffer*/, void* outputBuffer, uns
 		out[i] = sample;
 	}
 
-	// Recorder API: assume it's thread-safe or expects to be called from audio thread
 	if (_recorder) {
-		// CHANGED: write() assumed to be safe from audio thread
 		_recorder->write(out, numFrames);
 	}
 
 	return paContinue;
 }
 
-// CHANGED: _generateSound uses temp buffer and unique_lock while processing layers.
-// Note: locking here serializes with paCallbackFun and add/remove/etc.
 void Pipeline::_generateSound(std::stop_token stopToken, u32 framesPerCall) {
 	const u32 samplesPerCall = framesPerCall * _channels;
 	std::vector<float> tempBuffer(samplesPerCall);
 
 	while (!stopToken.stop_requested()) {
-		// Fill buffer from voice manager (vector-based API)
 		_voiceManager->generateSound(tempBuffer, framesPerCall);
 
-		// CHANGED: use unique_lock instead of shared_lock (protect _layers while we iterate/process)
 		{
-			std::unique_lock lock(_layersMutex);
+			auto lock = std::lock_guard(_layersMutex);
 			for (auto&& layer : _layers) {
-				// processSound(inputVector, outputVector, framesPerCall)
-				// Here we use tempBuffer as input and output; layers must support in-place processing
 				layer->processSound(tempBuffer, tempBuffer, framesPerCall);
 			}
 		}
 
-		// push samples into output queue
 		for (u32 i = 0; i < samplesPerCall; ++i) {
-			// CHANGED: busy-wait yielding if queue full; this is as before
 			while (!_outputQueue.push(tempBuffer[i])) {
 				std::this_thread::yield();
 			}
