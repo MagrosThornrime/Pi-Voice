@@ -98,14 +98,14 @@ const items:MyItems[] = [
         opts: defaultOpts
     },
     { 
-        label: "HighShelf",
-        value: "highshelf",
-        opts: defaultOpts 
-    },
-    { 
         label: "LowPass",
         value: "lowpass",
         opts: defaultOpts 
+    },
+    {
+        label: "HighShelf",
+        value: "highshelf",
+        opts: defaultOpts
     },
     { 
         label: "LowShelf",
@@ -116,6 +116,11 @@ const items:MyItems[] = [
         label: "Notch",
         value: "notch",
         opts: defaultOpts 
+    },
+    {
+        label: "PeakingEQ",
+        value: "peakingeq",
+        opts: defaultOpts
     },
 ]
 
