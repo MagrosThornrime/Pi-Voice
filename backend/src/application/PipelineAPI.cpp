@@ -194,12 +194,10 @@ void setFilterParam(const Napi::CallbackInfo& info) {
 		break
 
 	switch (param) {
-		SET_FILTER_PARAM(filters::FilterParams::channels);
 		SET_FILTER_PARAM(filters::FilterParams::cutoff);
 		SET_FILTER_PARAM(filters::FilterParams::gainDB);
 		SET_FILTER_PARAM(filters::FilterParams::order);
 		SET_FILTER_PARAM(filters::FilterParams::quality);
-		SET_FILTER_PARAM(filters::FilterParams::sampleRate);
 	}
 }
 
@@ -240,12 +238,10 @@ Napi::Value getFilterParam(const Napi::CallbackInfo& info) {
 		break
 
 	switch (param) {
-		GET_FILTER_PARAM(filters::FilterParams::channels);
 		GET_FILTER_PARAM(filters::FilterParams::cutoff);
 		GET_FILTER_PARAM(filters::FilterParams::gainDB);
 		GET_FILTER_PARAM(filters::FilterParams::order);
 		GET_FILTER_PARAM(filters::FilterParams::quality);
-		GET_FILTER_PARAM(filters::FilterParams::sampleRate);
 	}
 
 	return Napi::Number::New(env, std::nan(""));

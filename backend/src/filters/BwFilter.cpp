@@ -81,9 +81,7 @@ void BwFilter::_set(const u32 channels, const std::array<float, 2>& a, const std
 
 pipeline::Layer& BwFilter::setParam(const u32 param, std::any value) {
 	switch (param) {
-		SET_PARAM(channels);
 		SET_PARAM(cutoff);
-		SET_PARAM(sampleRate);
 		SET_PARAM(quality);
 		SET_PARAM(gainDB);
 		SET_PARAM(order);
@@ -98,9 +96,7 @@ std::any BwFilter::getParam(const u32 param) {
 	std::any result;
 
 	switch (param) {
-		GET_PARAM(channels);
 		GET_PARAM(cutoff);
-		GET_PARAM(sampleRate);
 		GET_PARAM(quality);
 		GET_PARAM(gainDB);
 		GET_PARAM(order);
