@@ -24,24 +24,26 @@ FileRecorder::FileRecorder(const u32 sampleRate, const u32 channels, const float
 	setOutputDirectory("./output");
 }
 
-int FileRecorder::paCallbackFun(const void* inputBuffer, void* outputBuffer, unsigned long numFrames,
-	const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) {
-	auto lock = std::lock_guard(_mutex);
+void FileRecorder::write(const float* buffer, u32 numFrames)
+{
+    auto lock = std::lock_guard(_mutex);
 
-	if (_isRunning) {
-		const float* in = (const float*)inputBuffer;
-		float* out = (float*)outputBuffer;
+    if (!_isRunning)
+        return;
 
-		const u32 size = numFrames * _channels;
-		std::copy_n(in, size, out); // recorder is a part of a bigger pipeline, it is invisible
-		if (not _skip) for (u32 i = 0; i != size; ++i) {
-			// force push
-			while (!_queue.push(in[i]));
-		} else _queue.push(in, size);
-	}
+    const u32 size = numFrames * _channels;
 
-	return paContinue;
+    if (!_skip) {
+        for (u32 i = 0; i < size; ++i) {
+            while (!_queue.push(buffer[i])) {
+    			std::this_thread::yield();
+			}
+        }
+    } else {
+        _queue.push(buffer, size);
+    }
 }
+
 
 std::string FileRecorder::_getFilename() {
 	auto now = std::chrono::system_clock::now();
@@ -144,13 +146,4 @@ void FileRecorder::setOutputDirectory(const std::string& dir) {
 	}
 	_outputDirectory = dir;
 }
-
-pipeline::Layer& FileRecorder::setParam(const u32, std::any) {
-	return *this;
-}
-
-std::any FileRecorder::getParam(const u32) {
-	return {};
-}
-
 }

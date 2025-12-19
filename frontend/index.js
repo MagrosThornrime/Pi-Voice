@@ -120,9 +120,6 @@ ipcMain.handle("synth-setAmplitude", (e, v) => synth.setAmplitude(v));
 ipcMain.handle("synth-setOscillatorType", (e, type, index) =>
     synth.setOscillatorType(type, index)
 );
-ipcMain.handle("synth-setOscillatorAmplitude", (e, amp, index) =>
-    synth.setOscillatorAmplitude(amp, index)
-);
 
 // ADSR
 ipcMain.handle("synth-setAttack", (e, v) => synth.setAttack(v));

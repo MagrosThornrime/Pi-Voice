@@ -3,6 +3,23 @@
 #include <application/BackendApp.hpp>
 #include <tuple>
 #include <Filters.hpp>
+#include <typeinfo>
+#ifdef __GNUG__
+#include <cxxabi.h>
+#include <cstdlib>
+#endif
+
+std::string demangle(const char* typeName) {
+#if defined(__GNUG__)
+	int status = 0;
+	char* demangled = abi::__cxa_demangle(typeName, nullptr, nullptr, &status);
+	std::string result = (status == 0 && demangled != nullptr) ? demangled : typeName;
+	std::free(demangled);
+	return result;
+#else
+	return typeName;
+#endif
+}
 
 namespace pipelineAPI {
 
@@ -18,6 +35,13 @@ void init(Napi::Env env, Napi::Object exports) {
 
 auto lockPipeline() {
 	return std::make_pair(std::unique_lock(mutex), std::ref(synthesiser->getPipeline()));
+}
+
+void printState(pipeline::Pipeline& p) {
+	fmt::println("Pipeline state:");
+	for (auto i = 0; i != p.length(); ++i) {
+		fmt::println("\t{}: {}", i, demangle(typeid(*p.get(i)).name()));
+	}
 }
 
 void addFilter(const Napi::CallbackInfo& info) {
@@ -43,6 +67,9 @@ void addFilter(const Napi::CallbackInfo& info) {
 	auto&& [lock, p] = lockPipeline();
 
 	p.add(filters::BwFilter::create((filters::FilterType::Value)type), idx);
+
+	//fmt::println("Added filter {} to index {}", type, idx);
+	printState(p);
 }
 
 void remove(const Napi::CallbackInfo& info) {
@@ -61,6 +88,8 @@ void remove(const Napi::CallbackInfo& info) {
 
 	auto&& [lock, p] = lockPipeline();
 	(void)p.remove(idx);
+	//fmt::println("Removed filter from index {}", idx);
+	printState(p);
 }
 
 void move(const Napi::CallbackInfo& info) {
@@ -86,6 +115,9 @@ void move(const Napi::CallbackInfo& info) {
 	auto&& [lock, p] = lockPipeline();
 
 	p.move(curr, target);
+
+	//fmt::println("Moved filter from {} to {}", curr, target);
+	printState(p);
 }
 
 void swap(const Napi::CallbackInfo& info) {
@@ -111,6 +143,8 @@ void swap(const Napi::CallbackInfo& info) {
 	auto&& [lock, p] = lockPipeline();
 
 	p.swap(i1, i2);
+	printState(p);
+	//fmt::println("Swapped filter with {} to {}", i1, i2);
 }
 
 void setFilterParam(const Napi::CallbackInfo& info) {
@@ -160,13 +194,13 @@ void setFilterParam(const Napi::CallbackInfo& info) {
 		break
 
 	switch (param) {
-		SET_FILTER_PARAM(filters::FilterParams::channels);
 		SET_FILTER_PARAM(filters::FilterParams::cutoff);
 		SET_FILTER_PARAM(filters::FilterParams::gainDB);
 		SET_FILTER_PARAM(filters::FilterParams::order);
 		SET_FILTER_PARAM(filters::FilterParams::quality);
-		SET_FILTER_PARAM(filters::FilterParams::sampleRate);
 	}
+
+	fmt::println("Changed param {} for filter {} to value {}", param, idx, value);
 }
 
 Napi::Value getFilterParam(const Napi::CallbackInfo& info) {
@@ -206,12 +240,10 @@ Napi::Value getFilterParam(const Napi::CallbackInfo& info) {
 		break
 
 	switch (param) {
-		GET_FILTER_PARAM(filters::FilterParams::channels);
 		GET_FILTER_PARAM(filters::FilterParams::cutoff);
 		GET_FILTER_PARAM(filters::FilterParams::gainDB);
 		GET_FILTER_PARAM(filters::FilterParams::order);
 		GET_FILTER_PARAM(filters::FilterParams::quality);
-		GET_FILTER_PARAM(filters::FilterParams::sampleRate);
 	}
 
 	return Napi::Number::New(env, std::nan(""));

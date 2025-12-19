@@ -1,35 +1,43 @@
 #include <pipeline/Pipeline.hpp>
-#include <range/v3/view/drop.hpp>
 #include <fmt/core.h>
+#include <algorithm>
+#include <functional>
+#include <thread>
 
 namespace pipeline {
 
 using LayerRef = std::shared_ptr<Layer>;
 
-//Pipeline& Pipeline::setSource(const InterfaceRef& source) {
-//	_layers.insert(_layers.begin(), source);
-//	return *this;
-//}
-//
-//Pipeline& Pipeline::addLayer(const InterfaceRef& layer) {
-//	_layers.push_back(layer);
-//	return *this;
-//}
+Pipeline::Pipeline(u32 framesPerCall, u32 channels,
+	std::shared_ptr<polyphonic::VoiceManager> voiceManager,
+	std::shared_ptr<fileio::FileRecorder> recorder)
+	: _channels(channels),
+	_outputQueue(framesPerCall * channels * 4),
+	_voiceManager(voiceManager),
+	_recorder(recorder) {
+	_producerThread = std::jthread([this, framesPerCall](std::stop_token stopToken) {
+		_generateSound(stopToken, framesPerCall);
+	});
+}
 
-LayerRef Pipeline::add(const LayerRef& layer, u32 i) {
-	if (not layer) {
-		return layer;
+LayerRef Pipeline::add(const LayerRef& layer, std::optional<u32> index) {
+	if (!layer) {
+		return nullptr;
 	}
 
-	if (i >= _layers.size() and i != 0) {
-		i = _layers.size() - 1;
-	}
+	std::lock_guard lock(_layersMutex);
+
+	const u32 size = _layers.size();
+
+	u32 i = index.value_or(size);
+	i = std::min(i, size);
 
 	_layers.insert(_layers.begin() + i, layer);
 	return layer;
 }
 
 LayerRef Pipeline::remove(const u32 i) {
+	auto lock = std::lock_guard(_layersMutex);
 	if (i >= _layers.size()) {
 		return nullptr;
 	}
@@ -40,37 +48,82 @@ LayerRef Pipeline::remove(const u32 i) {
 }
 
 void Pipeline::move(const u32 curr, const u32 target) {
-	add(remove(curr), target);
-}
-
-void Pipeline::swap(const u32 i1, const u32 i2) {
-	if (i1 >= _layers.size() or i2 >= _layers.size()) {
+	auto lock = std::lock_guard(_layersMutex);
+	const u32 size = _layers.size();
+	if (curr >= size){
 		return;
 	}
 
+	LayerRef item = std::move(_layers[curr]);
+	_layers.erase(_layers.begin() + curr);
+
+	u32 insertIndex = std::min(target, size);
+	_layers.insert(_layers.begin() + insertIndex, std::move(item));
+}
+
+void Pipeline::swap(const u32 i1, const u32 i2) {
+	auto lock = std::lock_guard(_layersMutex);
+	if (i1 >= _layers.size() || i2 >= _layers.size()){
+		return;
+	}
 	std::swap(_layers[i1], _layers[i2]);
 }
 
 LayerRef Pipeline::get(const u32 i) const {
-	if (i >= _layers.size()) {
+	auto lock = std::lock_guard(_layersMutex);
+	if (i >= _layers.size()){
 		return nullptr;
 	}
-
 	return _layers[i];
 }
 
 u32 Pipeline::length() const {
-	return (u32)_layers.size();
+	auto lock = std::lock_guard(_layersMutex);
+	return _layers.size();
 }
 
-int Pipeline::paCallbackFun(const void* inputBuffer, void* outputBuffer, unsigned long numFrames,
-	const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) {
+int Pipeline::paCallbackFun(const void* /*inputBuffer*/, void* outputBuffer, unsigned long numFrames,
+	const PaStreamCallbackTimeInfo* /*timeInfo*/, PaStreamCallbackFlags /*statusFlags*/) {
+	auto lock = std::lock_guard(_layersMutex);
 
-	_layers.front()->paCallbackFun(inputBuffer, outputBuffer, numFrames, timeInfo, statusFlags);
+	float* out = static_cast<float*>(outputBuffer);
+	const u32 samplesNeeded = static_cast<u32>(numFrames) * _channels;
 
-	for (auto&& layer : _layers | ranges::views::drop(1)) {
-		layer->paCallbackFun(outputBuffer, outputBuffer, numFrames, timeInfo, statusFlags);
+	for (u32 i = 0; i < samplesNeeded; ++i) {
+		float sample;
+		if (!_outputQueue.pop(sample)) {
+			sample = 0.0f;
+		}
+		out[i] = sample;
 	}
+
+	if (_recorder) {
+		_recorder->write(out, numFrames);
+	}
+
 	return paContinue;
 }
+
+void Pipeline::_generateSound(std::stop_token stopToken, u32 framesPerCall) {
+	const u32 samplesPerCall = framesPerCall * _channels;
+	std::vector<float> tempBuffer(samplesPerCall);
+
+	while (!stopToken.stop_requested()) {
+		_voiceManager->generateSound(tempBuffer, framesPerCall);
+
+		{
+			auto lock = std::lock_guard(_layersMutex);
+			for (auto&& layer : _layers) {
+				layer->processSound(tempBuffer, tempBuffer, framesPerCall);
+			}
+		}
+
+		for (u32 i = 0; i < samplesPerCall; ++i) {
+			while (!_outputQueue.push(tempBuffer[i])) {
+				std::this_thread::yield();
+			}
+		}
+	}
 }
+
+} // namespace pipeline
