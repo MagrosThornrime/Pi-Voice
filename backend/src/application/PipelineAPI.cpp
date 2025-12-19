@@ -199,6 +199,8 @@ void setFilterParam(const Napi::CallbackInfo& info) {
 		SET_FILTER_PARAM(filters::FilterParams::order);
 		SET_FILTER_PARAM(filters::FilterParams::quality);
 	}
+
+	fmt::println("Changed param {} for filter {} to value {}", param, idx, value);
 }
 
 Napi::Value getFilterParam(const Napi::CallbackInfo& info) {

@@ -58,6 +58,7 @@ type Opt = {
     logScale?: boolean;
     range: number[];
     step?: number; // log scale will not require step, neither continuous parameters
+    index: number;
 }
 
 
@@ -72,10 +73,10 @@ type OptKey = "order" | "cutoff" | "gainDB" | "quality";
 
 
 let defaultOpts: Record<OptKey, Opt> = {
-    order: { mutable: true, continuous: false, logScale: false, range: [0, 1], step: 1 } ,
-    cutoff: { mutable: true, continuous: false, logScale: true, range: [10, 20000] } ,
-    gainDB: {mutable: true, continuous: true, logScale: false, range: [-24, 24] },
-    quality: {mutable: true, continuous: true, logScale: false, range: [0.1, 20.0] } 
+    order: { mutable: true, continuous: false, logScale: false, range: [0, 1], step: 1, index: 3 } ,
+    cutoff: { mutable: true, continuous: false, logScale: true, range: [10, 20000], index: 0 } ,
+    gainDB: {mutable: true, continuous: true, logScale: false, range: [-24, 24], index: 2 },
+    quality: {mutable: true, continuous: true, logScale: false, range: [0.1, 20.0], index: 1 }
     // sampleRate: { mutable: false, range: [1000, 1000] },
     // channels: { mutable: false, range: [2, 2] }
 }
@@ -367,7 +368,8 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                             const opt_key = key;
                             const state_key = `${obj.value}.${opt_key}`;
                             const Value = Values[state_key];
-                            console.log(Values)
+                            console.log(Values);
+                            console.log(obj);
                             return (
                                 <Fragment key={`${obj.value}.${opt_key}`}>
 
@@ -395,7 +397,7 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                         }
 
 
-                                        onValueChangeEnd={(details) => {
+                                        onValueChangeEnd={async (details) => {
                                             const sliderVal = details.value[0]
                                             if (opt.mutable) {
                                                 setEndSliderValue(obj.value, opt_key, sliderVal);
@@ -424,8 +426,8 @@ function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                                                 )
                                             }
 
-                                            console.log("SLIDER END VALUE: ", EndValues[`${state_key}_end`])
-                                            // integration with backend will be here
+                                            console.log("SLIDER END VALUE: ", EndValues[`${state_key}_end`]);
+                                            await setFilterParam(obj.value, defaultOpts[opt_key].index, Props[state_key].actValue);
                                         }}>
 
                                         <Slider.Label color="white"> {`${opt_key}`} </Slider.Label>
@@ -579,6 +581,11 @@ async function addFilters(filters: string[]) {
         const filterNumber = items.findIndex(i => i.value === filter);
         await window.synthAPI.pipelineAddFilter(filterNumber, index);
     }
+}
+
+async function setFilterParam(filterName: string, param: number, value: number){
+    const filterNumber = currentFilters.findIndex(i => i === filterName);
+    await window.synthAPI.pipelineSetFilterParam(filterNumber, param, value)
 }
 
 function Page() {
