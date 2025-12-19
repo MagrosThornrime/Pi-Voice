@@ -2,8 +2,8 @@
 #include <application/Synthesiser.hpp>
 #include <napi.h>
 #include <Types.hpp>
-#include <application/BackendApp.hpp>
-#include <application/PipelineAPI.hpp>
+#include <BackendApp.hpp>
+#include <node_api/PipelineAPI.hpp>
 #include <range/v3/all.hpp>
 
 std::shared_ptr<application::Synthesiser> synthesiser{};

@@ -1,6 +1,6 @@
-#include <application/PipelineAPI.hpp>
+#include <node_api/PipelineAPI.hpp>
 #include <pipeline/Pipeline.hpp>
-#include <application/BackendApp.hpp>
+#include <BackendApp.hpp>
 #include <tuple>
 #include <Filters.hpp>
 
