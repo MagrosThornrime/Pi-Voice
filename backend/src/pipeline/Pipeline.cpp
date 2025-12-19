@@ -20,17 +20,18 @@ Pipeline::Pipeline(u32 framesPerCall, u32 channels,
 	});
 }
 
-LayerRef Pipeline::add(const LayerRef& layer, u32 i) {
+LayerRef Pipeline::add(const LayerRef& layer, std::optional<u32> index) {
 	if (!layer) {
 		return nullptr;
 	}
 
-	auto lock = std::lock_guard(_layersMutex);
+	std::lock_guard lock(_layersMutex);
 
-	const u32 size = static_cast<u32>(_layers.size());
-	if (i == static_cast<u32>(-1) || i > size) {
-		i = size;
-	}
+	const u32 size = _layers.size();
+
+	u32 i = index.value_or(size);
+	i = std::min(i, size);
+
 	_layers.insert(_layers.begin() + i, layer);
 	return layer;
 }
@@ -48,18 +49,15 @@ LayerRef Pipeline::remove(const u32 i) {
 
 void Pipeline::move(const u32 curr, const u32 target) {
 	auto lock = std::lock_guard(_layersMutex);
-	const u32 n = static_cast<u32>(_layers.size());
-	if (curr >= n){
+	const u32 size = _layers.size();
+	if (curr >= size){
 		return;
 	}
 
 	LayerRef item = std::move(_layers[curr]);
 	_layers.erase(_layers.begin() + curr);
 
-	u32 insertIndex = target;
-	if (insertIndex == static_cast<u32>(-1) || insertIndex > _layers.size()) {
-		insertIndex = static_cast<u32>(_layers.size());
-	}
+	u32 insertIndex = std::min(target, size);
 	_layers.insert(_layers.begin() + insertIndex, std::move(item));
 }
 
@@ -81,7 +79,7 @@ LayerRef Pipeline::get(const u32 i) const {
 
 u32 Pipeline::length() const {
 	auto lock = std::lock_guard(_layersMutex);
-	return static_cast<u32>(_layers.size());
+	return _layers.size();
 }
 
 int Pipeline::paCallbackFun(const void* /*inputBuffer*/, void* outputBuffer, unsigned long numFrames,

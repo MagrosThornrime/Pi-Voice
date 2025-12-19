@@ -14,7 +14,7 @@
 namespace pipeline {
 class Pipeline: public pa::CallbackInterface {
 public:
-	std::shared_ptr<Layer> add(const std::shared_ptr<Layer>& layer, u32 i = (u32)-1);
+	std::shared_ptr<Layer> add(const std::shared_ptr<Layer>& layer, std::optional<u32> index);
 	std::shared_ptr<Layer> remove(const u32 i);
 	void move(const u32 curr, const u32 target);
 	void swap(const u32 i1, const u32 i2);
