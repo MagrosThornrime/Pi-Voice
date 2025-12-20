@@ -20,7 +20,7 @@ public:
 	pipeline::Layer& setParam(const u32 param, std::any value) override;
 	std::any getParam(const u32 param) override;
 
-	int paCallbackFun(const void* inputBuffer, void* outputBuffer, unsigned long numFrames, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) override;
+	void processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames) override;
 
 protected:
 	struct Prev {

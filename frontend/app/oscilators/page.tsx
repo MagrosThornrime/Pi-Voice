@@ -80,7 +80,6 @@ const oscillatorsFuncMapping: Record<string, (X:number) => number> = {
   sine: ((x) => Math.sin(3 * x)),
   square: ((x => square_wave(x, 2.0))),
   triangle: ((x) => triangle_wave(x, 2.0)),
-  noise: ((x) => Math.sin(3 * x) + Math.random()/2),
   empty: (() => 0.0),
   sawtooth: ((x) => sawtooth_func(x, 2.0))
 }

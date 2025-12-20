@@ -6,9 +6,7 @@ namespace filters {
 
 struct FilterParams {
 	enum Value: u32 {
-		channels,
 		cutoff,
-		sampleRate,
 		quality,
 		gainDB,
 		order,
@@ -26,7 +24,6 @@ struct FilterParams {
 
 #define PARAM_TYPE(param, T) template<> struct FilterParams::_Type<param> { using type = T; }
 
-PARAM_TYPE(FilterParams::channels, u32);
 PARAM_TYPE(FilterParams::order, u32);
 
 #undef PARAM_TYPE

@@ -3,6 +3,8 @@ include_guard()
 include("cmake/libs/fmt.cmake")
 include("cmake/libs/ranges.cmake")
 include("cmake/libs/portaudio.cmake")
+include("cmake/libs/libsndfile.cmake")
+
 
 file(GLOB_RECURSE PIPELINE_SRC "src/pipeline/*.cpp")
 
@@ -16,4 +18,4 @@ else()
 endif()
 
 target_include_directories(pipeline PUBLIC include ${rtmidi_SOURCE_DIR}/include)
-target_link_libraries(pipeline PUBLIC fmt::fmt range-v3::range-v3 portaudio portaudiocpp)
+target_link_libraries(pipeline PUBLIC fmt::fmt range-v3::range-v3 portaudio portaudiocpp sndfile)

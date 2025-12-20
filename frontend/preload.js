@@ -9,8 +9,6 @@ contextBridge.exposeInMainWorld("synthAPI", {
     setAmplitude: (value) => ipcRenderer.invoke("synth-setAmplitude", value),
     setOscillatorType: (type, index) =>
         ipcRenderer.invoke("synth-setOscillatorType", type, index),
-    setOscillatorAmplitude: (amp, index) =>
-        ipcRenderer.invoke("synth-setOscillatorAmplitude", amp, index),
 
     // ADSR
     setAttack: (v) => ipcRenderer.invoke("synth-setAttack", v),

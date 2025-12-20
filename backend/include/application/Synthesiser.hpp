@@ -75,11 +75,6 @@ public:
     /// @param index id of the oscillator (0, 1 or 2)
     void setOscillatorType(const std::string& type, i32 index);
 
-	/// @brief Sets the amplitude of a particular oscillator (its importance in output)
-	/// @param amplitude amplitude of the oscillator (between 0 and 1)
-	/// @param index id of the oscillator (0, 1 or 2)
-	void setOscillatorAmplitude(f32 amplitude, i32 index);
-
 	/// @brief Sets the attack factor in ADSR (how fast the amplitude rises to full after pressing the key)
 	/// @param attack attack factor value (between 0 and 1)
 	void setAttack(f32 attack);
