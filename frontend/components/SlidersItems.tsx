@@ -1,16 +1,14 @@
-import { Box, Checkbox, Button, Fieldset, Stack, Text, CheckboxGroup, Heading, Collapsible, Flex, Grid, Slider } from "@chakra-ui/react";
-import { useContext, ReactNode, useEffect, createContext, useState, Fragment} from "react";
-import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
-import { useController, ControllerRenderProps, useForm, FieldError } from "react-hook-form"
+import { Box, Button, Text, Collapsible, Flex, Grid, Slider } from "@chakra-ui/react";
+import {useEffect, useState, Fragment} from "react";
 import { LuChevronRight } from "react-icons/lu"
 import {calcLinearPosFromLogarithmic, getBounds, calcLogaritmicPosFromLinear, calcValueFromLogScale, calcValueFromLinScale} from "../app/utils/maths_utils"
-import {Opt, OptKey, Filter, filters, effects, defaultOpts, } from "../app/utils/tables"
+import {Opt, OptKey, Filter, defaultOpts, } from "../app/utils/tables"
 import { buildInitialState } from "../app/utils/state_utils";
-import { z } from "zod"
 import { useFilters, setFilterParam } from "@/app/effects_filters/page";
+import { LogSlider } from "./SliderLinLog";
 
 
-type SliderProps = {
+export type SliderProps = {
     bounds: number[];
     actValue: number;
 }
@@ -73,127 +71,50 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                             console.log(Values);
                             console.log(obj);
                             return (
-                                <Fragment key={`${obj.value}.${opt_key}`}>
+                                <Fragment key={state_key}>
+                                {
+                                    ("logScale" in opt && opt.logScale) ? 
+                                        <LogSlider key = {state_key} setSliderVal={setSliderValue} setSliderEndVal={setEndSliderValue} Props = {Props}
+                                        setSliderProps={setSliderProps} opt_key = {opt_key} Values={Values} EndValues={EndValues} obj = {obj} opt = {opt}/>
+                                        :
+                                        <Fragment key={state_key}>
+                                            <Slider.Root
+                                                value={[Value]}
 
-                                    <Slider.Root
-                                        key={state_key}
-                                        value={[Value]}
+                                                onValueChange={(details) => {
+                                                    setSliderValue(obj.value, opt_key, details.value[0])
+                                                } }
 
-                                        onValueChange={(details) => {
-                                            const sliderVal = details.value[0]
-                                            if (opt.mutable) {
-                                                setSliderValue(obj.value, opt_key, sliderVal)
+                                                onValueChangeEnd={async (details) => {
+                                                    const sliderVal = details.value[0];
+                                                    setEndSliderValue(obj.value, opt_key, sliderVal);
+                                                    console.log("SLIDER END VALUE: ", EndValues[`${state_key}_end`]);
+                                                    await setFilterParam(obj.value, defaultOpts[opt_key].index, calcValueFromLinScale(sliderVal, opt.range));
+                                                }}>
 
-                                                setSliderProps(obj.value, opt_key, {
-                                                    bounds: Props[state_key].bounds,
-                                                    actValue: ("logScale" in opt && opt.logScale)
-                                                        ? (status === "logarithmic"
-                                                            ? calcValueFromLogScale(sliderVal, opt.range)
-                                                            : calcValueFromLinScale(sliderVal, Props[state_key].bounds)
-                                                        )
-                                                        : calcValueFromLinScale(sliderVal, opt.range)
-                                                })
-                                            }
-                                        }
-                                        }
+                                                <Slider.Label color="white"> {`${opt_key}`} </Slider.Label>
+                                                <Slider.Control>
+                                                    <Slider.Track>
+                                                        <Slider.Range />
+                                                    </Slider.Track>
+                                                    <Slider.Thumbs />
+                                                </Slider.Control>
+                                            </Slider.Root>
 
-
-                                        onValueChangeEnd={async (details) => {
-                                            const sliderVal = details.value[0]
-                                            if (opt.mutable) {
-                                                setEndSliderValue(obj.value, opt_key, sliderVal);
-
-                                                setSliderProps(obj.value, opt_key,
-                                                    {
-                                                        bounds: Props[`${state_key}`].bounds,
-                                                        actValue: ("logScale" in opt && opt.logScale) ?
-                                                            (
-                                                                status === "logarithmic" ?
-                                                                    ( calcValueFromLogScale(sliderVal, opt.range) )
-                                                                    :
-                                                                    ( calcValueFromLinScale(sliderVal, Props[state_key].bounds) )
-                                                            )
-                                                            :
-                                                            ( calcValueFromLinScale(sliderVal, opt.range) )
-
-                                                    }
-                                                )
-                                            }
-
-                                            console.log("SLIDER END VALUE: ", EndValues[`${state_key}_end`]);
-                                            await setFilterParam(obj.value, defaultOpts[opt_key].index, Props[state_key].actValue);
-                                        }}>
-
-                                        <Slider.Label color="white"> {`${opt_key}`} </Slider.Label>
-                                        <Slider.Control>
-                                            <Slider.Track>
-                                                <Slider.Range />
-                                            </Slider.Track>
-                                            <Slider.Thumbs />
-                                        </Slider.Control>
-                                    </Slider.Root>
-
-                                    <Flex justify="space-between" align="center" mb={2} w="100%">
-                                
-                                        <Text> 
-                                            {opt.mutable && Props[`${state_key}`].bounds[0]}
-                                        </Text>
-
-                                        <Text> Val:
-                                            {
-                                                opt.mutable ? Math.round(Props[`${state_key}`].actValue) : opt.range[0] 
-                                            } 
-                                        </Text> 
-
-                                        {
-                                           "logScale" in opt && opt.logScale &&
-                                           <Button bg={status === "linear" ? "green.400" : "red.400"}
-                                                onClick={() => {
-                                                    setStatus(prev => {
-                                                        const newStatus = prev === "linear" ? "logarithmic" : "linear";
-                                                        const SliderVal = EndValues[`${state_key}_end`]
-
-                                                        let logPos = calcLogaritmicPosFromLinear(SliderVal, Props[state_key].bounds, opt.range)
-
-                                                        let actVal = newStatus === "logarithmic" ? 
-                                                        ( calcValueFromLinScale(SliderVal, Props[state_key].bounds))
-                                                        :
-                                                        ( calcValueFromLogScale(SliderVal, opt.range) )
-
-                                                        let linRange = getBounds(actVal, opt.range);
-                                                        let linPos = calcLinearPosFromLogarithmic(SliderVal, opt.range, linRange);
-                                                        
-                                                        setSliderValue(
-                                                            obj.value, opt_key,
-                                                            newStatus === "logarithmic" ? logPos : linPos
-                                                        );
-
-                                                        setEndSliderValue(
-                                                            obj.value, opt_key,
-                                                            newStatus === "logarithmic" ? logPos : linPos
-                                                        );
-
-                                                        setSliderProps(
-                                                            obj.value, opt_key,
-                                                            newStatus === "logarithmic" ? 
-                                                            ({ bounds: opt.range, actValue: actVal })
-                                                            :
-                                                            ({ bounds: linRange, actValue: actVal })
-                                                        );
-
-                                                        return newStatus;
-                                                    })
+                                            <Flex justify="space-between" align="center" mb={2} w="100%">
+                                                <Text>  {opt.range[0]}  </Text>
+                                                <Text> Val:
+                                                { 
+                                                    Math.round(calcValueFromLinScale(
+                                                        EndValues[`${state_key}_end`], opt.range)
+                                                    )
                                                 }
-                                            }>
-                                            { status }
-                                            </Button>
-                                        }
-
-                                        <Text> {opt.mutable && Props[`${state_key}`].bounds[1]} </Text>
-                                    </Flex>
-
-                                    <Box h="5" />
-
+                                                </Text> 
+                                                <Text>  {opt.range[1]}  </Text>
+                                            </Flex>
+                                            <Box h="5" />
+                                        </Fragment>
+                                }
                                 </Fragment>
                             );
                         })
