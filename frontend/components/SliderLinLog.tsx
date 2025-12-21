@@ -24,6 +24,7 @@ export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, obj, 
     const [status, setStatus] = useState<string>("logarithmic");
     const state_key = `${obj.value}.${opt_key}`;
     const Value = Values[state_key];
+    
     return (
         <Fragment key={state_key}>
             <Slider.Root
@@ -32,15 +33,11 @@ export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, obj, 
                 onValueChange={(details) => {
                     const sliderVal = details.value[0]
                         setSliderVal(obj.value, opt_key, sliderVal)
-
                         setSliderProps(obj.value, opt_key, {
                             bounds: Props[state_key].bounds,
-                            actValue: ("logScale" in opt && opt.logScale)
-                                ? (status === "logarithmic"
-                                    ? calcValueFromLogScale(sliderVal, opt.range)
-                                    : calcValueFromLinScale(sliderVal, Props[state_key].bounds)
-                                )
-                                : calcValueFromLinScale(sliderVal, opt.range)
+                            actValue:status === "logarithmic"
+                                ? calcValueFromLogScale(sliderVal, opt.range)
+                                : calcValueFromLinScale(sliderVal, Props[state_key].bounds)
                         })
                 }
                 }
@@ -49,26 +46,19 @@ export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, obj, 
                 onValueChangeEnd={async (details) => {
                     const sliderVal = details.value[0]
                         setSliderEndVal(obj.value, opt_key, sliderVal);
-
                         setSliderProps(obj.value, opt_key,
                             {
                                 bounds: Props[`${state_key}`].bounds,
-                                actValue: ("logScale" in opt && opt.logScale) ?
-                                    (
-                                        status === "logarithmic" ?
-                                            (calcValueFromLogScale(sliderVal, opt.range))
-                                            :
-                                            (calcValueFromLinScale(sliderVal, Props[state_key].bounds))
-                                    )
-                                    :
-                                    (calcValueFromLinScale(sliderVal, opt.range))
-
+                                actValue:status === "logarithmic" 
+                                ? (calcValueFromLogScale(sliderVal, opt.range))
+                                : (calcValueFromLinScale(sliderVal, Props[state_key].bounds))
                             }
                         )
 
                     console.log("SLIDER END VALUE: ", EndValues[`${state_key}_end`]);
                     await setFilterParam(obj.value, defaultOpts[opt_key].index, Props[state_key].actValue);
                 }}>
+
 
                 <Slider.Label color="white"> {`${opt_key}`} </Slider.Label>
                 <Slider.Control>
