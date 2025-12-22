@@ -1,4 +1,4 @@
-#include <node_api/PipelineAPI.hpp>
+#include <node_api/FiltersAPI.hpp>
 #include <pipeline/Pipeline.hpp>
 #include <BackendApp.hpp>
 #include <tuple>
@@ -21,9 +21,9 @@ std::string demangle(const char* typeName) {
 #endif
 }
 
-namespace pipelineAPI {
+namespace node_api {
 
-void init(Napi::Env env, Napi::Object exports) {
+void initFilters(Napi::Env env, Napi::Object exports) {
 	exports.Set("pipelineAddFilter", Napi::Function::New(env, addFilter));
 	exports.Set("pipelineRemove", Napi::Function::New(env, remove));
 	exports.Set("pipelineMove", Napi::Function::New(env, move));
