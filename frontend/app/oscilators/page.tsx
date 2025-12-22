@@ -71,6 +71,11 @@ function sawtooth_func(x:number, interv: number){
 }
 
 
+function dupa(){
+    window.synthAPI.getOscillatorPlot("triangle", 1000);
+}
+
+
 const oscillatorsFuncMapping: Record<string, (X:number) => number> = {
   sine: ((x) => Math.sin(3 * x)),
   square: ((x => square_wave(x, 2.0))),
@@ -236,7 +241,7 @@ export default function Page() {
 
                 <Select.Control>
                   <Select.Trigger>
-                    <Select.ValueText color={"grey.100"} placeholder="Select oscillator" />
+                    <Select.ValueText color={"black"} placeholder="Select oscillator" />
                   </Select.Trigger>
                   <Select.IndicatorGroup>
                     <Select.Indicator />
@@ -246,7 +251,7 @@ export default function Page() {
                   <Select.Positioner>
                     <Select.Content>
                       {oscillatorTypes.items.map((oscilator) => (
-                        <Select.Item color="grey.100" item={oscilator} key={oscilator.value}>
+                        <Select.Item color="black" item={oscilator} key={oscilator.value}>
                           {oscilator.label}
                           <Select.ItemIndicator />
                         </Select.Item>
