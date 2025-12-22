@@ -1,6 +1,6 @@
 "use client";
 import { Chart, useChart } from "@chakra-ui/charts";
-import { Box,createListCollection, Grid, Portal,Select,Text, ListCollection } from "@chakra-ui/react";
+import { Box,createListCollection, Grid, Portal,Select,Text, ListCollection, NumberInputLabelProps } from "@chakra-ui/react";
 import {useState, useEffect, memo} from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { usePreset } from "@/components/ui/presetsProvider";
@@ -12,11 +12,24 @@ type OscillatorItem = {
 };
 
 
-function get_example_data(n: number, domain: number[], func : (X:number) => number) {
-  return Array.from({ length: n }, (_, i) => ({
-    x: domain[0] + i * (domain[1] - domain[0])/n,
-    y: func(domain[0] + i * (domain[1] - domain[0])/n),
-  }));
+type Point = {
+  x: number;
+  y: number;
+}
+
+
+function get_example_data(
+  n: number,
+  domain: number[],
+  func: (x: number) => number
+): Point[] {
+  return Array.from({ length: n }, (_, i): Point => {
+    const x = domain[0] + (i * (domain[1] - domain[0])) / n;
+    return {
+      x,
+      y: func(x),
+    };
+  });
 }
 
 
@@ -71,8 +84,9 @@ function sawtooth_func(x:number, interv: number){
 }
 
 
-function dupa(){
-    window.synthAPI.getOscillatorPlot("triangle", 1000);
+async function dupa(oscName:string){
+  const data = await window.synthAPI.getOscillatorPlot(oscName, 50);
+  console.log(data)
 }
 
 
@@ -85,17 +99,34 @@ const oscillatorsFuncMapping: Record<string, (X:number) => number> = {
 }
 
 
-type FunctionChartProps = {
+type FunctionProps = {
   func: (x: number) => number;
-  domain?: [number, number];
-  n?: number;
+  domain: [number, number];
+  n: number;
+}
+
+
+type DataProps = {
+  points: Point[];
+}
+
+
+type FunctionModeProps = {
+  inputType: "function";
+  givenFunc: FunctionProps;
 };
 
+type DataModeProps = {
+  inputType: "data";
+  givenData: DataProps;
+};
 
-function FunctionChart({func, domain = [0, 10], n = 1000}: FunctionChartProps){
+type FunctionChartProps = FunctionModeProps | DataModeProps;
 
+
+function FunctionChart(props: FunctionChartProps){
   const chart = useChart({
-      data: get_example_data(n, domain, func),
+      data: props.inputType === "function" ? get_example_data(props.givenFunc.n, props.givenFunc.domain, props.givenFunc.func) : props.givenData.points,
       series: [{ name: "y", color: "teal.solid" }]
     })
 
@@ -211,6 +242,7 @@ export default function Page() {
   useEffect(() => {
     setOscillator([oscilator1,oscilator2,oscilator3]);
     savePreset(String(presetNr));
+    dupa(oscilator1);
   }, [oscilator1, oscilator2, oscilator3]);
 
   return(
@@ -228,7 +260,7 @@ export default function Page() {
         {
           oscillators.map((o, i) => (
             <Box key={i}>
-              <MemoFunctionChart func = {getOscillatorFunction(o)} />
+              <MemoFunctionChart inputType = {"function"} givenFunc = {{func: getOscillatorFunction(o), domain:[0, 10], n:100}} />
 
               <Select.Root collection={oscillatorTypes} variant={"subtle"}
                 onValueChange={(e) => {

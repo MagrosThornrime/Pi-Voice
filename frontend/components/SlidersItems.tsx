@@ -56,8 +56,6 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
         console.log("EndValues changed:", EndValues);
     } , [EndValues]);
 
-    const [status, setStatus] = useState<string>("logarithmic");
-
     const sliders = filteredItems.flatMap(obj => {
         return (
             <Fragment key={obj.value}>
