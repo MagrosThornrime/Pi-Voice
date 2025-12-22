@@ -85,8 +85,12 @@ function sawtooth_func(x:number, interv: number){
 
 
 async function dupa(oscName:string){
-  const data = await window.synthAPI.getOscillatorPlot(oscName, 50);
-  console.log(data)
+  const data = await window.synthAPI.getOscillatorPlot(oscName, 500);
+
+  const dataPoints = data.map((y, x):Point => {
+    return { x, y };
+  })
+  return dataPoints;
 }
 
 
@@ -207,6 +211,9 @@ export default function Page() {
   } = usePreset();
 
   const [oscillators, setOscillator] = useState([oscilator1, oscilator2, oscilator3])
+  const [points1, setPoints1] = useState<Point[]>([]);
+  const [points2, setPoints2] = useState<Point[]>([]);
+  const [points3, setPoints3] = useState<Point[]>([]);
 
   function changeOscillators(i:number, val:string){
     if (i < 0 || i > 2) throw new Error("index out of range (0..2)");
@@ -245,6 +252,40 @@ export default function Page() {
     dupa(oscilator1);
   }, [oscilator1, oscilator2, oscilator3]);
 
+  useEffect(() => {
+    const loadPoints = async () => {
+      const dataPoints = await dupa(oscilator1);
+      setPoints1(dataPoints);
+    };
+    loadPoints();
+
+  }, [oscilator1]);
+
+  useEffect(() => {
+    const loadPoints = async () => {
+      const dataPoints = await dupa(oscilator2);
+      setPoints2(dataPoints);
+    };
+    loadPoints();
+    
+  }, [oscilator2]);
+
+  useEffect(() => {
+    const loadPoints = async () => {
+      const dataPoints = await dupa(oscilator3);
+      setPoints3(dataPoints);
+    };
+    loadPoints();
+    
+  }, [oscilator3]);
+
+  const getPoints = (i:number):Point[] => {
+    if (i < 0 || i > 2) { throw new Error("index out of range (0..2)"); }
+    else if (i==0) { return points1; }
+    else if (i==1){ return points2; }
+    else { return points3 };
+  }
+
   return(
     <Box minH="100vh" bg="gray.50" p={10}>
       <Grid templateColumns={{
@@ -260,7 +301,7 @@ export default function Page() {
         {
           oscillators.map((o, i) => (
             <Box key={i}>
-              <MemoFunctionChart inputType = {"function"} givenFunc = {{func: getOscillatorFunction(o), domain:[0, 10], n:100}} />
+              <MemoFunctionChart inputType = {"data"} givenData = {{points:getPoints(i)}} />
 
               <Select.Root collection={oscillatorTypes} variant={"subtle"}
                 onValueChange={(e) => {
