@@ -88,17 +88,25 @@ Napi::Array getOscillatorNames(const Napi::CallbackInfo& info) {
 
 Napi::Array getOscillatorPlot(const Napi::CallbackInfo& info) {
     auto env = info.Env();
-    if (info.Length() != 2 || !info[0].IsString() || !info[1].IsNumber()) {
-        Napi::TypeError::New(env, "Expected (type:string, length:i32)")
-            .ThrowAsJavaScriptException();
+    if ((info.Length() != 2 && info.Length() != 3)) {
+        Napi::TypeError::New(env, "Expected 2 or 3 arguments").ThrowAsJavaScriptException();
         return Napi::Array::New(env);
     }
+	if (!info[0].IsString() || !info[1].IsNumber() || (info.Length() == 3 && !info[2].IsNumber())) {
+		Napi::TypeError::New(env, "Expected (type:string, length:i32) or (type:string, length:i32, step:i32)")
+			.ThrowAsJavaScriptException();
+		return Napi::Array::New(env);
+	}
     std::string name = info[0].As<Napi::String>();
     i32 length = info[1].As<Napi::Number>().Int32Value();
+	i32 step = 1;
+	if (info.Length() == 3 && !info[2].IsUndefined()) {
+		step = info[2].As<Napi::Number>().Int32Value();
+	}
     std::vector<f32> plot;
     try {
     	auto lock = std::lock_guard(mutex);
-        plot = synthesiser->getOscillatorPlot(name, length);
+        plot = synthesiser->getOscillatorPlot(name, length, step);
     } catch (const std::exception& e) {
         Napi::Error::New(env, e.what()).ThrowAsJavaScriptException();
         return Napi::Array::New(env);

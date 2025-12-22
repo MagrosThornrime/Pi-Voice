@@ -133,7 +133,7 @@ std::vector<std::string> Synthesiser::getSampleNames() {
 	return _sampleManager->getSampleNames();
 }
 
-std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name, i32 length) {
+std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name, i32 length, i32 step) {
 	if (length <= 0) {
 		throw std::invalid_argument("length must be greater than 0");
 	}
@@ -157,7 +157,9 @@ std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name, i32 len
 	std::vector<f32> plot;
 	for (i32 i = 0; i < length; i++) {
 		plot.push_back(oscillator->getNextSample());
-		oscillator->advance();
+		for (i32 j = 0; j < step; j++) {
+			oscillator->advance();
+		}
 	}
 	return plot;
 }
