@@ -12,13 +12,15 @@ class Sequencer;
 /// @brief Advances internal state of the sequencer
 class SequencerIterator {
 public:
-	/// @brief Creates iterator and obtains lock on sequencer
 	SequencerIterator() = default;
+	/// @brief Creates iterator and obtains lock on sequencer
 	SequencerIterator(Sequencer* sequencer, std::unique_lock<std::mutex> lock);
 	/// @brief Saves sequencer state and releases lock
 	~SequencerIterator();
 
+	/// @brief Derefrerence operator
 	f32 operator*() const;
+	/// @brief Increment operator
 	SequencerIterator& operator++();
 
 private:
