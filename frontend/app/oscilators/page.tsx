@@ -84,7 +84,7 @@ function sawtooth_func(x:number, interv: number){
 }
 
 
-async function dupa(oscName:string){
+async function getOscPlotData(oscName:string){
   const data = await window.synthAPI.getOscillatorPlot(oscName, 500);
 
   const dataPoints = data.map((y, x):Point => {
@@ -249,12 +249,12 @@ export default function Page() {
   useEffect(() => {
     setOscillator([oscilator1,oscilator2,oscilator3]);
     savePreset(String(presetNr));
-    dupa(oscilator1);
+    getOscPlotData(oscilator1);
   }, [oscilator1, oscilator2, oscilator3]);
 
   useEffect(() => {
     const loadPoints = async () => {
-      const dataPoints = await dupa(oscilator1);
+      const dataPoints = await getOscPlotData(oscilator1);
       setPoints1(dataPoints);
     };
     loadPoints();
@@ -263,7 +263,7 @@ export default function Page() {
 
   useEffect(() => {
     const loadPoints = async () => {
-      const dataPoints = await dupa(oscilator2);
+      const dataPoints = await getOscPlotData(oscilator2);
       setPoints2(dataPoints);
     };
     loadPoints();
