@@ -5,6 +5,30 @@
 
 namespace seq {
 
+class Sequencer;
+
+/// @brief Iterator for sequencer
+/// @brief Holds lock 
+/// @brief Advances internal state of the sequencer
+class SequencerIterator {
+public:
+	/// @brief Creates iterator and obtains lock on sequencer
+	SequencerIterator() = default;
+	SequencerIterator(Sequencer* sequencer, std::unique_lock<std::mutex> lock);
+	/// @brief Saves sequencer state and releases lock
+	~SequencerIterator();
+
+	f32 operator*() const;
+	SequencerIterator& operator++();
+
+private:
+	Sequencer* _sequencer{};
+	u32 _sample{};
+	u32 _pos;
+	const std::vector<std::vector<f32>>* _samples{};
+	std::unique_lock<std::mutex> _lock;
+};
+
 class Sequencer {
 public:
 	Sequencer(std::shared_ptr<fileio::SampleManager> sampleManager);
@@ -16,6 +40,10 @@ public:
 	void activate();
 	/// @brief Deactivates sequencer (may record)
 	void deactivate();
+
+	/// @brief Returns iterator to next sample
+	/// @brief IMPORTANT! The sequencer is locked during the lifetime of the iterator
+	SequencerIterator iter();
 
 	/// @brief Starts recording
 	/// @brief Available to deactivated recorder
@@ -47,9 +75,14 @@ public:
 	void swapSamples(const u32 i1, const u32 i2);
 
 private:
+	friend class SequencerIterator;
+
+	std::mutex _mutex;
 	std::shared_ptr<fileio::SampleManager> _sampleManager;
 	MemoryRecorder _recorder;
 	std::vector<std::vector<f32>> _samples;
+	u32 _sample{};
+	u32 _pos{};
 	bool _active = false;
 };
 
