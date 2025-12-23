@@ -1,6 +1,6 @@
 "use client";
 import { Chart, useChart } from "@chakra-ui/charts";
-import { Box,createListCollection, Grid, Portal,Select,Text, ListCollection, NumberInputLabelProps } from "@chakra-ui/react";
+import { Box,createListCollection, Grid, Portal, Select,Text, ListCollection, Switch } from "@chakra-ui/react";
 import {useState, useEffect, memo} from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { usePreset } from "@/components/ui/presetsProvider";
@@ -135,7 +135,7 @@ function FunctionChart(props: FunctionChartProps){
     })
 
     return (
-      <Chart.Root width={400} height={300} chart={chart}>
+      <Chart.Root width="100%" height={300} chart={chart}>
 
         <LineChart data={chart.data}>
 
@@ -289,12 +289,12 @@ export default function Page() {
   return(
     <Box minH="100vh" bg="gray.50" p={10}>
       <Grid templateColumns={{
-          base: "2fr",
-          md: "repeat(3, 1fr)",
+          base: "1fr",
+          md: "repeat(2, 1fr)",
           lg: "repeat(3, 1fr)",
         }}
           gap={30}
-          maxW="1400px"
+          // maxW="1920px"
           mx="auto"
           alignItems="center"
           justifyItems="center" >

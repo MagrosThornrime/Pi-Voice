@@ -1,0 +1,26 @@
+import { Switch, Text } from "@chakra-ui/react"
+import { HiCheck, HiX } from "react-icons/hi"
+import { FaAngleUp, FaAnglesUp } from "react-icons/fa6";
+
+type OrderSwitchProps = {
+    label:string;
+}
+
+export function OrderSwitch(props:OrderSwitchProps){
+  return (
+    <>
+        <Text>{props.label}</Text>
+
+        <Switch.Root size="lg">
+            <Switch.HiddenInput />
+            <Switch.Control>
+            <Switch.Thumb>
+                <Switch.ThumbIndicator fallback={<FaAngleUp color = "blue" />}>
+                <FaAnglesUp color = "green" />
+                </Switch.ThumbIndicator>
+            </Switch.Thumb>
+            </Switch.Control>
+        </Switch.Root>
+    </>
+  )
+}
