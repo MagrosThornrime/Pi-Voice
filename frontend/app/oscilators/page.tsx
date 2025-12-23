@@ -272,7 +272,7 @@ export default function Page() {
 
   useEffect(() => {
     const loadPoints = async () => {
-      const dataPoints = await dupa(oscilator3);
+      const dataPoints = await getOscPlotData(oscilator3);
       setPoints3(dataPoints);
     };
     loadPoints();
