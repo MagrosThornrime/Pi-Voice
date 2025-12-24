@@ -1,6 +1,6 @@
 "use client";
 import { Chart, useChart } from "@chakra-ui/charts";
-import { Box,createListCollection, Grid, Portal,Select,Text, ListCollection } from "@chakra-ui/react";
+import { Box,createListCollection, Grid, Portal, Select,Text, ListCollection, Switch } from "@chakra-ui/react";
 import {useState, useEffect, memo} from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { usePreset } from "@/components/ui/presetsProvider";
@@ -12,11 +12,24 @@ type OscillatorItem = {
 };
 
 
-function get_example_data(n: number, domain: number[], func : (X:number) => number) {
-  return Array.from({ length: n }, (_, i) => ({
-    x: domain[0] + i * (domain[1] - domain[0])/n,
-    y: func(domain[0] + i * (domain[1] - domain[0])/n),
-  }));
+type Point = {
+  x: number;
+  y: number;
+}
+
+
+function get_example_data(
+  n: number,
+  domain: number[],
+  func: (x: number) => number
+): Point[] {
+  return Array.from({ length: n }, (_, i): Point => {
+    const x = domain[0] + (i * (domain[1] - domain[0])) / n;
+    return {
+      x,
+      y: func(x),
+    };
+  });
 }
 
 
@@ -71,8 +84,13 @@ function sawtooth_func(x:number, interv: number){
 }
 
 
-function dupa(){
-    window.synthAPI.getOscillatorPlot("triangle", 1000);
+async function getOscPlotData(oscName:string){
+  const data = await window.synthAPI.getOscillatorPlot(oscName, 500);
+
+  const dataPoints = data.map((y, x):Point => {
+    return { x, y };
+  })
+  return dataPoints;
 }
 
 
@@ -85,22 +103,39 @@ const oscillatorsFuncMapping: Record<string, (X:number) => number> = {
 }
 
 
-type FunctionChartProps = {
+type FunctionProps = {
   func: (x: number) => number;
-  domain?: [number, number];
-  n?: number;
+  domain: [number, number];
+  n: number;
+}
+
+
+type DataProps = {
+  points: Point[];
+}
+
+
+type FunctionModeProps = {
+  inputType: "function";
+  givenFunc: FunctionProps;
 };
 
+type DataModeProps = {
+  inputType: "data";
+  givenData: DataProps;
+};
 
-function FunctionChart({func, domain = [0, 10], n = 1000}: FunctionChartProps){
+type FunctionChartProps = FunctionModeProps | DataModeProps;
 
+
+function FunctionChart(props: FunctionChartProps){
   const chart = useChart({
-      data: get_example_data(n, domain, func),
+      data: props.inputType === "function" ? get_example_data(props.givenFunc.n, props.givenFunc.domain, props.givenFunc.func) : props.givenData.points,
       series: [{ name: "y", color: "teal.solid" }]
     })
 
     return (
-      <Chart.Root width={400} height={300} chart={chart}>
+      <Chart.Root width="100%" height={300} chart={chart}>
 
         <LineChart data={chart.data}>
 
@@ -176,6 +211,9 @@ export default function Page() {
   } = usePreset();
 
   const [oscillators, setOscillator] = useState([oscilator1, oscilator2, oscilator3])
+  const [points1, setPoints1] = useState<Point[]>([]);
+  const [points2, setPoints2] = useState<Point[]>([]);
+  const [points3, setPoints3] = useState<Point[]>([]);
 
   function changeOscillators(i:number, val:string){
     if (i < 0 || i > 2) throw new Error("index out of range (0..2)");
@@ -211,24 +249,59 @@ export default function Page() {
   useEffect(() => {
     setOscillator([oscilator1,oscilator2,oscilator3]);
     savePreset(String(presetNr));
+    getOscPlotData(oscilator1);
   }, [oscilator1, oscilator2, oscilator3]);
+
+  useEffect(() => {
+    const loadPoints = async () => {
+      const dataPoints = await getOscPlotData(oscilator1);
+      setPoints1(dataPoints);
+    };
+    loadPoints();
+
+  }, [oscilator1]);
+
+  useEffect(() => {
+    const loadPoints = async () => {
+      const dataPoints = await getOscPlotData(oscilator2);
+      setPoints2(dataPoints);
+    };
+    loadPoints();
+    
+  }, [oscilator2]);
+
+  useEffect(() => {
+    const loadPoints = async () => {
+      const dataPoints = await getOscPlotData(oscilator3);
+      setPoints3(dataPoints);
+    };
+    loadPoints();
+    
+  }, [oscilator3]);
+
+  const getPoints = (i:number):Point[] => {
+    if (i < 0 || i > 2) { throw new Error("index out of range (0..2)"); }
+    else if (i==0) { return points1; }
+    else if (i==1){ return points2; }
+    else { return points3 };
+  }
 
   return(
     <Box minH="100vh" bg="gray.50" p={10}>
       <Grid templateColumns={{
-          base: "2fr",
-          md: "repeat(3, 1fr)",
+          base: "1fr",
+          md: "repeat(2, 1fr)",
           lg: "repeat(3, 1fr)",
         }}
           gap={30}
-          maxW="1400px"
+          // maxW="1920px"
           mx="auto"
           alignItems="center"
           justifyItems="center" >
         {
           oscillators.map((o, i) => (
             <Box key={i}>
-              <MemoFunctionChart func = {getOscillatorFunction(o)} />
+              <MemoFunctionChart inputType = {"data"} givenData = {{points:getPoints(i)}} />
 
               <Select.Root collection={oscillatorTypes} variant={"subtle"}
                 onValueChange={(e) => {
