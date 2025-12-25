@@ -166,44 +166,110 @@ function DraggableList({attr}:DraggableListProps){
     const { data, setData } = useFilters();
     const myData = data[attr];
     const [listData, setListData] = useState<string[]>(myData);
+    const [blocks, setBlocks] = useState<string[]>([]);
+
+    useEffect(
+        () => {
+            setListData(myData ?? []);
+            const newArr = Array.from({ length: myData.length }, (_, i) => "");
+            setBlocks(newArr);
+        }, [myData]
+
+
+    )
     const [dragIndex, setDragIndex] = useState<number | null >(null);
+    const [dragBlockInd, setDragBlockInd] = useState<number | null >(null);
 
-
-    const handleDragStart = ( index: number) => {
+    const dragStartList = ( index: number) => {
         setDragIndex(index);
     };
 
+    const dragStartBlock = (index: number) => {
+        setDragBlockInd(index);
+    }
 
-    const handleDragOver = (e: DragEvent<HTMLLIElement>) => {
+    const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
     };
 
     const handleDrop = (index:number) => {
-        const newList = [...listData];
-        if (dragIndex == null){return}
-        const draggedItem = newList[dragIndex];
-        newList.splice(dragIndex, 1);
-        newList.splice(dragIndex, 0, draggedItem);
-        setListData(newList);
-        setDragIndex(null);
-    }
-    return (
-        <Box as="ul" listStyleType="circle">
-        {
-            listData.map((item, index) => {
-               return( 
-               <li
-                key = {index}
-                draggable
-                onDragStart={ () => handleDragStart(index)}
-                onDragOver={handleDragOver}
-                onDrop={() => handleDrop(index)}
-                className={index == dragIndex ? "dragging": ""} >
-                    {item}
-                </li>
-            )
-            })
+        if (dragIndex === null && dragBlockInd === null){return}
+
+        const newBlocks = [...blocks];
+
+        if (dragIndex !== null){
+            const draggedItem = listData[dragIndex];
+            newBlocks[index] = draggedItem;
+            setDragIndex(null);
         }
+
+        else if (dragBlockInd !== null) { // typescript is stupid
+            const draggedItem = blocks[dragBlockInd];
+            
+            newBlocks.splice(dragBlockInd, 1);
+            newBlocks.splice(index, 0, draggedItem);
+
+            setDragBlockInd(null);
+        }
+        setBlocks(newBlocks);
+    }
+
+    console.log("listData", listData);
+
+    return (
+        <Box>
+            <>
+                <Box
+                    as="ul"
+                    display="flex"
+                    flexDirection="row"
+                    listStyleType="none"
+                    p={0}
+                    gap={2}
+                >
+                    {
+                        listData.map((item, index) => {
+                            console.log(item);
+                            return (
+                                <Box key={index} as="li" color="white" bg="gray.500" rounded="2xl" maxW="30%" shadow="md" p={2}
+                                    draggable
+                                    onDragStart={() => dragStartList(index)}
+                                    cursor="grab"
+                                    className={index === dragIndex ? "dragging" : ""} >
+                                    {item}
+                                </Box>
+                            )
+                        })
+                    }
+                </Box>
+
+                <Box h = "5"/>
+
+                <Box
+                    as="ul"
+                    display="flex"
+                    flexDirection="row"
+                    listStyleType="none"
+                    p={0}
+                    gap={2}
+                >
+                    {
+                        blocks.map((item, index) => {
+                            console.log(item);
+                            return (
+                                <Box key={index} as="li" color="white" bg="green.500" rounded="2xl" minHeight = "30px" minWidth="6%" shadow="md" p={2}
+                                    draggable
+                                    onDragStart={() => dragStartBlock(index)}
+                                    onDragOver={handleDragOver}
+                                    onDrop={() => handleDrop(index)} >
+                                    {item}
+                                </Box>
+                            )
+                        })
+                    }
+                </Box>
+
+            </>
         </Box>
     )
 }
