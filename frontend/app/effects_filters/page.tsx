@@ -1,6 +1,6 @@
 "use client";
 import { Box, Checkbox, Button, Fieldset, Stack, Text, CheckboxGroup, Heading, Collapsible, Flex, Grid, Slider } from "@chakra-ui/react";
-import { useContext, ReactNode, useEffect, createContext, useState, Fragment} from "react";
+import { useContext, ReactNode, useEffect, createContext, useState, Fragment, DragEvent} from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { useController, ControllerRenderProps, useForm, FieldError } from "react-hook-form"
 import {filters, effects} from "../utils/tables"
@@ -157,6 +157,57 @@ export async function setFilterParam(filterName: string, param: number, value: n
     await window.synthAPI.pipelineSetFilterParam(filterNumber, param, value)
 }
 
+type DraggableListProps = {
+    attr:"filters" | "effects";
+}
+
+
+function DraggableList({attr}:DraggableListProps){
+    const { data, setData } = useFilters();
+    const myData = data[attr];
+    const [listData, setListData] = useState<string[]>(myData);
+    const [dragIndex, setDragIndex] = useState<number | null >(null);
+
+
+    const handleDragStart = ( index: number) => {
+        setDragIndex(index);
+    };
+
+
+    const handleDragOver = (e: DragEvent<HTMLLIElement>) => {
+        e.preventDefault();
+    };
+
+    const handleDrop = (index:number) => {
+        const newList = [...listData];
+        if (dragIndex == null){return}
+        const draggedItem = newList[dragIndex];
+        newList.splice(dragIndex, 1);
+        newList.splice(dragIndex, 0, draggedItem);
+        setListData(newList);
+        setDragIndex(null);
+    }
+    return (
+        <Box as="ul" listStyleType="circle">
+        {
+            listData.map((item, index) => {
+               return( 
+               <li
+                key = {index}
+                draggable
+                onDragStart={ () => handleDragStart(index)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(index)}
+                className={index == dragIndex ? "dragging": ""} >
+                    {item}
+                </li>
+            )
+            })
+        }
+        </Box>
+    )
+}
+
 
 function Page() {
 
@@ -230,6 +281,7 @@ function Page() {
             <Box h="10" />
 
             <Box minW = "80%">
+                <DraggableList attr = "filters" />
                 <SlidersItems neededItems = {filters} attr = "filters"/>
                 <Box h="10" />
                 <SlidersItems neededItems = {effects} attr = "effects"/>
