@@ -1,7 +1,9 @@
 "use client";
-import { Box, Checkbox, Button, Fieldset, Stack, Text, CheckboxGroup, Heading, Collapsible, Flex, Grid, Slider } from "@chakra-ui/react";
+import { Box, Checkbox, Button, Fieldset, Stack, Text, Portal, CheckboxGroup, Heading,  Grid,  Menu} from "@chakra-ui/react";
 import { useContext, ReactNode, useEffect, createContext, useState, Fragment, DragEvent} from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
+import { HiCog } from "react-icons/hi"
+import { MdDelete } from "react-icons/md";
 import { useController, ControllerRenderProps, useForm, FieldError } from "react-hook-form"
 import {filters, effects} from "../utils/tables"
 import { SlidersItems } from "@/components/SlidersItems";
@@ -205,12 +207,19 @@ function DraggableList({attr}:DraggableListProps){
 
         else if (dragBlockInd !== null) { // typescript is stupid
             const draggedItem = blocks[dragBlockInd];
-            
-            newBlocks.splice(dragBlockInd, 1);
-            newBlocks.splice(index, 0, draggedItem);
+
+            const temp = newBlocks[dragBlockInd];
+            newBlocks[dragBlockInd] = blocks[index];
+            newBlocks[index] = temp;
 
             setDragBlockInd(null);
         }
+        setBlocks(newBlocks);
+    }
+
+    const handleDelete = (index:number) => {
+        const newBlocks = [...blocks];
+        newBlocks[index] = "";
         setBlocks(newBlocks);
     }
 
@@ -233,7 +242,7 @@ function DraggableList({attr}:DraggableListProps){
                             return (
                                 <Box key={index} as="li" color="white" bg="gray.500" rounded="2xl" maxW="30%" shadow="md" p={2}
                                     draggable
-                                    onDragStart={() => dragStartList(index)}
+                                    onDragStart={() =>  dragStartList(index)}
                                     cursor="grab"
                                     className={index === dragIndex ? "dragging" : ""} >
                                     {item}
@@ -257,12 +266,36 @@ function DraggableList({attr}:DraggableListProps){
                         blocks.map((item, index) => {
                             console.log(item);
                             return (
-                                <Box key={index} as="li" color="white" bg="green.500" rounded="2xl" minHeight = "30px" minWidth="6%" shadow="md" p={2}
+                                <Box key={index} as="li" color="white" bg="green.500" rounded="2xl" minHeight="40px" minWidth="7%" shadow="md" p={2}
                                     draggable
-                                    onDragStart={() => dragStartBlock(index)}
+                                    onDragStart={() => {
+                                        if(blocks[index] == ""){ return; }
+                                        dragStartBlock(index);
+                                    }}
+
                                     onDragOver={handleDragOver}
+
                                     onDrop={() => handleDrop(index)} >
+
+                                    <Button size="xs"
+                                        p={1}
+                                        minW={0}
+                                        bg="transparent"
+                                        _hover={{ bg: "red.600" }}
+                                        _active={{ bg: "red.700" }}
+
+                                        onClick={(e) => {
+                                            e.stopPropagation;
+                                            handleDelete(index);
+                                        }}
+                                    >
+
+                                    <MdDelete />
+
+                                    </Button>
+
                                     {item}
+
                                 </Box>
                             )
                         })
