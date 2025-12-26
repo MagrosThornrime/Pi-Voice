@@ -1,11 +1,11 @@
 "use client";
-import { Box, Checkbox, Button, Fieldset, Stack, Text, Portal, CheckboxGroup, Heading,  Grid,  Menu} from "@chakra-ui/react";
+import { Box, Checkbox, Button, Fieldset, Stack, Text, Portal, Collapsible, CheckboxGroup, Heading,  Grid,  Menu} from "@chakra-ui/react";
 import { useContext, ReactNode, useEffect, createContext, useState, Fragment, DragEvent} from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
-import { HiCog } from "react-icons/hi"
 import { MdDelete } from "react-icons/md";
 import { useController, ControllerRenderProps, useForm, FieldError } from "react-hook-form"
 import {filters, effects} from "../utils/tables"
+import { LuChevronRight } from "react-icons/lu"
 import { SlidersItems } from "@/components/SlidersItems";
 import { z } from "zod"
 
@@ -19,18 +19,26 @@ const FiltersFormSchema = z.object({
     })
 })
 
-
 type FiltersData = z.infer<typeof FiltersFormSchema>
-
 
 type FiltersContextType = {
     data: FiltersData;
     setData: (value: FiltersData) => void;
 };
 
+export type orderedDataType = {
+    filters: string[];
+    effects: string[];
+}
+
+type FiltersOrderContextType = {
+    orderedData: orderedDataType;
+    setOrderedData: React.Dispatch<React.SetStateAction<orderedDataType>>;
+};
+
+const FiltersOrderedContext = createContext<FiltersOrderContextType | undefined> (undefined);
 
 const FiltersContext = createContext<FiltersContextType | undefined>(undefined);
-
 
 export function FiltersProvider({ children }: { children: ReactNode }) {
     const [data, setData] = useState<FiltersData>({
@@ -45,6 +53,18 @@ export function FiltersProvider({ children }: { children: ReactNode }) {
     );
 }
 
+export function FiltersOrderedProvider({ children }: { children: ReactNode }) {
+    const [orderedData, setOrderedData] = useState<orderedDataType>({
+        filters: [],
+        effects: []
+    });
+
+    return (
+        <FiltersOrderedContext.Provider value={{ orderedData, setOrderedData }}>
+            {children}
+        </FiltersOrderedContext.Provider>
+    );
+}
 
 export function useFilters() {
     const ctx = useContext(FiltersContext);
@@ -54,6 +74,13 @@ export function useFilters() {
     return ctx;
 }
 
+export function useOrderedFilters() {
+    const ctx = useContext(FiltersOrderedContext);
+    if (!ctx) {
+        throw new Error("useFilters must be used inside FiltersProvider");
+    }
+    return ctx;
+}
 
 type FormWithHeadingProps = {
     formItems: { label: string; value: string }[];
@@ -164,8 +191,10 @@ type DraggableListProps = {
 }
 
 
-function DraggableList({attr}:DraggableListProps){
+function DraggableList({ attr }: DraggableListProps) {
     const { data, setData } = useFilters();
+    const { orderedData, setOrderedData } = useOrderedFilters();
+
     const myData = data[attr];
     const [listData, setListData] = useState<string[]>(myData);
     const [blocks, setBlocks] = useState<string[]>([]);
@@ -173,16 +202,22 @@ function DraggableList({attr}:DraggableListProps){
     useEffect(
         () => {
             setListData(myData ?? []);
-            const newArr = Array.from({ length: myData.length }, (_, i) => "");
+            const newArr = Array.from({ length: 3 }, (_, i) => "");
             setBlocks(newArr);
         }, [myData]
-
-
     )
-    const [dragIndex, setDragIndex] = useState<number | null >(null);
-    const [dragBlockInd, setDragBlockInd] = useState<number | null >(null);
 
-    const dragStartList = ( index: number) => {
+    useEffect(() => {
+        setOrderedData((prev: orderedDataType) => ({
+            ...prev,
+            filters: blocks.filter(item => item !== "")
+        }));
+    }, [blocks]);
+
+    const [dragIndex, setDragIndex] = useState<number | null>(null);
+    const [dragBlockInd, setDragBlockInd] = useState<number | null>(null);
+
+    const dragStartList = (index: number) => {
         setDragIndex(index);
     };
 
@@ -194,12 +229,12 @@ function DraggableList({attr}:DraggableListProps){
         e.preventDefault();
     };
 
-    const handleDrop = (index:number) => {
-        if (dragIndex === null && dragBlockInd === null){return}
+    const handleDrop = (index: number) => {
+        if (dragIndex === null && dragBlockInd === null) { return }
 
         const newBlocks = [...blocks];
 
-        if (dragIndex !== null){
+        if (dragIndex !== null) {
             const draggedItem = listData[dragIndex];
             newBlocks[index] = draggedItem;
             setDragIndex(null);
@@ -217,7 +252,7 @@ function DraggableList({attr}:DraggableListProps){
         setBlocks(newBlocks);
     }
 
-    const handleDelete = (index:number) => {
+    const handleDelete = (index: number) => {
         const newBlocks = [...blocks];
         newBlocks[index] = "";
         setBlocks(newBlocks);
@@ -226,84 +261,107 @@ function DraggableList({attr}:DraggableListProps){
     console.log("listData", listData);
 
     return (
-        <Box>
-            <>
-                <Box
-                    as="ul"
-                    display="flex"
-                    flexDirection="row"
-                    listStyleType="none"
-                    p={0}
-                    gap={2}
-                >
-                    {
-                        listData.map((item, index) => {
-                            console.log(item);
-                            return (
-                                <Box key={index} as="li" color="white" bg="gray.500" rounded="2xl" maxW="30%" shadow="md" p={2}
-                                    draggable
-                                    onDragStart={() =>  dragStartList(index)}
-                                    cursor="grab"
-                                    className={index === dragIndex ? "dragging" : ""} >
-                                    {item}
-                                </Box>
-                            )
-                        })
-                    }
+        <Collapsible.Root justifyItems={"left"}>
+
+            <Collapsible.Trigger paddingY="3" display="flex" gap="2" alignItems="center" justifyItems={"center"}>
+
+                <Collapsible.Indicator
+                    transition="transform 0.2s"
+                    _open={{ transform: "rotate(90deg)" }} >
+                    <LuChevronRight size={24} color="black" />
+                </Collapsible.Indicator>
+
+                <Box maxW="100%">
+                    <Text textStyle="2xl" mb={2} color="teal.600" fontWeight="semibold" textAlign="center"> Toggle {attr} order selection </Text>
                 </Box>
 
-                <Box h = "5"/>
+            </Collapsible.Trigger>
 
-                <Box
-                    as="ul"
-                    display="flex"
-                    flexDirection="row"
-                    listStyleType="none"
-                    p={0}
-                    gap={2}
-                >
-                    {
-                        blocks.map((item, index) => {
-                            console.log(item);
-                            return (
-                                <Box key={index} as="li" color="white" bg="green.500" rounded="2xl" minHeight="40px" minWidth="7%" shadow="md" p={2}
-                                    draggable
-                                    onDragStart={() => {
-                                        if(blocks[index] == ""){ return; }
-                                        dragStartBlock(index);
-                                    }}
+            <Collapsible.Content maxW="100%" minW="100%">
 
-                                    onDragOver={handleDragOver}
+                <Box>
+                    <>
+                            <Box
+                                as="ul"
+                                display="flex"
+                                flexDirection="row"
+                                listStyleType="none"
+                                p={0}
+                                gap={2}
+                            >
+                                {
+                                    listData.map((item, index) => {
+                                        console.log(item);
+                                        return (
+                                            <Box key={index} as="li" color="white" bg="gray.500" rounded="2xl" maxW="30%" shadow="md" p={2}
+                                                draggable
+                                                onDragStart={() => dragStartList(index)}
+                                                cursor="grab"
+                                                className={index === dragIndex ? "dragging" : ""} >
+                                                {item}
+                                            </Box>
+                                        )
+                                    })
+                                }
+                            </Box>
 
-                                    onDrop={() => handleDrop(index)} >
+                        { 
+                            listData.length > 0 &&
+                            <>
+                                <Box h="5" />
 
-                                    <Button size="xs"
-                                        p={1}
-                                        minW={0}
-                                        bg="transparent"
-                                        _hover={{ bg: "red.600" }}
-                                        _active={{ bg: "red.700" }}
+                                <Box as="ul" display="flex" flexDirection="row" listStyleType="none" p={0} gap={2} >
+                                    {
+                                        blocks.map((item, index) => {
+                                            console.log(item);
+                                            return (
+                                                <Box key={index} as="li" color="white" bg="green.500"
+                                                rounded="2xl" minHeight="40px" minWidth="7%" shadow="md" p={2}
 
-                                        onClick={(e) => {
-                                            e.stopPropagation;
-                                            handleDelete(index);
-                                        }}
-                                    >
+                                                    draggable
 
-                                    <MdDelete />
+                                                    onDragStart={() => {
+                                                        if (blocks[index] == "") { return; }
+                                                        dragStartBlock(index);
+                                                    }}
 
-                                    </Button>
+                                                    onDragOver={handleDragOver}
 
-                                    {item}
+                                                    onDrop={() => handleDrop(index)} >
 
+                                                    <Button size="xs"
+                                                        p={1}
+                                                        minW={0}
+                                                        bg="transparent"
+                                                        _hover={{ bg: "red.600" }}
+                                                        _active={{ bg: "red.700" }}
+
+                                                        onClick={(e) => {
+                                                            e.stopPropagation;
+                                                            handleDelete(index);
+                                                        }}
+                                                    >
+
+                                                        <MdDelete />
+
+                                                    </Button>
+
+                                                    {item}
+
+                                                </Box>
+                                            )
+                                        })
+                                    }
                                 </Box>
-                            )
-                        })
-                    }
+                            </>
+                        }
+
+                    </>
                 </Box>
 
-            </>
-        </Box>
+            </Collapsible.Content>
+
+        </Collapsible.Root>
     )
 }
 
@@ -381,7 +439,10 @@ function Page() {
 
             <Box minW = "80%">
                 <DraggableList attr = "filters" />
+                <Box h="10" />
                 <SlidersItems neededItems = {filters} attr = "filters"/>
+                <Box h="10" />
+                <DraggableList attr = "effects" />
                 <Box h="10" />
                 <SlidersItems neededItems = {effects} attr = "effects"/>
             </Box>
@@ -392,8 +453,10 @@ function Page() {
 
 export default function Home() {
     return (
-        <FiltersProvider>
-            <Page />
-        </FiltersProvider>
+        <FiltersOrderedProvider>
+            <FiltersProvider>
+                <Page />
+            </FiltersProvider>
+        </FiltersOrderedProvider>
     )
 }
