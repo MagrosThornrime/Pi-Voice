@@ -6,7 +6,7 @@
 namespace effects {
     class Effect: public pipeline::Layer {
     public:
-        static std::shared_ptr<Effect> create(EffectType::Value effect);
+        //static std::shared_ptr<Effect> create(EffectType::Value effect);
 
         Effect() = default;
         explicit Effect(const u32 channels);

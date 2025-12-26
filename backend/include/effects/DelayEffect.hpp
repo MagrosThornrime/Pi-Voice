@@ -3,18 +3,12 @@
 
 namespace effects {
 
-enum DelayParam {
-    delayTime,
-    feedback,
-    wetAmount
-}
-
 class DelayEffect : public Effect {
 
     std::vector<f32> _delayBuffer;
     u32 _delayIndex = 0;
 
-    u32 _delayTime = 10000;
+	u32 _delayTime = 10000;
     f32 _feedback = 0.1f;
     f32 _wetAmount = 0.5f;
 
@@ -28,7 +22,7 @@ public:
 
     DelayEffect(const u32 channels, const u32 delayTime, const f32 feedback, const f32 wetAmount);
 
-    void refresh() override;
+	void refresh() override;
 };
 
 }

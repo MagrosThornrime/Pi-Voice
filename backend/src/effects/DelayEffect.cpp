@@ -10,32 +10,38 @@ void DelayEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>& 
     }
 }
 
-#define SET_PARAM(name) case FilterParams::name: if(value.type() == typeid(_##name)) { _##name = std::any_cast<decltype(_##name)>(std::move(value)); } break
 
-pipeline::Layer& BwFilter::setParam(const u32 param, std::any value) {
-    switch (param) {
-        SET_PARAM(cutoff);
-        SET_PARAM(quality);
-        SET_PARAM(gainDB);
-        SET_PARAM(order);
-    }
-    refresh();
-    return *this;
+pipeline::Layer& DelayEffect::setParam(const u32 param, std::any value){
+	return *this;
 }
 
-#define GET_PARAM(name) case FilterParams::name: result = _##name; break
+std::any DelayEffect::getParam(const u32 param){
+	return std::any();
+}
 
-    std::any BwFilter::getParam(const u32 param) {
-    std::any result;
+DelayEffect::DelayEffect(const u32 channels, const u32 delayTime, const f32 feedback, const f32 wetAmount){
+	_set(channels, delayTime, feedback, wetAmount);
+	refresh();
+}
 
-    switch (param) {
-        GET_PARAM(cutoff);
-        GET_PARAM(quality);
-        GET_PARAM(gainDB);
-        GET_PARAM(order);
-    }
+void DelayEffect::_set(const u32 channels, const u32 delayTime, const f32 feedback, const f32 wetAmount){
+	_channels = channels;
+	_delayTime = delayTime;
+	_feedback = feedback;
+	_wetAmount = wetAmount;
 
-    return result;
+}
+
+void DelayEffect::refresh(){
+	std::vector<f32> newBuffer(_delayTime * _channels);
+	if(!_delayBuffer.empty()){
+		for(u32 i = 0; i < _delayTime * _channels; i++){
+			newBuffer[i] = _delayBuffer[_delayIndex];
+			_delayIndex = (_delayIndex + 1) % _delayBuffer.size();
+		}
+	}
+	_delayBuffer = newBuffer;
+	_delayIndex = 0;
 }
 
 

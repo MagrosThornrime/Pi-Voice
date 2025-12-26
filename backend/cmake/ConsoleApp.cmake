@@ -11,6 +11,7 @@ include("cmake/polyphonic.cmake")
 include("cmake/oscillators.cmake")
 include("cmake/fileio.cmake")
 include("cmake/application.cmake")
+include("cmake/effects.cmake")
 
 add_executable(ConsoleApp src/ConsoleApp.cpp)
 

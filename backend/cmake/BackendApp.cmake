@@ -12,6 +12,7 @@ include("cmake/oscillators.cmake")
 include("cmake/fileio.cmake")
 include("cmake/application.cmake")
 include("cmake/node_api.cmake")
+include("cmake/effects.cmake")
 
 add_library(BackendApp SHARED)
 
