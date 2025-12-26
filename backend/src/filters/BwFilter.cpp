@@ -42,8 +42,6 @@ std::shared_ptr<BwFilter> BwFilter::create(FilterType::Value filter) {
 void BwFilter::processSound(std::vector<f32>& inputBuffer,
 	std::vector<f32>& outputBuffer,
 	u32 frames) {
-	const float* in = inputBuffer.data();
-	float* out = outputBuffer.data();
 
 	u32 idx = 0;
 	for (u32 i = 0; i < frames; ++i) {
@@ -52,19 +50,19 @@ void BwFilter::processSound(std::vector<f32>& inputBuffer,
 			auto& prev = _prev[ch];
 
 			float y =
-				_b[0] * in[idx] +
+				_b[0] * inputBuffer[idx] +
 				_b[1] * prev.x1 +
 				_b[2] * prev.x2 -
 				_a[0] * prev.y1 -
 				_a[1] * prev.y2;
 
 			prev.x2 = prev.x1;
-			prev.x1 = in[idx];
+			prev.x1 = inputBuffer[idx];
 
 			prev.y2 = prev.y1;
 			prev.y1 = y;
 
-			out[idx] = y;
+			outputBuffer[idx] = y;
 		}
 	}
 }

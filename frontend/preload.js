@@ -45,8 +45,8 @@ contextBridge.exposeInMainWorld("synthAPI", {
         ipcRenderer.invoke("synth-getOscillatorNames"),
 
     // Waveform preview
-    getOscillatorPlot: (name, length) =>
-        ipcRenderer.invoke("synth-getOscillatorPlot", name, length),
+    getOscillatorPlot: (name, length, step) =>
+        ipcRenderer.invoke("synth-getOscillatorPlot", name, length, step),
 });
 
 contextBridge.exposeInMainWorld("presetsAPI", {

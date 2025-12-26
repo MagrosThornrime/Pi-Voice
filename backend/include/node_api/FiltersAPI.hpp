@@ -2,10 +2,9 @@
 
 #include <napi.h>
 
-namespace pipelineAPI {
+namespace node_api {
 
-void init(Napi::Env env, Napi::Object exports);
-
+void initFilters(Napi::Env env, Napi::Object exports);
 void addFilter(const Napi::CallbackInfo& info);
 void remove(const Napi::CallbackInfo& info);
 void move(const Napi::CallbackInfo& info);

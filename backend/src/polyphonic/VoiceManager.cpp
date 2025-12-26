@@ -53,6 +53,9 @@ f32 VoiceManager::_getNextSample() {
 		}
 		sample += voice.getNextSample();
 	}
+	if(_nonEmpty == 0) {
+		return 0.0f;
+	}
 	return _amplitude * sample / _nonEmpty / _voices.size();
 }
 

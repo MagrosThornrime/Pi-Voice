@@ -110,7 +110,6 @@ void Pipeline::_generateSound(std::stop_token stopToken, u32 framesPerCall) {
 
 	while (!stopToken.stop_requested()) {
 		_voiceManager->generateSound(tempBuffer, framesPerCall);
-
 		{
 			auto lock = std::lock_guard(_layersMutex);
 			for (auto&& layer : _layers) {

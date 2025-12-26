@@ -17,6 +17,8 @@ public:
 
 	virtual void processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames);
 	virtual void refresh();
+
+	virtual ~Layer() = default;
 };
 
 }

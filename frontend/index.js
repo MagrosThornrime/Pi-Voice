@@ -143,6 +143,6 @@ ipcMain.handle("synth-getOscillatorNames", () =>
 );
 
 // Waveforms
-ipcMain.handle("synth-getOscillatorPlot", (e, name, len) =>
-    synth.getOscillatorPlot(name, len)
+ipcMain.handle("synth-getOscillatorPlot", (e, name, len, step) =>
+    synth.getOscillatorPlot(name, len, step)
 );
