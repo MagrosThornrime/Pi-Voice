@@ -33,6 +33,9 @@ void DelayEffect::_set(const u32 channels, const u32 delayTime, const f32 feedba
 }
 
 void DelayEffect::refresh(){
+    if(_delayTime * _channels == _delayBuffer.size()){
+        return;
+    }
 	std::vector<f32> newBuffer(_delayTime * _channels);
 	if(!_delayBuffer.empty()){
 		for(u32 i = 0; i < _delayTime * _channels; i++){
