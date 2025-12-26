@@ -40,8 +40,9 @@ void Synthesiser::start() {
 	_voiceManager->setOscillatorType("empty", 0);
 
 	auto& pipelineRef = *_pipeline.get();
+
 	pipelineRef.add(
-		std::make_shared<effects::DelayEffect>(_channels, 10000, .1f, .5f),
+		std::make_shared<effects::DelayEffect>(_channels, 25000, .1f, .5f),
 		std::nullopt
 	);
 	_stream = std::make_unique<portaudio::InterfaceCallbackStream>(streamParams, pipelineRef);
