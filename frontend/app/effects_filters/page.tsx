@@ -1,7 +1,9 @@
 "use client";
-import { Box, Checkbox, Button, Fieldset, Stack, Text, CheckboxGroup, Heading, Collapsible, Flex, Grid, Slider } from "@chakra-ui/react";
-import { useContext, ReactNode, useEffect, createContext, useState, Fragment} from "react";
+import { Box, Checkbox, Button, Fieldset, Stack, Text, Portal, CheckboxGroup, Heading,  Grid,  Menu} from "@chakra-ui/react";
+import { useContext, ReactNode, useEffect, createContext, useState, Fragment, DragEvent} from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
+import { HiCog } from "react-icons/hi"
+import { MdDelete } from "react-icons/md";
 import { useController, ControllerRenderProps, useForm, FieldError } from "react-hook-form"
 import {filters, effects} from "../utils/tables"
 import { SlidersItems } from "@/components/SlidersItems";
@@ -157,6 +159,154 @@ export async function setFilterParam(filterName: string, param: number, value: n
     await window.synthAPI.pipelineSetFilterParam(filterNumber, param, value)
 }
 
+type DraggableListProps = {
+    attr:"filters" | "effects";
+}
+
+
+function DraggableList({attr}:DraggableListProps){
+    const { data, setData } = useFilters();
+    const myData = data[attr];
+    const [listData, setListData] = useState<string[]>(myData);
+    const [blocks, setBlocks] = useState<string[]>([]);
+
+    useEffect(
+        () => {
+            setListData(myData ?? []);
+            const newArr = Array.from({ length: myData.length }, (_, i) => "");
+            setBlocks(newArr);
+        }, [myData]
+
+
+    )
+    const [dragIndex, setDragIndex] = useState<number | null >(null);
+    const [dragBlockInd, setDragBlockInd] = useState<number | null >(null);
+
+    const dragStartList = ( index: number) => {
+        setDragIndex(index);
+    };
+
+    const dragStartBlock = (index: number) => {
+        setDragBlockInd(index);
+    }
+
+    const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+    };
+
+    const handleDrop = (index:number) => {
+        if (dragIndex === null && dragBlockInd === null){return}
+
+        const newBlocks = [...blocks];
+
+        if (dragIndex !== null){
+            const draggedItem = listData[dragIndex];
+            newBlocks[index] = draggedItem;
+            setDragIndex(null);
+        }
+
+        else if (dragBlockInd !== null) { // typescript is stupid
+            const draggedItem = blocks[dragBlockInd];
+
+            const temp = newBlocks[dragBlockInd];
+            newBlocks[dragBlockInd] = blocks[index];
+            newBlocks[index] = temp;
+
+            setDragBlockInd(null);
+        }
+        setBlocks(newBlocks);
+    }
+
+    const handleDelete = (index:number) => {
+        const newBlocks = [...blocks];
+        newBlocks[index] = "";
+        setBlocks(newBlocks);
+    }
+
+    console.log("listData", listData);
+
+    return (
+        <Box>
+            <>
+                <Box
+                    as="ul"
+                    display="flex"
+                    flexDirection="row"
+                    listStyleType="none"
+                    p={0}
+                    gap={2}
+                >
+                    {
+                        listData.map((item, index) => {
+                            console.log(item);
+                            return (
+                                <Box key={index} as="li" color="white" bg="gray.500" rounded="2xl" maxW="30%" shadow="md" p={2}
+                                    draggable
+                                    onDragStart={() =>  dragStartList(index)}
+                                    cursor="grab"
+                                    className={index === dragIndex ? "dragging" : ""} >
+                                    {item}
+                                </Box>
+                            )
+                        })
+                    }
+                </Box>
+
+                <Box h = "5"/>
+
+                <Box
+                    as="ul"
+                    display="flex"
+                    flexDirection="row"
+                    listStyleType="none"
+                    p={0}
+                    gap={2}
+                >
+                    {
+                        blocks.map((item, index) => {
+                            console.log(item);
+                            return (
+                                <Box key={index} as="li" color="white" bg="green.500" rounded="2xl" minHeight="40px" minWidth="7%" shadow="md" p={2}
+                                    draggable
+                                    onDragStart={() => {
+                                        if(blocks[index] == ""){ return; }
+                                        dragStartBlock(index);
+                                    }}
+
+                                    onDragOver={handleDragOver}
+
+                                    onDrop={() => handleDrop(index)} >
+
+                                    <Button size="xs"
+                                        p={1}
+                                        minW={0}
+                                        bg="transparent"
+                                        _hover={{ bg: "red.600" }}
+                                        _active={{ bg: "red.700" }}
+
+                                        onClick={(e) => {
+                                            e.stopPropagation;
+                                            handleDelete(index);
+                                        }}
+                                    >
+
+                                    <MdDelete />
+
+                                    </Button>
+
+                                    {item}
+
+                                </Box>
+                            )
+                        })
+                    }
+                </Box>
+
+            </>
+        </Box>
+    )
+}
+
 
 function Page() {
 
@@ -230,6 +380,7 @@ function Page() {
             <Box h="10" />
 
             <Box minW = "80%">
+                <DraggableList attr = "filters" />
                 <SlidersItems neededItems = {filters} attr = "filters"/>
                 <Box h="10" />
                 <SlidersItems neededItems = {effects} attr = "effects"/>
