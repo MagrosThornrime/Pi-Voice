@@ -17,16 +17,17 @@ type LogSliderProps = {
     Props: Record<string, SliderProps>;
     opt:Opt;
     obj: Filter;
+    idx: number;
     
 
 };
-export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, obj, opt, opt_key, EndValues, Values, Props }: LogSliderProps) {
+export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, obj, opt, opt_key, EndValues, Values, Props, idx}: LogSliderProps) {
     const [status, setStatus] = useState<string>("logarithmic");
     const state_key = `${obj.value}.${opt_key}`;
     const Value = Values[state_key];
     
     return (
-        <Fragment key={state_key}>
+        <Fragment key={`${state_key}${idx}`}>
             <Slider.Root
                 value={[Value]}
 

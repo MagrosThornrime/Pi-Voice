@@ -2,9 +2,9 @@ import { Box, Button, Text, Collapsible, Flex, Grid, Slider } from "@chakra-ui/r
 import {useEffect, useState, Fragment} from "react";
 import { LuChevronRight } from "react-icons/lu"
 import {calcLinearPosFromLogarithmic, getBounds, calcLogaritmicPosFromLinear, calcValueFromLogScale, calcValueFromLinScale} from "../app/utils/maths_utils"
-import {Opt, OptKey, Filter, defaultOpts, } from "../app/utils/tables"
+import {Opt, OptKey, Filter, defaultOpts, filters } from "../app/utils/tables"
 import { buildInitialState } from "../app/utils/state_utils";
-import { useFilters, setFilterParam } from "@/app/effects_filters/page";
+import { useFilters, setFilterParam, useOrderedFilters, orderedDataType } from "@/app/effects_filters/page";
 import { LogSlider } from "./SliderLinLog";
 import { OrderSwitch } from "./OrderSwitch";
 
@@ -18,15 +18,18 @@ export type SliderProps = {
 type SlidersItemsProps = {
     neededItems: Filter[];
     attr: "filters" | "effects";
+    idx: number;
 };
 
-export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
+export function SlidersItems({ neededItems, attr, idx }: SlidersItemsProps) {
 
-    const { data } = useFilters();
+  const { orderedData } = useOrderedFilters();
 
-    const filteredItems = neededItems.filter(item =>
-        data[attr].includes(item.value)
-    );
+  const filteredItems = orderedData[attr].map((s: string) => {
+    return (filters.filter((f: Filter) => {
+      return f.value === s || f.label === s;
+    }))[0] // because there will always be one element matching
+  });
 
     const [Values, setValues] = useState<Record<string, any>>(buildInitialState(neededItems, false, 0));
     const [EndValues, setEndValues] = useState<Record<string, any>>(buildInitialState(neededItems, true, 0));
@@ -57,8 +60,8 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
         console.log("EndValues changed:", EndValues);
     } , [EndValues]);
 
-    const sliders = filteredItems.map(obj => (
-  <Fragment key={obj.value}>
+  const sliders = filteredItems.map((obj, idx1) => (
+  <Fragment key={idx1}>
     <Box
       p={5}
       bg="grey"
@@ -70,12 +73,12 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
         {obj.value}
       </Text>
 
-      {(Object.entries(obj.opts) as [OptKey, Opt][]).map(([optKey, opt]) => {
+      {(Object.entries(obj.opts) as [OptKey, Opt][]).map(([optKey, opt], idxMap) => {
         const stateKey = `${obj.value}.${optKey}`;
         const value = Values[stateKey];
 
         return (
-          <Fragment key={stateKey}>
+          <Fragment key={`${stateKey}${idxMap}`}>
             {"logScale" in opt && opt.logScale ? (
               <LogSlider
                 setSliderVal={setSliderValue}
@@ -87,6 +90,7 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                 EndValues={EndValues}
                 obj={obj}
                 opt={opt}
+                idx={idxMap}
               />
             ) : !("step" in opt) ? (
               <>
@@ -150,7 +154,7 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
 
     return (
         <Box>
-            <Collapsible.Root defaultOpen justifyItems={"center"}>
+            <Collapsible.Root justifyItems={"left"}>
 
                 <Collapsible.Trigger paddingY="3" display="flex" gap="2" alignItems="center" justifyItems={"center"}>
 
