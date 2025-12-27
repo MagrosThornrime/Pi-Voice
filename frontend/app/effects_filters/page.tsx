@@ -180,16 +180,31 @@ async function addFilters(filtersArr: string[]) {
     }
 }
 
+async function addFilter(item: string, idx: number){
+    const filterNumber = filters.findIndex(i => i.value === item);
+    await window.synthAPI.pipelineAddFilter(filterNumber, idx);
+}
 
 export async function setFilterParam(filterName: string, param: number, value: number){
     const filterNumber = currentFilters.findIndex(i => i === filterName);
     await window.synthAPI.pipelineSetFilterParam(filterNumber, param, value)
 }
 
+async function deleteFilter(idx:number){
+    await window.synthAPI.pipelineRemove(idx);
+}
+
+async function swapFilters(idx1:number, idx2:number){
+    await window.synthAPI.pipelineSwap(idx1, idx2);
+}
+
 type DraggableListProps = {
     attr:"filters" | "effects";
 }
 
+function eraseEmpty(list1: string[]){
+    return list1.filter(item => item !== "");
+}
 
 function DraggableList({ attr }: DraggableListProps) {
     const { data, setData } = useFilters();
@@ -204,8 +219,7 @@ function DraggableList({ attr }: DraggableListProps) {
             setListData(myData ?? []);
             const newArr = Array.from({ length: 3 }, (_, i) => "");
             setBlocks(newArr);
-        }, [myData]
-    )
+        }, [myData]);
 
     useEffect(() => {
         setOrderedData((prev: orderedDataType) => ({
@@ -214,6 +228,9 @@ function DraggableList({ attr }: DraggableListProps) {
         }));
         console.log("ordered data", orderedData);
     }, [blocks]);
+
+
+
 
     const [dragIndex, setDragIndex] = useState<number | null>(null);
     const [dragBlockInd, setDragBlockInd] = useState<number | null>(null);
@@ -232,21 +249,34 @@ function DraggableList({ attr }: DraggableListProps) {
 
     const handleDrop = (index: number) => {
         if (dragIndex === null && dragBlockInd === null) { return }
-
         const newBlocks = [...blocks];
 
-        if (dragIndex !== null) {
+        if (dragIndex !== null) { // we drop filter from list to the blocks array
             const draggedItem = listData[dragIndex];
             newBlocks[index] = draggedItem;
+
+            (async () => { 
+                const index1 = eraseEmpty(newBlocks).findIndex(i => i === newBlocks[index]);
+                if (newBlocks[index] !== ""){
+                    await deleteFilter(index1);
+                }
+                await addFilter(draggedItem, index1);
+            } )();
+
             setDragIndex(null);
         }
 
-        else if (dragBlockInd !== null) { // typescript is stupid
+        else if (dragBlockInd !== null) { 
             const draggedItem = blocks[dragBlockInd];
 
             const temp = newBlocks[dragBlockInd];
             newBlocks[dragBlockInd] = blocks[index];
             newBlocks[index] = temp;
+
+            const index1 = eraseEmpty(newBlocks).findIndex(i => i === newBlocks[index]);
+            const index2 = eraseEmpty(newBlocks).findIndex(i => i === newBlocks[dragBlockInd]);
+
+            (async () => { await swapFilters(index1, index2) })(); // swap 2 existing filters
 
             setDragBlockInd(null);
         }
@@ -256,6 +286,12 @@ function DraggableList({ attr }: DraggableListProps) {
     const handleDelete = (index: number) => {
         const newBlocks = [...blocks];
         newBlocks[index] = "";
+
+        (async () => {
+            const index1 = eraseEmpty(newBlocks).findIndex(i => i === newBlocks[index]);
+            await deleteFilter(index1) 
+            } )();
+
         setBlocks(newBlocks);
     }
 
