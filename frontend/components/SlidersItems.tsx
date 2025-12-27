@@ -18,9 +18,10 @@ export type SliderProps = {
 type SlidersItemsProps = {
     neededItems: Filter[];
     attr: "filters" | "effects";
+    idx: number;
 };
 
-export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
+export function SlidersItems({ neededItems, attr, idx }: SlidersItemsProps) {
 
   const { orderedData } = useOrderedFilters();
 
@@ -30,8 +31,6 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
     }))[0] // because there will always be one element matching
   });
 
-    console.log(filteredItems);
-    
     const [Values, setValues] = useState<Record<string, any>>(buildInitialState(neededItems, false, 0));
     const [EndValues, setEndValues] = useState<Record<string, any>>(buildInitialState(neededItems, true, 0));
     const [Props, setProps] = useState<Record<string, SliderProps>>(buildInitialState(neededItems, false, 0, true));
@@ -61,8 +60,8 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
         console.log("EndValues changed:", EndValues);
     } , [EndValues]);
 
-  const sliders = filteredItems.map(obj => (
-  <Fragment key={obj.value}>
+  const sliders = filteredItems.map((obj, idx1) => (
+  <Fragment key={idx1}>
     <Box
       p={5}
       bg="grey"
@@ -74,12 +73,12 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
         {obj.value}
       </Text>
 
-      {(Object.entries(obj.opts) as [OptKey, Opt][]).map(([optKey, opt]) => {
+      {(Object.entries(obj.opts) as [OptKey, Opt][]).map(([optKey, opt], idxMap) => {
         const stateKey = `${obj.value}.${optKey}`;
         const value = Values[stateKey];
 
         return (
-          <Fragment key={stateKey}>
+          <Fragment key={`${stateKey}${idxMap}`}>
             {"logScale" in opt && opt.logScale ? (
               <LogSlider
                 setSliderVal={setSliderValue}
@@ -91,6 +90,7 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
                 EndValues={EndValues}
                 obj={obj}
                 opt={opt}
+                idx={idxMap}
               />
             ) : !("step" in opt) ? (
               <>

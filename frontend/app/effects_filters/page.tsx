@@ -212,6 +212,7 @@ function DraggableList({ attr }: DraggableListProps) {
             ...prev,
             filters: blocks.filter(item => item !== "")
         }));
+        console.log("ordered data", orderedData);
     }, [blocks]);
 
     const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -258,7 +259,6 @@ function DraggableList({ attr }: DraggableListProps) {
         setBlocks(newBlocks);
     }
 
-    console.log("listData", listData);
 
     return (
         <Collapsible.Root justifyItems={"left"}>
@@ -291,7 +291,6 @@ function DraggableList({ attr }: DraggableListProps) {
                             >
                                 {
                                     listData.map((item, index) => {
-                                        console.log(item);
                                         return (
                                             <Box key={index} as="li" color="white" bg="gray.500" rounded="2xl" maxW="30%" shadow="md" p={2}
                                                 draggable
@@ -313,7 +312,6 @@ function DraggableList({ attr }: DraggableListProps) {
                                 <Box as="ul" display="flex" flexDirection="row" listStyleType="none" p={0} gap={2} >
                                     {
                                         blocks.map((item, index) => {
-                                            console.log(item);
                                             return (
                                                 <Box key={index} as="li" color="white" bg="green.500"
                                                 rounded="2xl" minHeight="40px" minWidth="7%" shadow="md" p={2}
@@ -439,12 +437,12 @@ function Page() {
 
             <Box minW = "80%">
                 <DraggableList attr = "filters" />
-                <Box h="10" />
-                <SlidersItems neededItems = {filters} attr = "filters"/>
+                <Box h="10" /> 
+                <SlidersItems neededItems = {filters} attr = "filters" idx={0}/>
                 <Box h="10" />
                 <DraggableList attr = "effects" />
                 <Box h="10" />
-                <SlidersItems neededItems = {effects} attr = "effects"/>
+                <SlidersItems neededItems = {effects} attr = "effects" idx={1}/>
             </Box>
         </Box>
     )
