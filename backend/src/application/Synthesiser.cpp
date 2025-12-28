@@ -1,4 +1,5 @@
 #include <application/Synthesiser.hpp>
+#include <effects/DelayEffect.hpp>
 
 namespace application {
 
@@ -39,6 +40,12 @@ void Synthesiser::start() {
 	_voiceManager->setOscillatorType("empty", 0);
 
 	auto& pipelineRef = *_pipeline.get();
+/*
+	pipelineRef.add(
+		std::make_shared<effects::DelayEffect>(_channels, 25000, .1f, .5f),
+		std::nullopt
+	);
+*/
 	_stream = std::make_unique<portaudio::InterfaceCallbackStream>(streamParams, pipelineRef);
 	_stream->start();
 	_running = true;
@@ -133,7 +140,7 @@ std::vector<std::string> Synthesiser::getSampleNames() {
 	return _sampleManager->getSampleNames();
 }
 
-std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name, i32 length) {
+std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name, i32 length, i32 step) {
 	if (length <= 0) {
 		throw std::invalid_argument("length must be greater than 0");
 	}
@@ -157,7 +164,9 @@ std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name, i32 len
 	std::vector<f32> plot;
 	for (i32 i = 0; i < length; i++) {
 		plot.push_back(oscillator->getNextSample());
-		oscillator->advance();
+		for (i32 j = 0; j < step; j++) {
+			oscillator->advance();
+		}
 	}
 	return plot;
 }
