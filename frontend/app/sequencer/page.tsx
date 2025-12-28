@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Box,
@@ -15,12 +15,33 @@ function generate_name(){
     last+=1;
     return("Dzwiek"+String(last/2))
 }
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 
 export default function Page() {
     const [sounds, setSounds] = useState<string[]>([]);
+    const [colorMap, setColorMap] = useState<Record<string, string>>({});
     const [dragIndex, setDragIndex] = useState<number | null>(null);
     const [buttonText, setButtonText] = useState<string>("Record to sequencer");
     const [buttonText2, setButtonText2] = useState<string>("Play");
+
+    useEffect(() => {
+        setColorMap(prev => {
+            const copy: Record<string, string> = { ...prev };
+            sounds.forEach(s => {
+            if (!copy[s]) {
+                copy[s] = getRandomColor();
+            }
+            });
+            return copy;
+        });
+    }, [sounds]);
 
     const handleDragStart = (index: number) => {
         setDragIndex(index);
@@ -70,7 +91,7 @@ export default function Page() {
                 >
                     {
                         sounds.map((item, index) => (
-                             <GridItem colSpan={1}>
+                             <GridItem colSpan={1} key={item}>
                                 <Box
                                     draggable
                                     onDragStart={() => handleDragStart(index)}
@@ -79,7 +100,7 @@ export default function Page() {
                                     cursor="grab"
                                     opacity={dragIndex === index ? 0.4 : 1}
                                 >
-                                    <Button bg="red" onClick={() => setSounds(prev => prev.filter(s => s !== item))}>
+                                    <Button bg={colorMap[item]} onClick={() => setSounds(prev => prev.filter(s => s !== item))}>
                                         Remove {item}
                                     </Button>
                                 </Box>
