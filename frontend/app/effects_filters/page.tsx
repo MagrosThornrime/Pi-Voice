@@ -202,8 +202,9 @@ type DraggableListProps = {
     attr:"filters" | "effects";
 }
 
-function eraseEmpty(list1: string[]){
-    return list1.filter(item => item !== "");
+function getPosFromFiltered(list1: string[], idx:number){
+    const elem = list1[idx];
+    return list1.filter(item => item !== "").findIndex(i => i === elem);
 }
 
 function DraggableList({ attr }: DraggableListProps) {
@@ -239,13 +240,16 @@ function DraggableList({ attr }: DraggableListProps) {
         setDragIndex(index);
     };
 
+    
     const dragStartBlock = (index: number) => {
         setDragBlockInd(index);
     }
 
+
     const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
     };
+
 
     const handleDrop = (index: number) => {
         if (dragIndex === null && dragBlockInd === null) { return }
@@ -256,11 +260,12 @@ function DraggableList({ attr }: DraggableListProps) {
             newBlocks[index] = draggedItem;
 
             (async () => { 
-                const index1 = eraseEmpty(newBlocks).findIndex(i => i === newBlocks[index]);
-                if (newBlocks[index] !== ""){
+                if (blocks[index] !== ""){
+                    const index1 = getPosFromFiltered(blocks, index ); // element that was there previously
                     await deleteFilter(index1);
                 }
-                await addFilter(draggedItem, index1);
+                const index2 = getPosFromFiltered(blocks, index) // actual position after adding
+                await addFilter(draggedItem, index2);
             } )();
 
             setDragIndex(null);
@@ -273,8 +278,8 @@ function DraggableList({ attr }: DraggableListProps) {
             newBlocks[dragBlockInd] = blocks[index];
             newBlocks[index] = temp;
 
-            const index1 = eraseEmpty(newBlocks).findIndex(i => i === newBlocks[index]);
-            const index2 = eraseEmpty(newBlocks).findIndex(i => i === newBlocks[dragBlockInd]);
+            const index1 = getPosFromFiltered(blocks, index);
+            const index2 = getPosFromFiltered(blocks, dragBlockInd);
 
             (async () => { await swapFilters(index1, index2) })(); // swap 2 existing filters
 
@@ -283,12 +288,13 @@ function DraggableList({ attr }: DraggableListProps) {
         setBlocks(newBlocks);
     }
 
+
     const handleDelete = (index: number) => {
         const newBlocks = [...blocks];
         newBlocks[index] = "";
 
         (async () => {
-            const index1 = eraseEmpty(newBlocks).findIndex(i => i === newBlocks[index]);
+            const index1 = getPosFromFiltered(blocks, index); // we search in arr before change
             await deleteFilter(index1) 
             } )();
 
