@@ -222,6 +222,7 @@ function DraggableList({ attr }: DraggableListProps) {
             setBlocks(newArr);
         }, [myData]);
 
+        
     useEffect(() => {
         setOrderedData((prev: orderedDataType) => ({
             ...prev,
@@ -240,7 +241,7 @@ function DraggableList({ attr }: DraggableListProps) {
         setDragIndex(index);
     };
 
-    
+
     const dragStartBlock = (index: number) => {
         setDragBlockInd(index);
     }
@@ -264,7 +265,7 @@ function DraggableList({ attr }: DraggableListProps) {
                     const index1 = getPosFromFiltered(blocks, index ); // element that was there previously
                     await deleteFilter(index1);
                 }
-                const index2 = getPosFromFiltered(blocks, index) // actual position after adding
+                const index2 = getPosFromFiltered(newBlocks, index) // actual position after adding
                 await addFilter(draggedItem, index2);
             } )();
 
