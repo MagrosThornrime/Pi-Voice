@@ -165,8 +165,6 @@ function CheckboxesWithHeading({
 }
 
 
-let currentFilters : string[] = [];
-
 async function clearFilters(filtersNumber: number) {
     for(let i=filtersNumber-1; i>=0; i--){
         await window.synthAPI.pipelineRemove(i);
@@ -185,8 +183,9 @@ async function addFilter(item: string, idx: number){
     await window.synthAPI.pipelineAddFilter(filterNumber, idx);
 }
 
-export async function setFilterParam(filterName: string, param: number, value: number){
-    const filterNumber = currentFilters.findIndex(i => i === filterName);
+export async function setFilterParam(filtersList:string[], filterName: string, param: number, value: number){
+    const filterNumber = filtersList.findIndex(i => i === filterName);
+    console.log("FILTER IDX", filterNumber);
     await window.synthAPI.pipelineSetFilterParam(filterNumber, param, value)
 }
 

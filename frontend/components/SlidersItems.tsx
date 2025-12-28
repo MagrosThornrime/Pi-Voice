@@ -101,13 +101,18 @@ export function SlidersItems({ neededItems, attr, idx }: SlidersItemsProps) {
                   }}
                   onValueChangeEnd={async details => {
                     const sliderVal = details.value[0];
+                    const linVal = calcValueFromLinScale(sliderVal, opt.range)
                     setEndSliderValue(obj.value, optKey, sliderVal);
+                    
+                    console.log("FILTER PARAMS", obj.value, defaultOpts[optKey].index, Math.round(linVal))
 
                     await setFilterParam(
+                      orderedData.filters,
                       obj.value,
                       defaultOpts[optKey].index,
-                      calcValueFromLinScale(sliderVal, opt.range)
+                      linVal
                     );
+
                   }}
                 >
                   <Slider.Label color="white">
