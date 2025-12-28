@@ -10,11 +10,13 @@ using LayerRef = std::shared_ptr<Layer>;
 
 Pipeline::Pipeline(u32 framesPerCall, u32 channels,
 	std::shared_ptr<polyphonic::VoiceManager> voiceManager,
-	std::shared_ptr<fileio::FileRecorder> recorder)
+	std::shared_ptr<fileio::FileRecorder> recorder,
+	std::shared_ptr<seq::Sequencer> sequencer)
 	: _channels(channels),
 	_outputQueue(framesPerCall * channels * 4),
 	_voiceManager(voiceManager),
-	_recorder(recorder) {
+	_recorder(recorder),
+	_sequencer(sequencer) {
 	_producerThread = std::jthread([this, framesPerCall](std::stop_token stopToken) {
 		_generateSound(stopToken, framesPerCall);
 	});
@@ -104,6 +106,14 @@ int Pipeline::paCallbackFun(const void* /*inputBuffer*/, void* outputBuffer, uns
 	return paContinue;
 }
 
+void Pipeline::_mixWithSequencer(std::vector<f32>& buffer){
+	auto iter = _sequencer->iter();
+	for(u32 i=0; i < buffer.size(); ++i, ++iter) {
+		buffer[i] /= 2;
+		buffer[i] += *iter / 2;
+	}
+}
+
 void Pipeline::_generateSound(std::stop_token stopToken, u32 framesPerCall) {
 	const u32 samplesPerCall = framesPerCall * _channels;
 	std::vector<float> tempBuffer(samplesPerCall);
@@ -116,6 +126,13 @@ void Pipeline::_generateSound(std::stop_token stopToken, u32 framesPerCall) {
 			for (auto&& layer : _layers) {
 				layer->processSound(tempBuffer, tempBuffer, framesPerCall);
 			}
+		}
+
+		if(_sequencer->isActive()) {
+			_mixWithSequencer(tempBuffer);
+		}
+		else{
+			_sequencer->writeToRecorder(tempBuffer);
 		}
 
 		for (u32 i = 0; i < samplesPerCall; ++i) {

@@ -79,7 +79,7 @@ public:
 private:
 	friend class SequencerIterator;
 
-	std::mutex _mutex;
+	mutable std::mutex _mutex;
 	std::shared_ptr<fileio::SampleManager> _sampleManager;
 	MemoryRecorder _recorder;
 	std::vector<std::vector<f32>> _samples;

@@ -34,6 +34,7 @@ if (MSVC)
         oscillators
         fileio
         application
+        sequencer
     )
     target_link_options(BackendApp PRIVATE
         /WHOLEARCHIVE:midi
@@ -61,6 +62,7 @@ else()
         oscillators
         fileio
         application
+        sequencer
         -Wl,--no-whole-archive
     )
 endif()

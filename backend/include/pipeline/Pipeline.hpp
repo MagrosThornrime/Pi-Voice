@@ -10,6 +10,7 @@
 #include <polyphonic/VoiceManager.hpp>
 #include <fileio/FileRecorder.hpp>
 #include <mutex>
+#include <sequencer/Sequencer.hpp>
 
 namespace pipeline {
 class Pipeline: public pa::CallbackInterface {
@@ -28,19 +29,22 @@ public:
 		u32 framesPerCall,
 		u32 channels,
 		std::shared_ptr<polyphonic::VoiceManager> voiceManager,
-		std::shared_ptr<fileio::FileRecorder> recorder
+		std::shared_ptr<fileio::FileRecorder> recorder,
+		std::shared_ptr<seq::Sequencer> sequencer
 	);
 
 private:
 	std::vector<std::shared_ptr<Layer>> _layers;
     std::shared_ptr<polyphonic::VoiceManager> _voiceManager;
     std::shared_ptr<fileio::FileRecorder> _recorder;
+	std::shared_ptr<seq::Sequencer> _sequencer;
 
 	std::jthread _producerThread;
 	mutable std::mutex _layersMutex;
 	utils::SPSCQueue<f32> _outputQueue;
 	const u32 _channels;
 
+	void _mixWithSequencer(std::vector<f32>& buffer);
 
 	void _generateSound(std::stop_token stopToken, u32 framesPerCall);
 };
