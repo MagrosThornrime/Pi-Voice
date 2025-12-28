@@ -66,7 +66,7 @@ export function SlidersItems({ neededItems, attr, idx }: SlidersItemsProps) {
       p={5}
       bg="grey"
       rounded="2xl"
-      maxW="100%"
+      maxW="80%"
       shadow="md"
     >
       <Text mb={2} fontWeight="medium" textAlign="center">
@@ -159,9 +159,9 @@ export function SlidersItems({ neededItems, attr, idx }: SlidersItemsProps) {
 
     return (
         <Box>
-            <Collapsible.Root justifyItems={"left"}>
+            <Collapsible.Root justifyItems={"left"} alignContent={"left"}>
 
-                <Collapsible.Trigger paddingY="3" display="flex" gap="2" alignItems="center" justifyItems={"center"}>
+                <Collapsible.Trigger paddingY="3" display="flex" gap="2">
 
                     <Collapsible.Indicator
                         transition="transform 0.2s"
@@ -177,7 +177,8 @@ export function SlidersItems({ neededItems, attr, idx }: SlidersItemsProps) {
 
                 <Collapsible.Content maxW="100%" minW="100%">
 
-                    <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)", }} gap={10} maxW="1000px" mx="auto">
+                    <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)", }} gap={5} maxW="100%" mx="auto"
+                     alignItems="start" >
                         {sliders}
                     </Grid>
 

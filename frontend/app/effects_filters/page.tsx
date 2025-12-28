@@ -105,7 +105,7 @@ function CheckboxesWithHeading({
 ) {
     return (
         <Box>
-            <Heading size="3xl" textAlign="center" mb={10} color="teal.600">
+            <Heading size="3xl" textAlign="left" mb={10} color="teal.600">
                 {headerText}
             </Heading>
 
@@ -123,13 +123,13 @@ function CheckboxesWithHeading({
                             md: "repeat(4, 1fr)",
                             lg: "repeat(4, 1fr)",
                         }}
-                            gap={10} maxW="800px" mx="auto">
+                            gap={10} maxW="100%" mx="auto">
                             {
                                 formItems.map((item) => (
-                                    <Checkbox.Root key={item.value} value={item.value}>
+                                    <Checkbox.Root size = "lg" key={item.value} value={item.value}>
                                         <Checkbox.HiddenInput />
-                                        <Checkbox.Control />
-                                        <Checkbox.Label>{item.label}</Checkbox.Label>
+                                        <Checkbox.Control boxSize="40px" transform="scale(1)"/>
+                                        <Checkbox.Label fontSize="xl" fontWeight="medium" >{item.label}</Checkbox.Label>
                                     </Checkbox.Root>
                                 ))
                             }
@@ -430,7 +430,7 @@ function Page() {
 
 
     return (
-        <Box minH="100vh" bg="gray.50" p={10} justifyItems={"center"} alignItems="center">
+        <Box minH="100vh" bg="gray.50" p={10} justifyItems={"left"} alignItems="center">
             <form
                 onSubmit={handleSubmit(async (formData) => {
                     setData(formData);
@@ -444,7 +444,7 @@ function Page() {
                 })}
             >
 
-                <Stack direction="row" gap={40} >
+                {/* <Stack direction="row" gap={40} > */}
                     <CheckboxesWithHeading field={filtersField.field}
                         formItems={filters}
                         invalid={invalid}
@@ -457,7 +457,7 @@ function Page() {
 
                     </CheckboxesWithHeading>
 
-                    <CheckboxesWithHeading field={effectsField.field}
+                    {/* <CheckboxesWithHeading field={effectsField.field}
                         formItems={effects}
                         invalid={invalid_eff}
                         error={Array.isArray(errors.effects)
@@ -467,8 +467,8 @@ function Page() {
                         ifButton={false}
                         headerText="Select effects" >
 
-                    </CheckboxesWithHeading>
-                </Stack>
+                    </CheckboxesWithHeading> */}
+                {/* </Stack> */}
 
                 <Box display="flex" justifyContent="center" minW="60%">
                     <Button size="sm" type="submit">
@@ -488,6 +488,24 @@ function Page() {
                 <DraggableList attr = "effects" />
                 <Box h="10" />
                 <SlidersItems neededItems = {effects} attr = "effects" idx={1}/>
+                <Box h="10" />
+
+                {/* <Box justifyItems={"left"} >
+
+                    <CheckboxesWithHeading field={effectsField.field}
+                            formItems={effects}
+                            invalid={invalid_eff}
+                            error={Array.isArray(errors.effects)
+                                ? errors.effects[0]
+                                : errors.effects
+                            }
+                            ifButton={false}
+                            headerText="Select effects" >
+
+                        </CheckboxesWithHeading>
+
+                    </Box> */}
+
             </Box>
         </Box>
     )
