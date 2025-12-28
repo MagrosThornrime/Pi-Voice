@@ -85,7 +85,12 @@ function sawtooth_func(x:number, interv: number){
 
 
 async function getOscPlotData(oscName:string){
-  const data = await window.synthAPI.getOscillatorPlot(oscName, 500);
+  let data : number[];
+  if(oscName=="meow"){
+    data = await window.synthAPI.getOscillatorPlot(oscName, 500, 100);
+  }else{
+    data = await window.synthAPI.getOscillatorPlot(oscName, 500, 1);
+  }
 
   const dataPoints = data.map((y, x):Point => {
     return { x, y };
