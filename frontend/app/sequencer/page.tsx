@@ -18,8 +18,30 @@ function generate_name(){
 
 export default function Page() {
     const [sounds, setSounds] = useState<string[]>([]);
+    const [dragIndex, setDragIndex] = useState<number | null>(null);
     const [buttonText, setButtonText] = useState<string>("Record to sequencer");
     const [buttonText2, setButtonText2] = useState<string>("Play");
+
+    const handleDragStart = (index: number) => {
+        setDragIndex(index);
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+    };
+    
+    const handleDrop = (index: number) => {
+        if (dragIndex === null || dragIndex === index){setDragIndex(null); return;}
+
+        const newArr = [...sounds];
+
+        const [movedItem] = newArr.splice(dragIndex, 1);
+        newArr.splice(index, 0, movedItem);
+
+        setSounds(newArr);
+        setDragIndex(null);
+    };
+
     return (
         <Box minH="100vh" bg="gray.50" p={10}>
             <Stack>
@@ -47,11 +69,20 @@ export default function Page() {
                     gap={4}
                 >
                     {
-                        sounds.map((item) => (
+                        sounds.map((item, index) => (
                              <GridItem colSpan={1}>
-                                <Button bg="red" onClick={() => setSounds(prev => prev.filter(s => s !== item))}>
-                                    Remove {item}
-                                </Button>
+                                <Box
+                                    draggable
+                                    onDragStart={() => handleDragStart(index)}
+                                    onDragOver={handleDragOver}
+                                    onDrop={() => handleDrop(index)}
+                                    cursor="grab"
+                                    opacity={dragIndex === index ? 0.4 : 1}
+                                >
+                                    <Button bg="red" onClick={() => setSounds(prev => prev.filter(s => s !== item))}>
+                                        Remove {item}
+                                    </Button>
+                                </Box>
                             </GridItem>
                         ))
                     }
