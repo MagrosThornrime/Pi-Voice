@@ -195,6 +195,7 @@ async function deleteFilter(idx:number){
 }
 
 async function swapFilters(idx1:number, idx2:number){
+    console.log("idxs:", idx1, idx2)
     await window.synthAPI.pipelineSwap(idx1, idx2);
 }
 
@@ -423,6 +424,8 @@ function Page() {
 
     const { data, setData } = useFilters();
 
+    const { orderedData, setOrderedData } = useOrderedFilters();
+
     const invalid = !!errors.filters
     const invalid_eff = !!errors.effects
 
@@ -433,10 +436,10 @@ function Page() {
                 onSubmit={handleSubmit(async (formData) => {
                     setData(formData);
 
-                    await clearFilters(currentFilters.length);
-                    currentFilters = formData.filters;
+                    await clearFilters(orderedData.filters.length);
 
-                    await addFilters(currentFilters);
+                    //currentFilters = formData.filters;
+                    //await addFilters(currentFilters);
 
                     console.log("SUBMITTED", formData);
                 })}
