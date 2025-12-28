@@ -165,8 +165,6 @@ function CheckboxesWithHeading({
 }
 
 
-let currentFilters : string[] = [];
-
 async function clearFilters(filtersNumber: number) {
     for(let i=filtersNumber-1; i>=0; i--){
         await window.synthAPI.pipelineRemove(i);
@@ -180,16 +178,34 @@ async function addFilters(filtersArr: string[]) {
     }
 }
 
+async function addFilter(item: string, idx: number){
+    const filterNumber = filters.findIndex(i => i.value === item);
+    await window.synthAPI.pipelineAddFilter(filterNumber, idx);
+}
 
-export async function setFilterParam(filterName: string, param: number, value: number){
-    const filterNumber = currentFilters.findIndex(i => i === filterName);
+export async function setFilterParam(filtersList:string[], filterName: string, param: number, value: number){
+    const filterNumber = filtersList.findIndex(i => i === filterName);
+    console.log("FILTER IDX", filterNumber);
     await window.synthAPI.pipelineSetFilterParam(filterNumber, param, value)
+}
+
+async function deleteFilter(idx:number){
+    await window.synthAPI.pipelineRemove(idx);
+}
+
+async function swapFilters(idx1:number, idx2:number){
+    console.log("idxs:", idx1, idx2)
+    await window.synthAPI.pipelineSwap(idx1, idx2);
 }
 
 type DraggableListProps = {
     attr:"filters" | "effects";
 }
 
+function getPosFromFiltered(list1: string[], idx:number){
+    const elem = list1[idx];
+    return list1.filter(item => item !== "").findIndex(i => i === elem);
+}
 
 function DraggableList({ attr }: DraggableListProps) {
     const { data, setData } = useFilters();
@@ -204,9 +220,9 @@ function DraggableList({ attr }: DraggableListProps) {
             setListData(myData ?? []);
             const newArr = Array.from({ length: 3 }, (_, i) => "");
             setBlocks(newArr);
-        }, [myData]
-    )
+        }, [myData]);
 
+        
     useEffect(() => {
         setOrderedData((prev: orderedDataType) => ({
             ...prev,
@@ -215,6 +231,9 @@ function DraggableList({ attr }: DraggableListProps) {
         console.log("ordered data", orderedData);
     }, [blocks]);
 
+
+
+
     const [dragIndex, setDragIndex] = useState<number | null>(null);
     const [dragBlockInd, setDragBlockInd] = useState<number | null>(null);
 
@@ -222,40 +241,64 @@ function DraggableList({ attr }: DraggableListProps) {
         setDragIndex(index);
     };
 
+
     const dragStartBlock = (index: number) => {
         setDragBlockInd(index);
     }
+
 
     const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
     };
 
+
     const handleDrop = (index: number) => {
         if (dragIndex === null && dragBlockInd === null) { return }
-
         const newBlocks = [...blocks];
 
-        if (dragIndex !== null) {
+        if (dragIndex !== null) { // we drop filter from list to the blocks array
             const draggedItem = listData[dragIndex];
             newBlocks[index] = draggedItem;
+
+            (async () => { 
+                if (blocks[index] !== ""){
+                    const index1 = getPosFromFiltered(blocks, index ); // element that was there previously
+                    await deleteFilter(index1);
+                }
+                const index2 = getPosFromFiltered(newBlocks, index) // actual position after adding
+                await addFilter(draggedItem, index2);
+            } )();
+
             setDragIndex(null);
         }
 
-        else if (dragBlockInd !== null) { // typescript is stupid
+        else if (dragBlockInd !== null) { 
             const draggedItem = blocks[dragBlockInd];
 
             const temp = newBlocks[dragBlockInd];
             newBlocks[dragBlockInd] = blocks[index];
             newBlocks[index] = temp;
 
+            const index1 = getPosFromFiltered(blocks, index);
+            const index2 = getPosFromFiltered(blocks, dragBlockInd);
+
+            (async () => { await swapFilters(index1, index2) })(); // swap 2 existing filters
+
             setDragBlockInd(null);
         }
         setBlocks(newBlocks);
     }
 
+
     const handleDelete = (index: number) => {
         const newBlocks = [...blocks];
         newBlocks[index] = "";
+
+        (async () => {
+            const index1 = getPosFromFiltered(blocks, index); // we search in arr before change
+            await deleteFilter(index1) 
+            } )();
+
         setBlocks(newBlocks);
     }
 
@@ -380,6 +423,8 @@ function Page() {
 
     const { data, setData } = useFilters();
 
+    const { orderedData, setOrderedData } = useOrderedFilters();
+
     const invalid = !!errors.filters
     const invalid_eff = !!errors.effects
 
@@ -390,10 +435,10 @@ function Page() {
                 onSubmit={handleSubmit(async (formData) => {
                     setData(formData);
 
-                    await clearFilters(currentFilters.length);
-                    currentFilters = formData.filters;
+                    await clearFilters(orderedData.filters.length);
 
-                    await addFilters(currentFilters);
+                    //currentFilters = formData.filters;
+                    //await addFilters(currentFilters);
 
                     console.log("SUBMITTED", formData);
                 })}
