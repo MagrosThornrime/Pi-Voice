@@ -50,6 +50,11 @@ const Links: readonly SimpleLink[] = [
     external: false,
   },
   {
+    name: "Sequencer",
+    href: "/sequencer",
+    external: false,
+  },
+  {
     name: "GitHub",
     href: "https://github.com/MagrosThornrime/Pi-Voice",
     external: true,
