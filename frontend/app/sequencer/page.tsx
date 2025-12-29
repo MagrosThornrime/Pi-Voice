@@ -27,17 +27,20 @@ function getRandomColor() {
 export default function Page() {
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [isRecording, setIsRecording] = useState<boolean>(false);
-    const [sounds, setSounds] = useState<string[]>(() => {
-        const saved = sessionStorage.getItem("sounds");
-        return saved ? JSON.parse(saved) : [];
-    });
-    const [colorMap, setColorMap] = useState<Record<string, string>>(() => {
-        const saved = sessionStorage.getItem("colorMap");
-        return saved ? JSON.parse(saved) : {};
-    });
+    const [sounds, setSounds] = useState<string[]>([]);
+    const [colorMap, setColorMap] = useState<Record<string, string>>({});
     const [dragIndex, setDragIndex] = useState<number | null>(null);
     const [buttonText, setButtonText] = useState<string>("Record to sequencer");
     const [buttonText2, setButtonText2] = useState<string>("Play");
+
+    useEffect(() => {
+        const saved = sessionStorage.getItem("sounds");
+        if (saved){
+            setSounds(JSON.parse(saved));
+            const saved2 = sessionStorage.getItem("colorMap");
+            if (saved2) setColorMap(JSON.parse(saved2));
+        }
+    }, []);
 
     useEffect(() => {
         sessionStorage.setItem("sounds", JSON.stringify(sounds));
