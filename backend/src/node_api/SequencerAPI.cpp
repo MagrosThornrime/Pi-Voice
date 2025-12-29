@@ -150,7 +150,7 @@ void sequencerSwapSamples(const Napi::CallbackInfo& info) {
 		Napi::Error::New(env, "i1 is not a Number").ThrowAsJavaScriptException();
 	}
 
-	auto i2Val = info[0];
+	auto i2Val = info[1];
 	if (not i2Val.IsNumber()) {
 		Napi::Error::New(env, "i2 is not a Number").ThrowAsJavaScriptException();
 	}
