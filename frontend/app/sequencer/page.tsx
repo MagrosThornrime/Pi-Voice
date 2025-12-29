@@ -62,7 +62,7 @@ export default function Page() {
         e.preventDefault();
     };
     
-    const handleDrop = (index: number) => {
+    const handleDrop = async (index: number) => {
         if (dragIndex === null || dragIndex === index){setDragIndex(null); return;}
 
         const newArr = [...sounds];
@@ -72,6 +72,8 @@ export default function Page() {
 
         setSounds(newArr);
         setDragIndex(null);
+
+        // await window.synthAPI.sequencerMoveSample(dragIndex,index); //TODO Krystian weź to zdebuguj
     };
 
     return (
@@ -84,12 +86,10 @@ export default function Page() {
                             if (buttonText === "Record to sequencer") {
                                 await window.synthAPI.sequencerStartRecording(44100,2,40);
                                 setButtonText("Stop recording");
-                                console.log(await window.synthAPI.sequencerIsRecording())
                             } else {
-                                await window.synthAPI.stopRecording();
+                                await window.synthAPI.sequencerStopRecording();
                                 setButtonText("Record to sequencer");
                                 setSounds(prev => [...prev, generate_name()]);
-                                console.log(await window.synthAPI.sequencerIsRecording())
                             }
                         } catch (err) {
                             console.error(err);
@@ -115,7 +115,10 @@ export default function Page() {
                                     cursor="grab"
                                     opacity={dragIndex === index ? 0.4 : 1}
                                 >
-                                    <Button bg={colorMap[item]} onClick={() => setSounds(prev => prev.filter(s => s !== item))}>
+                                    <Button bg={colorMap[item]} onClick={() => {
+                                        setSounds(prev => prev.filter(s => s !== item));
+                                        window.synthAPI.sequencerRemoveSample(index);
+                                    }}>
                                         Remove {item}
                                     </Button>
                                 </Box>
@@ -131,11 +134,9 @@ export default function Page() {
                             if (buttonText2 === "Play") {
                                 await window.synthAPI.sequencerActivate();
                                 setButtonText2("Stop");
-                                console.log(await window.synthAPI.sequencerIsRecording())
                             } else {
                                 await window.synthAPI.sequencerDeactivate();
                                 setButtonText2("Play");
-                                console.log(await window.synthAPI.sequencerIsRecording())
                             }
                         } catch (err) {
                             console.error(err);
