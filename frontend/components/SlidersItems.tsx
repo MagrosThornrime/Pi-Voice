@@ -3,7 +3,7 @@ import { useEffect, useState, Fragment } from "react";
 import { LuChevronRight } from "react-icons/lu"
 import { Opt, OptKey, Filter, filters } from "../app/utils/tables"
 import { buildInitialState } from "../app/utils/state_utils";
-import { useOrderedFilters} from "@/app/effects_filters/page";
+import { useOrderedFilters } from "@/app/utils/context_utils";
 import { LogSlider } from "./SliderLinLog";
 import { OrderSwitch } from "./OrderSwitch";
 import { SliderNormal } from "./SliderNormal";

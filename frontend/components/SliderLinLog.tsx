@@ -5,7 +5,7 @@ import { Opt, OptKey, Filter, defaultOpts } from "@/app/utils/tables";
 import { calcValueFromLogScale, calcValueFromLinScale } from "@/app/utils/maths_utils";
 import { setFilterParam } from "@/app/effects_filters/page";
 import { ButtonScale } from "./ButtonScale";
-import { useOrderedFilters } from "@/app/effects_filters/page";
+import { useOrderedFilters } from "@/app/utils/context_utils";
 
 
 type LogSliderProps = {
