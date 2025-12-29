@@ -25,6 +25,8 @@ function getRandomColor() {
 }
 
 export default function Page() {
+    const [isPlaying, setIsPlaying] = useState<boolean>(false);
+    const [isRecording, setIsRecording] = useState<boolean>(false);
     const [sounds, setSounds] = useState<string[]>(() => {
         const saved = sessionStorage.getItem("sounds");
         return saved ? JSON.parse(saved) : [];
@@ -73,20 +75,23 @@ export default function Page() {
         setSounds(newArr);
         setDragIndex(null);
 
-        await window.synthAPI.sequencerMoveSample(dragIndex,index); //TODO Krystian weź to zdebuguj
+        await window.synthAPI.sequencerMoveSample(dragIndex,index);
     };
 
     return (
         <Box minH="100vh" bg="gray.50" p={10}>
             <Stack>
                 <Button
+                    disabled={isPlaying}
                     bg={buttonText === "Record to sequencer" ? "green.400" : "red.400"}
                     onClick={async () => {
                         try {
                             if (buttonText === "Record to sequencer") {
+                                setIsRecording(true);
                                 await window.synthAPI.sequencerStartRecording(44100,2,40);
                                 setButtonText("Stop recording");
                             } else {
+                                setIsRecording(false);
                                 await window.synthAPI.sequencerStopRecording();
                                 setButtonText("Record to sequencer");
                                 setSounds(prev => [...prev, generate_name()]);
@@ -128,13 +133,16 @@ export default function Page() {
                 </Grid>
                 <Box h="10"/>
                 <Button
+                    disabled={isRecording||sounds.length==0}
                     bg={buttonText2 === "Play" ? "green.400" : "red.400"}
                     onClick={async () => {
                         try {
                             if (buttonText2 === "Play") {
+                                setIsPlaying(true);
                                 await window.synthAPI.sequencerActivate();
                                 setButtonText2("Stop");
                             } else {
+                                setIsPlaying(false);
                                 await window.synthAPI.sequencerDeactivate();
                                 setButtonText2("Play");
                             }
