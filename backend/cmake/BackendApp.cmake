@@ -47,6 +47,8 @@ if (MSVC)
         /WHOLEARCHIVE:oscillators
         /WHOLEARCHIVE:fileio
         /WHOLEARCHIVE:application
+        /WHOLEARCHIVE:sequencer
+        /WHOLEARCHIVE:node_api
     )
 else()
     target_link_libraries(BackendApp

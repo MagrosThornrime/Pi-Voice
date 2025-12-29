@@ -15,6 +15,11 @@ bool Sequencer::isRecording() const {
 	return _recorder.running();
 }
 
+u32 Sequencer::length() const {
+	auto lock = std::unique_lock(_mutex);
+	return _samples.size();
+}
+
 void Sequencer::activate() {
 	auto lock = std::unique_lock(_mutex);
 	if (not _recorder.running() and not _active) {

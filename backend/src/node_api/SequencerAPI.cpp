@@ -7,7 +7,7 @@ namespace node_api {
 
 #define EXPORT_FN(x) exports.Set(#x, Napi::Function::New(env, x))
 
-void initFilters(Napi::Env env, Napi::Object exports) {
+void initSequencer(Napi::Env env, Napi::Object exports) {
 	EXPORT_FN(sequencerIsActive);
 	EXPORT_FN(sequencerIsRecording);
 	EXPORT_FN(sequencerActivate);
