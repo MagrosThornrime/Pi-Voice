@@ -126,7 +126,7 @@ void sequencerMoveSample(const Napi::CallbackInfo& info) {
 		Napi::Error::New(env, "curr is not a Number").ThrowAsJavaScriptException();
 	}
 
-	auto targetVal = info[0];
+	auto targetVal = info[1];
 	if (not targetVal.IsNumber()) {
 		Napi::Error::New(env, "target is not a Number").ThrowAsJavaScriptException();
 	}
