@@ -82,10 +82,14 @@ export default function Page() {
                     onClick={async () => {
                         try {
                             if (buttonText === "Record to sequencer") {
+                                await window.synthAPI.sequencerStartRecording(44100,2,40);
                                 setButtonText("Stop recording");
+                                console.log(await window.synthAPI.sequencerIsRecording())
                             } else {
+                                await window.synthAPI.stopRecording();
                                 setButtonText("Record to sequencer");
                                 setSounds(prev => [...prev, generate_name()]);
+                                console.log(await window.synthAPI.sequencerIsRecording())
                             }
                         } catch (err) {
                             console.error(err);
@@ -125,9 +129,13 @@ export default function Page() {
                     onClick={async () => {
                         try {
                             if (buttonText2 === "Play") {
+                                await window.synthAPI.sequencerActivate();
                                 setButtonText2("Stop");
+                                console.log(await window.synthAPI.sequencerIsRecording())
                             } else {
+                                await window.synthAPI.sequencerDeactivate();
                                 setButtonText2("Play");
+                                console.log(await window.synthAPI.sequencerIsRecording())
                             }
                         } catch (err) {
                             console.error(err);
