@@ -61,6 +61,8 @@ public:
 	/// @brief Clears all samples
 	/// @brief Available for deactivated & non-recording sequencer
 	void clear();
+	/// @brief Returns sample count
+	u32 length() const;
 
 	/// @brief Adds raw sample
 	/// @brief Available for deactivated & non-recording sequencer

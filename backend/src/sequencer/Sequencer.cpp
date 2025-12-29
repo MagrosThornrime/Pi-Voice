@@ -50,7 +50,10 @@ void Sequencer::startRecording(const u32 sampleRate, const u32 channels, const f
 void Sequencer::writeToRecorder(std::span<const f32> data) {
 	auto lock = std::unique_lock(_mutex);
 	if (not _active and _recorder.running()) {
-		_recorder.write(data);
+		if (not _recorder.write(data)) {
+			_recorder.stop();
+			_samples.push_back(_recorder.getResult());
+		}
 	}
 }
 
