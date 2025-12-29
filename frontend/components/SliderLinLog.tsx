@@ -1,35 +1,51 @@
-import { Box, Button, Text, Collapsible, Flex, Grid, Slider } from "@chakra-ui/react";
-import {useState, Fragment} from "react";
+import { Box, Text, Flex, Slider } from "@chakra-ui/react";
+import { useState, Fragment } from "react";
 import { SliderProps } from "./SlidersItems";
 import { Opt, OptKey, Filter, defaultOpts } from "@/app/utils/tables";
-import { calcValueFromLogScale, calcValueFromLinScale,calcLinearPosFromLogarithmic, calcLogaritmicPosFromLinear, getBounds} from "@/app/utils/maths_utils";
-import { setFilterParam} from "@/app/effects_filters/page";
+import { calcValueFromLogScale, calcValueFromLinScale } from "@/app/utils/maths_utils";
+import { setFilterParam } from "@/app/effects_filters/page";
 import { ButtonScale } from "./ButtonScale";
 import { useOrderedFilters } from "@/app/effects_filters/page";
 
 
 type LogSliderProps = {
-    setSliderVal:(itemValue: string, opt: string, newValue: number) => void;
+    setSliderVal: (itemValue: string, opt: string, newValue: number) => void;
     setSliderEndVal: (itemValue: string, opt: string, newValue: number) => void;
     setSliderProps: (itemValue: string, opt: string, newProps: SliderProps) => void;
     opt_key: OptKey;
     EndValues: Record<string, any>;
     Values: Record<string, any>;
     Props: Record<string, SliderProps>;
-    opt:Opt;
+    opt: Opt;
     obj: Filter;
     idx: number;
-    
+
 
 };
-export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, obj, opt, opt_key, EndValues, Values, Props, idx}: LogSliderProps) {
+export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, obj, opt, opt_key, EndValues, Values, Props, idx }: LogSliderProps) {
     const [status, setStatus] = useState<string>("logarithmic");
     const state_key = `${obj.value}.${opt_key}`;
     const Value = Values[state_key];
     const { orderedData } = useOrderedFilters();
-    
+
     return (
         <Fragment key={`${state_key}${idx}`}>
+
+            <Flex
+                align="center"
+                justify="center"
+                w="100%"
+            >
+
+                <Text fontWeight="medium" color="white"> {opt_key} </Text>
+                <Box flex="1" display="flex" justifyContent="center">
+                    <ButtonScale setStatus={setStatus} status={status}
+                        opt_key={opt_key} setSliderVal={setSliderVal} setSliderEndVal={setSliderEndVal} Props={Props}
+                        setSliderProps={setSliderProps} opt={opt} obj={obj} Values={Values} EndValues={EndValues} />
+                </Box>
+
+            </Flex>
+
             <Slider.Root
                 value={[Value]}
 
@@ -66,7 +82,6 @@ export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, obj, 
                 }}>
 
 
-                <Slider.Label color="white"> {`${opt_key}`} </Slider.Label>
                 <Slider.Control>
                     <Slider.Track>
                         <Slider.Range />
@@ -79,18 +94,15 @@ export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, obj, 
             <Flex justify="space-between" align="center" mb={2} w="100%">
 
                 <Text>
-                    {Props[`${state_key}`].bounds[0]}
+                    {Props[state_key].bounds[0]}
                 </Text>
+                <Box flex="1" textAlign="center" minW="0">
+                    <Text> Val:
+                        {Math.round(Props[state_key].actValue)}
+                    </Text>
+                </Box>
 
-                <Text> Val:
-                    {Math.round(Props[`${state_key}`].actValue)}
-                </Text>
-
-                <ButtonScale setStatus = {setStatus} status = {status}
-                    opt_key={opt_key} setSliderVal={setSliderVal} setSliderEndVal={setSliderEndVal} Props={Props}
-                    setSliderProps={setSliderProps} opt={opt} obj={obj} Values={Values} EndValues={EndValues} />
-
-                <Text> {Props[`${state_key}`].bounds[1]} </Text>
+                <Text> {Props[state_key].bounds[1]} </Text>
             </Flex>
 
             <Box h="5" />
