@@ -2,10 +2,11 @@ import { Box, Button, Text, Collapsible, Flex, Grid, Slider } from "@chakra-ui/r
 import {useEffect, useState, Fragment} from "react";
 import { LuChevronRight } from "react-icons/lu"
 import {calcLinearPosFromLogarithmic, getBounds, calcLogaritmicPosFromLinear, calcValueFromLogScale, calcValueFromLinScale} from "../app/utils/maths_utils"
-import {Opt, OptKey, Filter, defaultOpts, } from "../app/utils/tables"
+import {Opt, OptKey, Filter, defaultOpts, filters } from "../app/utils/tables"
 import { buildInitialState } from "../app/utils/state_utils";
-import { useFilters, setFilterParam } from "@/app/effects_filters/page";
+import { useFilters, setFilterParam, useOrderedFilters, orderedDataType } from "@/app/effects_filters/page";
 import { LogSlider } from "./SliderLinLog";
+import { OrderSwitch } from "./OrderSwitch";
 
 
 export type SliderProps = {
@@ -17,15 +18,18 @@ export type SliderProps = {
 type SlidersItemsProps = {
     neededItems: Filter[];
     attr: "filters" | "effects";
+    idx: number;
 };
 
-export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
+export function SlidersItems({ neededItems, attr, idx }: SlidersItemsProps) {
 
-    const { data } = useFilters();
+  const { orderedData } = useOrderedFilters();
 
-    const filteredItems = neededItems.filter(item =>
-        data[attr].includes(item.value)
-    );
+  const filteredItems = orderedData[attr].map((s: string) => {
+    return (filters.filter((f: Filter) => {
+      return f.value === s || f.label === s;
+    }))[0] // because there will always be one element matching
+  });
 
     const [Values, setValues] = useState<Record<string, any>>(buildInitialState(neededItems, false, 0));
     const [EndValues, setEndValues] = useState<Record<string, any>>(buildInitialState(neededItems, true, 0));
@@ -56,77 +60,106 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
         console.log("EndValues changed:", EndValues);
     } , [EndValues]);
 
-    const [status, setStatus] = useState<string>("logarithmic");
+  const sliders = filteredItems.map((obj, idx1) => (
+  <Fragment key={idx1}>
+    <Box
+      p={5}
+      bg="grey"
+      rounded="2xl"
+      maxW="100%"
+      shadow="md"
+    >
+      <Text mb={2} fontWeight="medium" textAlign="center">
+        {obj.value}
+      </Text>
 
-    const sliders = filteredItems.flatMap(obj => {
+      {(Object.entries(obj.opts) as [OptKey, Opt][]).map(([optKey, opt], idxMap) => {
+        const stateKey = `${obj.value}.${optKey}`;
+        const value = Values[stateKey];
+
         return (
-            <Fragment key={obj.value}>
-                <Box p={5} bg="grey" rounded="2xl" maxW="100%" shadow="md">
-                    <Text mb={2} fontWeight="medium" textAlign="center">{obj.value}</Text>
-                    {
-                        ( Object.entries(obj.opts) as [OptKey, Opt][]).map(([key, opt]) => {
-                            const opt_key = key;
-                            const state_key = `${obj.value}.${opt_key}`;
-                            const Value = Values[state_key];
-                            console.log(Values);
-                            console.log(obj);
-                            return (
-                                <Fragment key={state_key}>
-                                {
-                                    ("logScale" in opt && opt.logScale) ? 
-                                        <LogSlider key = {state_key} setSliderVal={setSliderValue} setSliderEndVal={setEndSliderValue} Props = {Props}
-                                        setSliderProps={setSliderProps} opt_key = {opt_key} Values={Values} EndValues={EndValues} obj = {obj} opt = {opt}/>
-                                        :
-                                        <Fragment key={state_key}>
-                                            <Slider.Root
-                                                value={[Value]}
+          <Fragment key={`${stateKey}${idxMap}`}>
+            {"logScale" in opt && opt.logScale ? (
+              <LogSlider
+                setSliderVal={setSliderValue}
+                setSliderEndVal={setEndSliderValue}
+                Props={Props}
+                setSliderProps={setSliderProps}
+                opt_key={optKey}
+                Values={Values}
+                EndValues={EndValues}
+                obj={obj}
+                opt={opt}
+                idx={idxMap}
+              />
+            ) : !("step" in opt) ? (
+              <>
+                <Slider.Root
+                  value={[value]}
+                  onValueChange={details => {
+                    setSliderValue(obj.value, optKey, details.value[0]);
+                  }}
+                  onValueChangeEnd={async details => {
+                    const sliderVal = details.value[0];
+                    const linVal = calcValueFromLinScale(sliderVal, opt.range)
+                    setEndSliderValue(obj.value, optKey, sliderVal);
+                    
+                    console.log("FILTER PARAMS", obj.value, defaultOpts[optKey].index, Math.round(linVal))
 
-                                                onValueChange={(details) => {
-                                                    setSliderValue(obj.value, opt_key, details.value[0])
-                                                } }
+                    await setFilterParam(
+                      orderedData.filters,
+                      obj.value,
+                      defaultOpts[optKey].index,
+                      linVal
+                    );
 
-                                                onValueChangeEnd={async (details) => {
-                                                    const sliderVal = details.value[0];
-                                                    setEndSliderValue(obj.value, opt_key, sliderVal);
-                                                    console.log("SLIDER END VALUE: ", EndValues[`${state_key}_end`]);
-                                                    await setFilterParam(obj.value, defaultOpts[opt_key].index, calcValueFromLinScale(sliderVal, opt.range));
-                                                }}>
+                  }}
+                >
+                  <Slider.Label color="white">
+                    {optKey}
+                  </Slider.Label>
 
-                                                <Slider.Label color="white"> {`${opt_key}`} </Slider.Label>
-                                                <Slider.Control>
-                                                    <Slider.Track>
-                                                        <Slider.Range />
-                                                    </Slider.Track>
-                                                    <Slider.Thumbs />
-                                                </Slider.Control>
-                                            </Slider.Root>
+                  <Slider.Control>
+                    <Slider.Track>
+                      <Slider.Range />
+                    </Slider.Track>
+                    <Slider.Thumbs />
+                  </Slider.Control>
+                </Slider.Root>
 
-                                            <Flex justify="space-between" align="center" mb={2} w="100%">
-                                                <Text>  {opt.range[0]}  </Text>
-                                                <Text> Val:
-                                                { 
-                                                    Math.round(calcValueFromLinScale(
-                                                        EndValues[`${state_key}_end`], opt.range)
-                                                    )
-                                                }
-                                                </Text> 
-                                                <Text>  {opt.range[1]}  </Text>
-                                            </Flex>
-                                            <Box h="5" />
-                                        </Fragment>
-                                }
-                                </Fragment>
-                            );
-                        })
-                    }
-                </Box>
-            </Fragment>
-        )
-    });
+                <Flex justify="space-between" align="center" mb={2} w="100%">
+                  <Text>{opt.range[0]}</Text>
+                  <Text>
+                    Val:{" "}
+                    {Math.round(
+                      calcValueFromLinScale(
+                        EndValues[`${stateKey}_end`],
+                        opt.range
+                      )
+                    )}
+                  </Text>
+                  <Text>{opt.range[1]}</Text>
+                </Flex>
+
+                <Box h="5" />
+              </>
+            ) : 
+            (
+              <>
+                <OrderSwitch label={optKey} />
+                <Box h="5" />
+              </>
+            )}
+          </Fragment>
+        );
+      })}
+    </Box>
+  </Fragment>
+));
 
     return (
         <Box>
-            <Collapsible.Root defaultOpen justifyItems={"center"}>
+            <Collapsible.Root justifyItems={"left"}>
 
                 <Collapsible.Trigger paddingY="3" display="flex" gap="2" alignItems="center" justifyItems={"center"}>
 
@@ -144,7 +177,7 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
 
                 <Collapsible.Content maxW="100%" minW="100%">
 
-                    <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)", lg: "repeat(3, 1fr)", }} gap={10} maxW="1000px" mx="auto">
+                    <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)", }} gap={10} maxW="1000px" mx="auto">
                         {sliders}
                     </Grid>
 

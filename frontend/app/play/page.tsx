@@ -45,7 +45,7 @@ declare global {
             getOscillatorNames: () => Promise<string[]>;
 
             // waveform preview
-            getOscillatorPlot: (name: string, length: number) => Promise<number[]>;
+            getOscillatorPlot: (name: string, length: number, step?: number) => Promise<number[]>;
 
         };
     }

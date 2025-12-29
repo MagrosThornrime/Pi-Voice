@@ -5,6 +5,7 @@ import { Opt, OptKey, Filter, defaultOpts } from "@/app/utils/tables";
 import { calcValueFromLogScale, calcValueFromLinScale,calcLinearPosFromLogarithmic, calcLogaritmicPosFromLinear, getBounds} from "@/app/utils/maths_utils";
 import { setFilterParam} from "@/app/effects_filters/page";
 import { ButtonScale } from "./ButtonScale";
+import { useOrderedFilters } from "@/app/effects_filters/page";
 
 
 type LogSliderProps = {
@@ -17,46 +18,51 @@ type LogSliderProps = {
     Props: Record<string, SliderProps>;
     opt:Opt;
     obj: Filter;
+    idx: number;
     
 
 };
-export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, obj, opt, opt_key, EndValues, Values, Props }: LogSliderProps) {
+export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, obj, opt, opt_key, EndValues, Values, Props, idx}: LogSliderProps) {
     const [status, setStatus] = useState<string>("logarithmic");
     const state_key = `${obj.value}.${opt_key}`;
     const Value = Values[state_key];
+    const { orderedData } = useOrderedFilters();
     
     return (
-        <Fragment key={state_key}>
+        <Fragment key={`${state_key}${idx}`}>
             <Slider.Root
                 value={[Value]}
 
                 onValueChange={(details) => {
                     const sliderVal = details.value[0]
-                        setSliderVal(obj.value, opt_key, sliderVal)
-                        setSliderProps(obj.value, opt_key, {
-                            bounds: Props[state_key].bounds,
-                            actValue:status === "logarithmic"
-                                ? calcValueFromLogScale(sliderVal, opt.range)
-                                : calcValueFromLinScale(sliderVal, Props[state_key].bounds)
-                        })
+                    setSliderVal(obj.value, opt_key, sliderVal)
+                    setSliderProps(obj.value, opt_key, {
+                        bounds: Props[state_key].bounds,
+                        actValue: status === "logarithmic"
+                            ? calcValueFromLogScale(sliderVal, opt.range)
+                            : calcValueFromLinScale(sliderVal, Props[state_key].bounds)
+                    })
                 }
                 }
 
 
                 onValueChangeEnd={async (details) => {
                     const sliderVal = details.value[0]
-                        setSliderEndVal(obj.value, opt_key, sliderVal);
-                        setSliderProps(obj.value, opt_key,
-                            {
-                                bounds: Props[`${state_key}`].bounds,
-                                actValue:status === "logarithmic" 
+                    setSliderEndVal(obj.value, opt_key, sliderVal);
+                    setSliderProps(obj.value, opt_key,
+                        {
+                            bounds: Props[`${state_key}`].bounds,
+                            actValue: status === "logarithmic"
                                 ? (calcValueFromLogScale(sliderVal, opt.range))
                                 : (calcValueFromLinScale(sliderVal, Props[state_key].bounds))
-                            }
-                        )
+                        }
+                    )
 
                     console.log("SLIDER END VALUE: ", EndValues[`${state_key}_end`]);
-                    await setFilterParam(obj.value, defaultOpts[opt_key].index, Props[state_key].actValue);
+
+                    await setFilterParam(orderedData.filters, obj.value, defaultOpts[opt_key].index, Props[state_key].actValue);
+
+                    console.log("FILTER LOG PARAM", obj.value, defaultOpts[opt_key].index, Math.round(Props[state_key].actValue))
                 }}>
 
 

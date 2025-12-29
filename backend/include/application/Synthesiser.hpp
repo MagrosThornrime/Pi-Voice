@@ -113,7 +113,7 @@ public:
 	/// @brief Gets the oscillator output signal
 	/// @param name oscillator's name
 	/// @param i32 plot length
-	std::vector<f32> getOscillatorPlot(const std::string& name, i32 length);
+	std::vector<f32> getOscillatorPlot(const std::string& name, i32 length, i32 step=1);
 
 	pipeline::Pipeline& getPipeline();
 

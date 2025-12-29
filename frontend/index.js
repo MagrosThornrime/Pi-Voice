@@ -110,7 +110,7 @@ ipcMain.handle("synth-openMidi", (e, port) => synth.openMidi(port));
 ipcMain.handle("synth-pipelineAddFilter", (e, filter, idx) => synth.pipelineAddFilter(filter, idx));
 ipcMain.handle("synth-pipelineRemove", (e, idx) => synth.pipelineRemove(idx));
 ipcMain.handle("synth-pipelineMove", (e, current, target) => synth.pipelineMove(current, target));
-ipcMain.handle("synth-pipelineSwap", (e, i1, i2) => synth.pipelineSwap(vi1, i2al));
+ipcMain.handle("synth-pipelineSwap", (e, i1, i2) => synth.pipelineSwap(i1, i2));
 ipcMain.handle("synth-pipelineSetFilterParam", (e, idx, param, value) => synth.pipelineSetFilterParam(idx, param, value));
 ipcMain.handle("synth-pipelineGetFilterParam", (e, idx, param) => synth.pipelineGetFilterParam(idx, param));
 ipcMain.handle("synth-pipelineLength", (e) => synth.pipelineLength());
@@ -143,6 +143,6 @@ ipcMain.handle("synth-getOscillatorNames", () =>
 );
 
 // Waveforms
-ipcMain.handle("synth-getOscillatorPlot", (e, name, len) =>
-    synth.getOscillatorPlot(name, len)
+ipcMain.handle("synth-getOscillatorPlot", (e, name, len, step) =>
+    synth.getOscillatorPlot(name, len, step)
 );

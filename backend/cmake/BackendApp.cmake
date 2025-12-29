@@ -12,6 +12,8 @@ include("cmake/oscillators.cmake")
 include("cmake/fileio.cmake")
 include("cmake/application.cmake")
 include("cmake/sequencer.cmake")
+include("cmake/node_api.cmake")
+include("cmake/effects.cmake")
 
 add_library(BackendApp SHARED)
 
@@ -35,6 +37,7 @@ if (MSVC)
         fileio
         application
         sequencer
+        node_api
     )
     target_link_options(BackendApp PRIVATE
         /WHOLEARCHIVE:midi
@@ -63,6 +66,7 @@ else()
         fileio
         application
         sequencer
+        node_api
         -Wl,--no-whole-archive
     )
 endif()
