@@ -107,7 +107,7 @@ void Sequencer::moveSample(const u32 curr, const u32 target) {
 			return;
 		}
 
-		auto&& item = std::move(_samples[curr]);
+		auto item = std::move(_samples[curr]);
 		_samples.erase(_samples.begin() + curr);
 
 		u32 insertIndex = std::min(target, size);

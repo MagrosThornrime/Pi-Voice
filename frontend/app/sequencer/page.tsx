@@ -73,7 +73,7 @@ export default function Page() {
         setSounds(newArr);
         setDragIndex(null);
 
-        // await window.synthAPI.sequencerMoveSample(dragIndex,index); //TODO Krystian weź to zdebuguj
+        await window.synthAPI.sequencerMoveSample(dragIndex,index); //TODO Krystian weź to zdebuguj
     };
 
     return (
