@@ -1,5 +1,5 @@
 #include <application/Synthesiser.hpp>
-#include <effects/DelayEffect.hpp>
+#include <Effects.hpp>
 
 namespace application {
 
@@ -39,13 +39,16 @@ void Synthesiser::start() {
 	);
 	_voiceManager->setOscillatorType("empty", 0);
 
+    _voiceManager->setRelease(0.001f);
 	auto& pipelineRef = *_pipeline.get();
-/*
+
+    /*
 	pipelineRef.add(
-		std::make_shared<effects::DelayEffect>(_channels, 25000, .1f, .5f),
+		std::make_shared<effects::ReverbEffect>(_channels, .1f, .5f),
 		std::nullopt
 	);
-*/
+    */
+
 	_stream = std::make_unique<portaudio::InterfaceCallbackStream>(streamParams, pipelineRef);
 	_stream->start();
 	_running = true;

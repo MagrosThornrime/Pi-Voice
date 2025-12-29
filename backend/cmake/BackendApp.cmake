@@ -45,6 +45,9 @@ if (MSVC)
         /WHOLEARCHIVE:oscillators
         /WHOLEARCHIVE:fileio
         /WHOLEARCHIVE:application
+        /WHOLEARCHIVE:effects
+        /WHOLEARCHIVE:node_api
+
     )
 else()
     target_link_libraries(BackendApp
@@ -64,6 +67,7 @@ else()
         fileio
         application
         node_api
+        effects
         -Wl,--no-whole-archive
     )
 endif()
