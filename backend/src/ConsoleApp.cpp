@@ -3,10 +3,16 @@
 #include <Types.hpp>
 #include <range/v3/all.hpp>
 #include <iostream>
+#include <Effects.hpp>
 
 int main(){
     auto synthesiser = std::make_shared<application::Synthesiser>("capture_in.wav", 2, 44100, "res/samples");
     auto midiApp = std::make_shared<application::MidiManager>(synthesiser);
+    auto& pipeline = synthesiser->getPipeline();
+	pipeline.add(
+		std::make_shared<effects::ModulatorEffect>(2, 30.0f),
+		std::nullopt
+	);
     synthesiser->start();
     midiApp->openMidiPort(1);
     synthesiser->setOscillatorType("square", 0);
