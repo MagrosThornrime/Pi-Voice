@@ -9,7 +9,8 @@ import { LuChevronRight } from "react-icons/lu"
 import { SlidersItems } from "@/components/SlidersItems";
 import { z } from "zod"
 import { CheckboxesWithHeading } from "@/components/Checkboxes";
-import { useFilters, useFiltersParams, FiltersParamsProvider, FiltersProvider, useFiltersLogic } from "../utils/context_utils";
+import { useFilters, useFiltersParams, useFiltersLogic } from "../utils/context_utils";
+import { v4 as uuidv4 } from "uuid";
 
 
 const FiltersFormSchema = z.object({
@@ -59,24 +60,29 @@ type DraggableListProps = {
     attr: "filters" | "effects";
 }
 
-function getPosFromFiltered(list1: string[], idx: number) {
-    const elem = list1[idx];
-    return list1.filter(item => item !== "").findIndex(i => i === elem);
+type blockType = {
+    val: string;
+    id: string;
+}
+
+function getPosFromFiltered(list1: blockType[], idx: string) {
+    return list1.filter(item => item.val !== "").findIndex(i => i.id === idx);
 }
 
 function DraggableList({ attr }: DraggableListProps) {
+
     const { data, setData } = useFilters();
     const { paramsData, setParamsData } = useFiltersParams();
     const { deleteFilterFromList, addFilterToList, swapFiltersFromList } = useFiltersLogic();
 
     const myData = data[attr];
     const [listData, setListData] = useState<string[]>(myData);
-    const [blocks, setBlocks] = useState<string[]>([]);
+    const [blocks, setBlocks] = useState<blockType[]>([]);
 
     useEffect(
         () => {
             setListData(myData ?? []);
-            const newArr = Array.from({ length: 3 }, (_, i) => "");
+            const newArr = Array.from({ length: 3 }, (_, i):blockType => {return { val: "", id:uuidv4() }});
             setBlocks(newArr);
             setParamsData([]);
         }, [myData]);
@@ -106,20 +112,21 @@ function DraggableList({ attr }: DraggableListProps) {
 
         if (dragIndex !== null) { // we drop filter from list to the blocks array
             const draggedItem = listData[dragIndex];
-            newBlocks[index] = draggedItem;
+            const newID:string = uuidv4();
+            newBlocks[index] = {val: draggedItem, id: newID};
         
             let index1:number = -1;
             
-            if (blocks[index] !== "") {
-                index1 = getPosFromFiltered(blocks, index); // element that was there previously
+            if (blocks[index].val !== "") {
+                index1 = getPosFromFiltered(blocks, blocks[index].id); // element that was there previously
                 deleteFilterFromList(index1);
             }
 
-            const index2 = getPosFromFiltered(newBlocks, index) // actual position after adding
+            const index2 = getPosFromFiltered(newBlocks, newBlocks[index].id) // actual position after adding
             addFilterToList(draggedItem as FilterType, Object.keys(defaultOpts) as OptKey[], index2);
 
             (async () => {
-                if (blocks[index] !== "") {
+                if (blocks[index].val !== "") {
                     await deleteFilter(index1);
                 }
                 await addFilter(draggedItem, index2);
@@ -135,8 +142,8 @@ function DraggableList({ attr }: DraggableListProps) {
             newBlocks[dragBlockInd] = blocks[index];
             newBlocks[index] = temp;
 
-            const index1 = getPosFromFiltered(blocks, index);
-            const index2 = getPosFromFiltered(blocks, dragBlockInd);
+            const index1 = getPosFromFiltered(blocks, newBlocks[index].id);
+            const index2 = getPosFromFiltered(blocks, newBlocks[dragBlockInd].id);
 
             swapFiltersFromList(index1, index2);
 
@@ -151,9 +158,9 @@ function DraggableList({ attr }: DraggableListProps) {
 
     const handleDelete = (index: number) => {
         const newBlocks = [...blocks];
-        newBlocks[index] = "";
+        newBlocks[index].val = "";
 
-        const index1 = getPosFromFiltered(blocks, index); // we search in arr before change
+        const index1 = getPosFromFiltered(blocks, blocks[index].id); // we search in arr before change
         deleteFilterFromList(index1);
 
         (async () => {
@@ -223,7 +230,7 @@ function DraggableList({ attr }: DraggableListProps) {
                                                     draggable
 
                                                     onDragStart={() => {
-                                                        if (blocks[index] == "") { return; }
+                                                        if (blocks[index].val == "") { return; }
                                                         dragStartBlock(index);
                                                     }}
 
@@ -248,7 +255,7 @@ function DraggableList({ attr }: DraggableListProps) {
 
                                                     </Button>
 
-                                                    {item}
+                                                    {item.val}
 
                                                 </Box>
                                             )
