@@ -3,46 +3,41 @@ import { Fragment } from "react";
 import { Opt, OptKey, Filter, defaultOpts } from "@/app/utils/tables";
 import { calcValueFromLinScale } from "@/app/utils/maths_utils";
 import { setFilterParam } from "@/app/effects_filters/page";
-import { useOrderedFilters } from "@/app/utils/context_utils";
+import { FiltersParams } from "@/app/utils/context_utils";
 
 
 type NormalSliderProps = {
-    setSliderValue: (itemValue: string, opt: string, newValue: number) => void;
-    setEndSliderValue: (itemValue: string, opt: string, newValue: number) => void;
+    setSliderValue: (itemIdx: string, opt: OptKey, newValue: number) => void;
+    setEndSliderValue: (itemIdx: string, opt: OptKey, newValue: number) => void;
     optKey: OptKey;
-    EndValues: Record<string, any>;
-    Values: Record<string, any>;
+    itemID: string;
+    paramsData:FiltersParams[];
     opt: Opt;
-    obj: Filter;
-    idx: number;
+
 };
 
-export function SliderNormal({ setSliderValue, setEndSliderValue, obj, opt, optKey, EndValues, Values, idx }: NormalSliderProps) {
-    const stateKey = `${obj.value}.${optKey}`;
-    const Value = Values[stateKey];
-    const { orderedData } = useOrderedFilters();
+export function SliderNormal({ setSliderValue, setEndSliderValue, opt, optKey, paramsData, itemID}: NormalSliderProps) {
+    const obj = paramsData.find(f => f.id === itemID);
+    if (!obj) return null;
+
+    const Value = obj.record[optKey].Val;
 
     return (
-        <Fragment key={`${stateKey}${idx}`}>
+        <Fragment key={`${itemID}${optKey}`}>
             <Text mb={2} fontWeight="medium" color="white" textAlign="left"> {optKey} </Text>
             <Slider.Root
                 value={[Value]}
                 onValueChange={details => {
-                    setSliderValue(obj.value, optKey, details.value[0]);
+                    setSliderValue(itemID, optKey, details.value[0]);
                 }}
                 onValueChangeEnd={async details => {
                     const sliderVal = details.value[0];
                     const linVal = calcValueFromLinScale(sliderVal, opt.range)
-                    setEndSliderValue(obj.value, optKey, sliderVal);
+                    setEndSliderValue(itemID, optKey, sliderVal);
 
-                    console.log("FILTER PARAMS", obj.value, defaultOpts[optKey].index, Math.round(linVal))
+                    console.log("FILTER PARAMS", itemID, defaultOpts[optKey].index, Math.round(linVal))
 
-                    await setFilterParam(
-                        orderedData.filters,
-                        obj.value,
-                        defaultOpts[optKey].index,
-                        linVal
-                    );
+                    await setFilterParam(paramsData.findIndex((f) => f.id === itemID), defaultOpts[optKey].index, linVal );
 
                 }}
             >
@@ -56,19 +51,23 @@ export function SliderNormal({ setSliderValue, setEndSliderValue, obj, opt, optK
             </Slider.Root>
 
             <Flex justify="center" align="center" w="100%">
+
                 <Text>{opt.range[0]}</Text>
+
                 <Box flex="1" textAlign="center" minW="0">
                     <Text>
                         Val:{" "}
                         {Math.round(
                             calcValueFromLinScale(
-                                EndValues[`${stateKey}_end`],
+                                obj.record[optKey].EndVal,
                                 opt.range
                             )
                         )}
                     </Text>
                 </Box>
+
                 <Text>{opt.range[1]}</Text>
+
             </Flex>
 
             <Box h="5" />

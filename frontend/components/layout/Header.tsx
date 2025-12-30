@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import Link from "next/link";
-import { LuExternalLink} from "react-icons/lu";
+import { LuExternalLink } from "react-icons/lu";
 import { MuseoModerno } from "next/font/google";
 import { usePreset } from "@/components/ui/presetsProvider";
 
@@ -72,7 +72,7 @@ export default function WithAction() {
     maxPresets,
     loadPreset,
   } = usePreset();
-  
+
   return (
     <Box
       as="header"
@@ -90,7 +90,7 @@ export default function WithAction() {
               className={museoModerno.className}
               aria-label={"Open Menu"}
             >
-            Pi-Voice
+              Pi-Voice
             </IconButton>
           </Drawer.Trigger>
 
@@ -107,51 +107,51 @@ export default function WithAction() {
                   Pi-Voice
                 </IconButton>
 
-              <VStack padding={4} align="stretch">
-                {Links.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    rel={link.external ? "noreferrer" : undefined}
-                    target={link.external ? "_blank" : "_self"}
-                    onClick={() => setOpen(false)}
-                  >
-                    <Box
-                      as="button"
-                      w="100%"
-                      p={5}
-                      bg="#00B8D9"
-                      _hover={{ bg: "#00D1E0", transform: "scale(1.03)" }}
-                      borderRadius="xl"
-                      transition="all 0.2s"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      className={museoModerno.className}
-                      fontSize="1.25rem"
-                      fontWeight="600"
+                <VStack padding={4} align="stretch">
+                  {Links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      rel={link.external ? "noreferrer" : undefined}
+                      target={link.external ? "_blank" : "_self"}
+                      onClick={() => setOpen(false)}
                     >
-                      <Text>{link.name}</Text>
-                      {link.external && <LuExternalLink />}
-                    </Box>
-                  </Link>
-                ))}
-              </VStack>
-            </Drawer.Content>
+                      <Box
+                        as="button"
+                        w="100%"
+                        p={5}
+                        bg="#00B8D9"
+                        _hover={{ bg: "#00D1E0", transform: "scale(1.03)" }}
+                        borderRadius="xl"
+                        transition="all 0.2s"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        className={museoModerno.className}
+                        fontSize="1.25rem"
+                        fontWeight="600"
+                      >
+                        <Text>{link.name}</Text>
+                        {link.external && <LuExternalLink />}
+                      </Box>
+                    </Link>
+                  ))}
+                </VStack>
+              </Drawer.Content>
             </Drawer.Positioner>
           </Portal>
         </Drawer.Root>
 
         <HStack alignItems={"center"}>
-          <Button 
-          variant={"solid"} 
-          colorScheme={"teal"} 
-          size={"sm"}
-          onClick={()=>{
-            const newNr = Math.max(presetNr - 1, 1);
-            setPresetNr(newNr);
-            loadPreset(String(newNr));
-          }}
+          <Button
+            variant={"solid"}
+            colorScheme={"teal"}
+            size={"sm"}
+            onClick={() => {
+              const newNr = Math.max(presetNr - 1, 1);
+              setPresetNr(newNr);
+              loadPreset(String(newNr));
+            }}
           >
             prev
           </Button>
@@ -162,21 +162,21 @@ export default function WithAction() {
               Preset {presetNr}
             </Text>
           </Box>
-          <Button 
-          variant={"solid"} 
-          colorScheme={"teal"} 
-          size={"sm"} 
-          mr={4}
-          onClick={()=>{
-            const newNr = Math.min(presetNr + 1, maxPresets);
-            setPresetNr(newNr);
-            loadPreset(String(newNr));
-          }}
+          <Button
+            variant={"solid"}
+            colorScheme={"teal"}
+            size={"sm"}
+            mr={4}
+            onClick={() => {
+              const newNr = Math.min(presetNr + 1, maxPresets);
+              setPresetNr(newNr);
+              loadPreset(String(newNr));
+            }}
           >
             next
           </Button>
         </HStack>
-        <Box w={10}/>
+        <Box w={10} />
       </Flex>
     </Box>
   );

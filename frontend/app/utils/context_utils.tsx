@@ -1,24 +1,40 @@
+"use client";
 import { FiltersData } from "../effects_filters/page";
 import { useContext, ReactNode, createContext, useState } from "react";
+import { OptKey, FilterType, Filter, defaultOpts } from "./tables";
+import { SliderProps } from "@/components/SlidersItems";
+import { v4 as uuidv4 } from "uuid";
+
 
 type FiltersContextType = {
     data: FiltersData;
-    setData: (value: FiltersData) => void;
+    setData: React.Dispatch<React.SetStateAction<FiltersData>>;
 };
 
-export type orderedDataType = {
-    filters: string[];
-    effects: string[];
+
+export type OptParams = {
+    Val: number;
+    EndVal: number;
+    Props: SliderProps;
 }
 
-type FiltersOrderContextType = {
-    orderedData: orderedDataType;
-    setOrderedData: React.Dispatch<React.SetStateAction<orderedDataType>>;
+
+export type FiltersParams = {
+    record: Record<OptKey, OptParams>;
+    value: FilterType;
+    id: string;
+}
+
+
+type FiltersParamsContextType = {
+    paramsData: FiltersParams[];
+    setParamsData: React.Dispatch<React.SetStateAction<FiltersParams[]>>;
 };
 
-const FiltersOrderedContext = createContext<FiltersOrderContextType | undefined>(undefined);
 
 const FiltersContext = createContext<FiltersContextType | undefined>(undefined);
+const FiltersParamsContext = createContext<FiltersParamsContextType | undefined>(undefined);
+
 
 export function FiltersProvider({ children }: { children: ReactNode }) {
     const [data, setData] = useState<FiltersData>({
@@ -33,18 +49,17 @@ export function FiltersProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export function FiltersOrderedProvider({ children }: { children: ReactNode }) {
-    const [orderedData, setOrderedData] = useState<orderedDataType>({
-        filters: [],
-        effects: []
-    });
+
+export function FiltersParamsProvider({ children }: { children: ReactNode }) {
+    const [paramsData, setParamsData] = useState<FiltersParams[]>([]);
 
     return (
-        <FiltersOrderedContext.Provider value={{ orderedData, setOrderedData }}>
+        <FiltersParamsContext.Provider value={{ paramsData, setParamsData }}>
             {children}
-        </FiltersOrderedContext.Provider>
+        </FiltersParamsContext.Provider>
     );
 }
+
 
 export function useFilters() {
     const ctx = useContext(FiltersContext);
@@ -54,10 +69,62 @@ export function useFilters() {
     return ctx;
 }
 
-export function useOrderedFilters() {
-    const ctx = useContext(FiltersOrderedContext);
+
+export function useFiltersParams() {
+    const ctx = useContext(FiltersParamsContext);
     if (!ctx) {
         throw new Error("useFilters must be used inside FiltersProvider");
     }
     return ctx;
+}
+
+
+export function useFiltersLogic() {
+    const { paramsData, setParamsData } = useFiltersParams();
+
+    const deleteFilterFromList = (idx: number) => {
+        setParamsData(prev => {
+            console.log("DELETING", idx, prev.length);
+
+            const newParamsData = [...prev];
+            newParamsData.splice(idx, 1);
+
+            console.log("SIZE AFTER:", newParamsData.length);
+            return newParamsData;
+        });
+    };
+
+    const swapFiltersFromList = (idx1: number, idx2: number) => {
+        setParamsData(prev => {
+            console.log("SWAPPING", idx1, idx2, "SIZE BEFORE:", prev.length);
+
+            const newParamsData = [...prev];
+
+            const temp = newParamsData[idx1];
+            newParamsData[idx1] = newParamsData[idx2];
+            newParamsData[idx2] = temp;
+
+            console.log("SIZE AFTER:", newParamsData.length);
+
+            return newParamsData;
+        });
+    };
+
+    const addFilterToList = (itemName: FilterType, names: OptKey[], idx: number, initial = 0) => {
+        console.log("ADDING", itemName, idx, paramsData.length);
+        const newParams: FiltersParams = { id: uuidv4(), value: itemName, record: {} as Record<OptKey, OptParams> };
+        names.forEach((key, _) => {
+            newParams.record[key] = { EndVal: initial, Val: initial, Props: { bounds: defaultOpts[key].range, actValue: initial } }
+        })
+
+        setParamsData(prev => {
+            const newParamsData = [...prev];
+            newParamsData.splice(idx, 0, newParams);
+            console.log("ADDING", itemName, idx, newParamsData.length);
+            return newParamsData;
+        });
+
+    }
+
+    return { paramsData, swapFiltersFromList, addFilterToList, deleteFilterFromList };
 }

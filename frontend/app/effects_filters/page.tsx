@@ -1,15 +1,15 @@
 "use client";
-import { Box, Checkbox, Button, Fieldset, Stack, Text, Portal, Collapsible, CheckboxGroup, Heading, Grid, Menu } from "@chakra-ui/react";
-import { useContext, ReactNode, useEffect, createContext, useState, Fragment, DragEvent } from "react";
+import { Box, Button, Text, Collapsible } from "@chakra-ui/react";
+import { useEffect, useState,  DragEvent } from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { MdDelete } from "react-icons/md";
-import { useController, ControllerRenderProps, useForm, FieldError } from "react-hook-form"
-import { filters, effects } from "../utils/tables"
+import { useController, useForm, FieldError } from "react-hook-form"
+import { filters, effects, defaultOpts, OptKey, FilterType } from "../utils/tables"
 import { LuChevronRight } from "react-icons/lu"
 import { SlidersItems } from "@/components/SlidersItems";
 import { z } from "zod"
 import { CheckboxesWithHeading } from "@/components/Checkboxes";
-import { useFilters, useOrderedFilters, orderedDataType, FiltersOrderedProvider, FiltersProvider } from "../utils/context_utils";
+import { useFilters, useFiltersParams, FiltersParamsProvider, FiltersProvider, useFiltersLogic } from "../utils/context_utils";
 
 
 const FiltersFormSchema = z.object({
@@ -41,10 +41,9 @@ async function addFilter(item: string, idx: number) {
     await window.synthAPI.pipelineAddFilter(filterNumber, idx);
 }
 
-export async function setFilterParam(filtersList: string[], filterName: string, param: number, value: number) {
-    const filterNumber = filtersList.findIndex(i => i === filterName);
-    console.log("FILTER IDX", filterNumber);
-    await window.synthAPI.pipelineSetFilterParam(filterNumber, param, value)
+export async function setFilterParam(idx:number, param: number, value: number) {
+    console.log("FILTER IDX", idx);
+    await window.synthAPI.pipelineSetFilterParam(idx, param, value)
 }
 
 async function deleteFilter(idx: number) {
@@ -67,7 +66,8 @@ function getPosFromFiltered(list1: string[], idx: number) {
 
 function DraggableList({ attr }: DraggableListProps) {
     const { data, setData } = useFilters();
-    const { orderedData, setOrderedData } = useOrderedFilters();
+    const { paramsData, setParamsData } = useFiltersParams();
+    const { deleteFilterFromList, addFilterToList, swapFiltersFromList } = useFiltersLogic();
 
     const myData = data[attr];
     const [listData, setListData] = useState<string[]>(myData);
@@ -78,18 +78,8 @@ function DraggableList({ attr }: DraggableListProps) {
             setListData(myData ?? []);
             const newArr = Array.from({ length: 3 }, (_, i) => "");
             setBlocks(newArr);
+            setParamsData([]);
         }, [myData]);
-
-
-    useEffect(() => {
-        setOrderedData((prev: orderedDataType) => ({
-            ...prev,
-            filters: blocks.filter(item => item !== "")
-        }));
-        console.log("ordered data", orderedData);
-    }, [blocks]);
-
-
 
 
     const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -117,13 +107,21 @@ function DraggableList({ attr }: DraggableListProps) {
         if (dragIndex !== null) { // we drop filter from list to the blocks array
             const draggedItem = listData[dragIndex];
             newBlocks[index] = draggedItem;
+        
+            let index1:number = -1;
+            
+            if (blocks[index] !== "") {
+                index1 = getPosFromFiltered(blocks, index); // element that was there previously
+                deleteFilterFromList(index1);
+            }
+
+            const index2 = getPosFromFiltered(newBlocks, index) // actual position after adding
+            addFilterToList(draggedItem as FilterType, Object.keys(defaultOpts) as OptKey[], index2);
 
             (async () => {
                 if (blocks[index] !== "") {
-                    const index1 = getPosFromFiltered(blocks, index); // element that was there previously
                     await deleteFilter(index1);
                 }
-                const index2 = getPosFromFiltered(newBlocks, index) // actual position after adding
                 await addFilter(draggedItem, index2);
             })();
 
@@ -140,10 +138,13 @@ function DraggableList({ attr }: DraggableListProps) {
             const index1 = getPosFromFiltered(blocks, index);
             const index2 = getPosFromFiltered(blocks, dragBlockInd);
 
+            swapFiltersFromList(index1, index2);
+
             (async () => { await swapFilters(index1, index2) })(); // swap 2 existing filters
 
             setDragBlockInd(null);
         }
+
         setBlocks(newBlocks);
     }
 
@@ -152,8 +153,10 @@ function DraggableList({ attr }: DraggableListProps) {
         const newBlocks = [...blocks];
         newBlocks[index] = "";
 
+        const index1 = getPosFromFiltered(blocks, index); // we search in arr before change
+        deleteFilterFromList(index1);
+
         (async () => {
-            const index1 = getPosFromFiltered(blocks, index); // we search in arr before change
             await deleteFilter(index1)
         })();
 
@@ -281,7 +284,7 @@ function Page() {
 
     const { data, setData } = useFilters();
 
-    const { orderedData, setOrderedData } = useOrderedFilters();
+    const { paramsData} = useFiltersParams();
 
     const invalid = !!errors.filters
     const invalid_eff = !!errors.effects
@@ -293,7 +296,7 @@ function Page() {
                 onSubmit={handleSubmit(async (formData) => {
                     setData(formData);
 
-                    await clearFilters(orderedData.filters.length);
+                    await clearFilters(paramsData.length);
 
                     console.log("SUBMITTED", formData);
                 })}
@@ -338,11 +341,5 @@ function Page() {
 
 
 export default function Home() {
-    return (
-        <FiltersOrderedProvider>
-            <FiltersProvider>
-                <Page />
-            </FiltersProvider>
-        </FiltersOrderedProvider>
-    )
+    return ( <Page /> )
 }

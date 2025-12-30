@@ -25,6 +25,7 @@ export const defaultOpts: Record<OptKey, Opt> = {
     quality: {mutable: true, continuous: true, logScale: false, range: [0.1, 20.0], index: 1 }
 }
 
+export type FilterType = "allpass" | "bandpass" | "highpass" | "lowpass" | "highshelf" | "lowshelf" | "notch" | "peakingeq";
 
 export const filters:Filter[] = [
     { 
