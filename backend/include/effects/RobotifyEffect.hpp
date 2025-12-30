@@ -3,12 +3,12 @@
 
 namespace effects {
 
-    class ModulatorEffect : public Effect {
+    class RobotifyEffect : public Effect {
 
         f32 _modFrequency = 30.0f;
 
         f32 _phaseIncrement;
-        f32 _phase = 0.0f;
+        f32 _phase;
 
         void _set(const u32 channels, const f32 modFrequency);
 
@@ -18,7 +18,7 @@ namespace effects {
 
         void processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames) override;
 
-        ModulatorEffect(const u32 channels, const f32 modFrequency);
+        RobotifyEffect(const u32 channels, const f32 modFrequency);
 
         void refresh() override;
     };

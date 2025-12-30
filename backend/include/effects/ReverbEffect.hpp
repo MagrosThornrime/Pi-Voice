@@ -17,8 +17,8 @@ namespace effects {
             10867
         };
 
-        std::array<std::vector<f32>, 8> _delayBuffers{};
-        std::array<u32, 8> _delayIndices{};
+        std::array<std::vector<f32>, 8> _buffers{};
+        std::array<u32, 8> _indices{};
 
         f32 _feedback = 0.1f;
         f32 _wetAmount = 0.5f;

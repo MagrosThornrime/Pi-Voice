@@ -3,10 +3,10 @@
 namespace effects {
 void DelayEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames){
     for(u32 i = 0; i < frames * _channels; i++){
-        f32 delayedSample = _delayBuffer[_delayIndex];
+        f32 delayedSample = _buffer[_index];
         outputBuffer[i] = inputBuffer[i] * (1 - _wetAmount) + delayedSample * _wetAmount;
-        _delayBuffer[_delayIndex] = inputBuffer[i] + delayedSample * _feedback;
-        _delayIndex = (_delayIndex + 1) % _delayBuffer.size();
+        _buffer[_index] = inputBuffer[i] * (1 - _feedback) + delayedSample * _feedback;
+        _index = (_index + 1) % _buffer.size();
     }
 }
 
@@ -33,18 +33,18 @@ void DelayEffect::_set(const u32 channels, const u32 delayTime, const f32 feedba
 }
 
 void DelayEffect::refresh(){
-    if(_delayTime * _channels == _delayBuffer.size()){
+    if(_delayTime * _channels == _buffer.size()){
         return;
     }
 	std::vector<f32> newBuffer(_delayTime * _channels);
-	if(!_delayBuffer.empty()){
+	if(!_buffer.empty()){
 		for(u32 i = 0; i < _delayTime * _channels; i++){
-			newBuffer[i] = _delayBuffer[_delayIndex];
-			_delayIndex = (_delayIndex + 1) % _delayBuffer.size();
+			newBuffer[i] = _buffer[_index];
+			_index = (_index + 1) % _buffer.size();
 		}
 	}
-	_delayBuffer = newBuffer;
-	_delayIndex = 0;
+	_buffer = newBuffer;
+	_index = 0;
 }
 
 

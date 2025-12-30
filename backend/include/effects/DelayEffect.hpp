@@ -5,8 +5,8 @@ namespace effects {
 
 class DelayEffect : public Effect {
 
-    std::vector<f32> _delayBuffer;
-    u32 _delayIndex = 0;
+    std::vector<f32> _buffer;
+    u32 _index = 0;
 
 	u32 _delayTime = 10000;
     f32 _feedback = 0.1f;
