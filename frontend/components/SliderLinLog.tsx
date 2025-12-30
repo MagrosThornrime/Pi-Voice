@@ -3,7 +3,7 @@ import { useState, Fragment } from "react";
 import { SliderProps } from "./SlidersItems";
 import { Opt, OptKey, Filter, defaultOpts } from "@/app/utils/tables";
 import { calcValueFromLogScale, calcValueFromLinScale } from "@/app/utils/maths_utils";
-import { setFilterParam } from "@/app/effects_filters/page";
+import { setFilterParam } from "@/app/utils/integration_utils";
 import { ButtonScale } from "./ButtonScale";
 import { FiltersParams } from "@/app/utils/context_utils";
 
