@@ -11,6 +11,7 @@ include("cmake/filters.cmake")
 include("cmake/polyphonic.cmake")
 include("cmake/oscillators.cmake")
 include("cmake/fileio.cmake")
+include("cmake/sequencer.cmake")
 
 enable_testing()
 
@@ -40,6 +41,7 @@ foreach(TEST_SRC ${TEST_SOURCES})
 				polyphonic
 				oscillators
 				fileio
+				sequencer
 		)
 		target_link_options(BackendApp PRIVATE
 			/WHOLEARCHIVE:midi
@@ -68,6 +70,7 @@ foreach(TEST_SRC ${TEST_SOURCES})
 				polyphonic
 				oscillators
 				fileio
+				sequencer
 				-Wl,--no-whole-archive
 		)
 	endif()

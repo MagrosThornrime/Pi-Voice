@@ -9,8 +9,8 @@ Synthesiser::Synthesiser(const std::string& recordingPath, i32 channels, i32 sam
 	_autoSys = std::make_unique<portaudio::AutoSystem>();
 	_sampleManager = std::make_shared<fileio::SampleManager>(samplesPath, _sampleRate);
 	_voiceManager = std::make_shared<polyphonic::VoiceManager>(6, (f32)sampleRate, channels, _sampleManager);
-	_pipeline = std::make_shared<pipeline::Pipeline>(256, channels, _voiceManager, _recorder);
-
+	_sequencer = std::make_shared<seq::Sequencer>(_sampleManager);
+	_pipeline = std::make_shared<pipeline::Pipeline>(256, channels, _voiceManager, _recorder, _sequencer);
 }
 
 void Synthesiser::start() {
@@ -124,6 +124,10 @@ void Synthesiser::setRecordingPath(const std::string& path) {
 
 pipeline::Pipeline& Synthesiser::getPipeline() {
 	return *_pipeline;
+}
+
+seq::Sequencer& Synthesiser::getSequencer() {
+	return *_sequencer;
 }
 
 void Synthesiser::setSamplesPath(const std::string& path) {

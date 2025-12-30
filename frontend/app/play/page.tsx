@@ -40,6 +40,20 @@ declare global {
             pipelineGetFilterParam: (idx: number, param: number) => Promise<number>;
             pipelineLength: () => Promise<number>;
 
+            // sequencerAPI
+            sequencerIsActive: () => Promise<boolean>;
+            sequencerIsRecording: () => Promise<boolean>;
+            sequencerActivate: () => Promise<void>;
+            sequencerDeactivate: () => Promise<void>;
+            sequencerStartRecording: (sampleRate: number, channels: number, seconds: number) => Promise<void>;
+            sequencerStopRecording: () => Promise<void>;
+            sequencerRemoveSample: (i: number) => Promise<void>;
+            sequencerClear: () => Promise<void>;
+            sequencerLength: () => Promise<number>;
+            sequencerMoveSample: (curr: number, val: number) => Promise<void>;
+            sequencerSwapSamples: (i1: number, i2: number) => Promise<void>;
+            sequencerAddSample: (name: string) => Promise<void>;
+
             // sample manager
             setSamplesPath: (path: string) => Promise<void>;
             getOscillatorNames: () => Promise<string[]>;
