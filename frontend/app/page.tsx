@@ -61,8 +61,8 @@ function get_adsr_curve(attack: number, decay: number, sustain: number, release:
 }
 
 
-function norm(param:number[]){
-  return param[0]/100;
+function norm(param:number){
+  return param/100;
 }
 
 
@@ -70,24 +70,16 @@ export default function Home() {
 
   const {
       presetNr,
-      volumeValue,
-      setVolumeValue,
-      attackValue,
-      setAttackValue,
-      decayValue,
-      setDecayValue,
-      sustainValue,
-      setSustainValue,
-      releaseValue,
-      setReleaseValue,
+      presetProperties,
+      setPresetProperties,
       savePreset,
     } = usePreset();
 
-  const [volumeValueVis, setVolumeValueVis] = useState(volumeValue);
-  const [attackValueVis, setAttackValueVis] = useState(attackValue);
-  const [decayValueVis, setDecayValueVis] = useState(decayValue);
-  const [sustainValueVis, setSustainValueVis] = useState(sustainValue);
-  const [releaseValueVis, setReleaseValueVis] = useState(releaseValue);
+  const [volumeValueVis, setVolumeValueVis] = useState(presetProperties.volume);
+  const [attackValueVis, setAttackValueVis] = useState(presetProperties.attack);
+  const [decayValueVis, setDecayValueVis] = useState(presetProperties.decay);
+  const [sustainValueVis, setSustainValueVis] = useState(presetProperties.sustain);
+  const [releaseValueVis, setReleaseValueVis] = useState(presetProperties.release);
   
   const data_adsr = useMemo(() => {
     return get_adsr_curve(norm(attackValueVis), norm(decayValueVis), norm(sustainValueVis), norm(releaseValueVis), 1.0, 100);
@@ -103,7 +95,7 @@ export default function Home() {
     label: "Volume",
     value: volumeValueVis,
     setValue: setVolumeValueVis,
-    setEndValue: setVolumeValue,
+    setEndValue: (v: number) => setPresetProperties(prev => ({...prev, volume: v})),
     onEnd: (v: number) => window.synthAPI.setAmplitude(v/100)
   },
 
@@ -111,7 +103,7 @@ export default function Home() {
     label: "Attack",
     value: attackValueVis,
     setValue: setAttackValueVis,
-    setEndValue: setAttackValue,
+    setEndValue: (v: number) => setPresetProperties(prev => ({...prev, attack: v})),
     onEnd: (v: number) => window.synthAPI.setAttack(10 ** (-v / 10))
   },
 
@@ -119,7 +111,7 @@ export default function Home() {
     label: "Sustain",
     value: sustainValueVis,
     setValue: setSustainValueVis,
-    setEndValue: setSustainValue,
+    setEndValue: (v: number) => setPresetProperties(prev => ({...prev, sustain: v})),
     onEnd: (v: number) => window.synthAPI.setSustain(v / 100)
   },
 
@@ -127,7 +119,7 @@ export default function Home() {
     label: "Decay",
     value: decayValueVis,
     setValue: setDecayValueVis,
-    setEndValue: setDecayValue,
+    setEndValue: (v: number) => setPresetProperties(prev => ({...prev, decay: v})),
     onEnd: (v: number) => window.synthAPI.setDecay(10 ** (-v / 10))
   },
 
@@ -135,25 +127,25 @@ export default function Home() {
     label: "Release",
     value: releaseValueVis,
     setValue: setReleaseValueVis,
-    setEndValue: setReleaseValue,
+    setEndValue: (v: number) => setPresetProperties(prev => ({...prev, release: v})),
     onEnd: (v: number) => window.synthAPI.setRelease(10 ** (-v / 10))
   }
 ]
   const isFirstRender = useRef(0);
 
   useEffect(() => {
-    setVolumeValueVis(volumeValue);
-    setAttackValueVis(attackValue);
-    setDecayValueVis(decayValue);
-    setSustainValueVis(sustainValue);
-    setReleaseValueVis(releaseValue);
+    setVolumeValueVis(presetProperties.volume);
+    setAttackValueVis(presetProperties.attack);
+    setDecayValueVis(presetProperties.decay);
+    setSustainValueVis(presetProperties.sustain);
+    setReleaseValueVis(presetProperties.release);
     if (isFirstRender.current<2){
       isFirstRender.current = isFirstRender.current+1;
     }else{
       savePreset(String(presetNr));
       console.log("saved adsr");
     }
-  }, [volumeValue, attackValue, decayValue, sustainValue, releaseValue]);
+  }, [presetProperties.volume, presetProperties.attack, presetProperties.decay, presetProperties.sustain, presetProperties.release]);
 
 
   const charts = [chart_adsr];
@@ -257,10 +249,10 @@ export default function Home() {
                 </Text>
 
                 <Slider.Root
-                  value={ctrl.value}
-                  onValueChange={(e) => ctrl.setValue(e.value)}
+                  value={[ctrl.value]}
+                  onValueChange={(e) => ctrl.setValue(e.value[0])}
                   onValueChangeEnd={(e) => {
-                    ctrl.setEndValue(e.value);
+                    ctrl.setEndValue(e.value[0]);
                     ctrl.onEnd(e.value[0]);
                     console.log(presetNr);
                   }} >

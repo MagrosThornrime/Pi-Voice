@@ -96,5 +96,7 @@ export function PresetProvider({ children }: { children: ReactNode }) {
 }
 
 export function usePreset() {
-  return useContext(PresetContext);
+  const ctx = useContext(PresetContext);
+  if (!ctx) throw new Error("usePreset must be used inside PresetProvider");
+  return ctx;
 }
