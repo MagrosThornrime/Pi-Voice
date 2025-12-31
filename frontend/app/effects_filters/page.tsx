@@ -13,6 +13,7 @@ import { useFilters, useFiltersParams, useFiltersLogic } from "../utils/context_
 import { v4 as uuidv4 } from "uuid";
 import { clearFilters, addFilter, deleteFilter, swapFilters, moveFilter } from "../utils/integration_utils";
 
+const FIELDS = 4
 
 const FiltersFormSchema = z.object({
     filters: z.array(z.string()).max(3, {
@@ -53,7 +54,7 @@ function DraggableList({ attr }: DraggableListProps) {
     useEffect(
         () => {
             setListData(myData ?? []);
-            const newArr = Array.from({ length: 3 }, (_, i):blockType => {return { val: "", id:uuidv4() }});
+            const newArr = Array.from({ length: FIELDS }, (_, i):blockType => {return { val: "", id:uuidv4() }});
             setBlocks(newArr);
             setParamsData([]);
         }, [myData]);
