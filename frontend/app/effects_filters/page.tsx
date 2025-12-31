@@ -36,7 +36,6 @@ type blockType = {
 }
 
 function getPosFromFiltered(list1: blockType[], idx: string) {
-    console.log("FILTERING", list1.filter(item => item.val !== ""), idx)
     const res:number = list1.filter(item => item.val !== "").findIndex(i => i.id === idx);
     return res;
 }
@@ -111,8 +110,6 @@ function DraggableList({ attr }: DraggableListProps) {
             const draggedItem = blocks[dragBlockInd];
 
             const temp = newBlocks[dragBlockInd];
-            newBlocks[dragBlockInd] = newBlocks[index];
-            newBlocks[index] = temp;
 
             const condDrag:boolean = newBlocks[dragBlockInd].val !== "";
             const condInd: boolean = newBlocks[index].val !== ""
@@ -125,25 +122,27 @@ function DraggableList({ attr }: DraggableListProps) {
                     swapFiltersFromList(index1, index2);
                     (async () => { await swapFilters(index1, index2) })(); // swap 2 existing filters
                 }
-                else if (condInd){
-                    const index3 = newBlocks.slice(0, dragBlockInd).filter(item => item.val !== "").length
-                    if (index1 != index3){
-                        moveFilterInList(index1, index3);
-                        (async () => {
-                            await moveFilter(index1, index3);
-                        })();
-                    }
-                }
-                else if (condDrag) {
-                    const index3 = newBlocks.slice(0, index).filter(item => item.val !== "").length
-                    if (index2 != index3){
+                else if (condDrag){
+                    const index3 = newBlocks.slice(0, index).filter(item => item.val !== "").length;
+                    if (index2 + 1 != index3){ // we insert before index3
                         moveFilterInList(index2, index3);
                         (async () => {
                             await moveFilter(index2, index3);
                         })();
                     }
                 }
+                else if (condInd){
+                    const index3 = newBlocks.slice(0, dragBlockInd).filter(item => item.val !== "").length;
+                    if (index1 + 1 != index3){ // we insert before index1
+                        moveFilterInList(index1, index3);
+                        (async () => {
+                            await moveFilter(index1, index3);
+                        })();
+                    }
+                }
             }
+            newBlocks[dragBlockInd] = newBlocks[index];
+            newBlocks[index] = temp;
 
             setDragBlockInd(null);
         }
