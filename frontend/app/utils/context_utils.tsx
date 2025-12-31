@@ -111,7 +111,7 @@ export function useFiltersLogic() {
     };
 
     const addFilterToList = (itemName: FilterType, names: OptKey[], idx: number, initial = 0) => {
-        console.log("ADDING", itemName, idx, paramsData.length);
+        console.log("ADDING", itemName, idx);
         const newParams: FiltersParams = { id: uuidv4(), value: itemName, record: {} as Record<OptKey, OptParams> };
         names.forEach((key, _) => {
             newParams.record[key] = { EndVal: initial, Val: initial, Props: { bounds: defaultOpts[key].range, actValue: initial } }
@@ -120,7 +120,6 @@ export function useFiltersLogic() {
         setParamsData(prev => {
             const newParamsData = [...prev];
             newParamsData.splice(idx, 0, newParams);
-            console.log("ADDING", itemName, idx, newParamsData.length);
             return newParamsData;
         });
 
@@ -128,9 +127,10 @@ export function useFiltersLogic() {
 
     const moveFilterInList = (idxFrom:number, idxTo:number) => {
         setParamsData(prev => {
+            console.log("MOVING", idxFrom, idxTo);
             const newParamsData = [...prev];
             const elem = newParamsData.splice(idxFrom, 1)[0];
-            newParamsData.splice(idxTo > idxFrom ? idxTo - 1 : idxTo, 0, elem) // after splice all elements are moved to the left
+            newParamsData.splice(idxTo > idxFrom ? idxTo - 1 : idxTo, 0, elem); // after splice all elements are moved to the left
             return newParamsData;
         });
     }
