@@ -126,5 +126,14 @@ export function useFiltersLogic() {
 
     }
 
-    return { paramsData, swapFiltersFromList, addFilterToList, deleteFilterFromList };
+    const moveFilterInList = (idxFrom:number, idxTo:number) => {
+        setParamsData(prev => {
+            const newParamsData = [...prev];
+            const elem = newParamsData.splice(idxFrom, 1)[0];
+            newParamsData.splice(idxTo > idxFrom ? idxTo - 1 : idxTo, 0, elem) // after splice all elements are moved to the left
+            return newParamsData;
+        });
+    }
+
+    return { paramsData, swapFiltersFromList, addFilterToList, deleteFilterFromList, moveFilterInList };
 }

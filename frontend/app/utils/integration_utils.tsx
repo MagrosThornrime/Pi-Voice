@@ -31,3 +31,9 @@ export async function swapFilters(idx1: number, idx2: number) {
     console.log("idxs:", idx1, idx2)
     await window.synthAPI.pipelineSwap(idx1, idx2);
 }
+
+
+export async function moveFilter(idx1: number, idx2:number){
+    console.log("MOVE idxs:", idx1, idx2)
+    await window.synthAPI.pipelineMove(idx1, idx2);
+}

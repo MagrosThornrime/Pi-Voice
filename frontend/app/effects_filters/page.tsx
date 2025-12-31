@@ -11,7 +11,7 @@ import { z } from "zod"
 import { CheckboxesWithHeading } from "@/components/Checkboxes";
 import { useFilters, useFiltersParams, useFiltersLogic } from "../utils/context_utils";
 import { v4 as uuidv4 } from "uuid";
-import { clearFilters, addFilter, deleteFilter, swapFilters } from "../utils/integration_utils";
+import { clearFilters, addFilter, deleteFilter, swapFilters, moveFilter } from "../utils/integration_utils";
 
 
 const FiltersFormSchema = z.object({
@@ -45,7 +45,7 @@ function DraggableList({ attr }: DraggableListProps) {
 
     const { data, setData } = useFilters();
     const { paramsData, setParamsData } = useFiltersParams();
-    const { deleteFilterFromList, addFilterToList, swapFiltersFromList } = useFiltersLogic();
+    const { deleteFilterFromList, addFilterToList, swapFiltersFromList, moveFilterInList } = useFiltersLogic();
 
     const myData = data[attr];
     const [listData, setListData] = useState<string[]>(myData);
@@ -114,12 +114,36 @@ function DraggableList({ attr }: DraggableListProps) {
             newBlocks[dragBlockInd] = newBlocks[index];
             newBlocks[index] = temp;
 
-            const index1 = getPosFromFiltered(newBlocks, newBlocks[index].id);
-            const index2 = getPosFromFiltered(newBlocks, newBlocks[dragBlockInd].id);
+            const condDrag:boolean = newBlocks[dragBlockInd].val !== "";
+            const condInd: boolean = newBlocks[index].val !== ""
 
-            swapFiltersFromList(index1, index2);
+            if (condDrag || condInd){
+                const index1 = getPosFromFiltered(newBlocks, newBlocks[index].id);
+                const index2 = getPosFromFiltered(newBlocks, newBlocks[dragBlockInd].id);
 
-            (async () => { await swapFilters(index1, index2) })(); // swap 2 existing filters
+                if (condDrag && condInd){
+                    swapFiltersFromList(index1, index2);
+                    (async () => { await swapFilters(index1, index2) })(); // swap 2 existing filters
+                }
+                else if (condInd){
+                    const index3 = newBlocks.slice(0, dragBlockInd).filter(item => item.val !== "").length
+                    if (index1 != index3){
+                        moveFilterInList(index1, index3);
+                        (async () => {
+                            await moveFilter(index1, index3);
+                        })();
+                    }
+                }
+                else if (condDrag) {
+                    const index3 = newBlocks.slice(0, index).filter(item => item.val !== "").length
+                    if (index2 != index3){
+                        moveFilterInList(index2, index3);
+                        (async () => {
+                            await moveFilter(index2, index3);
+                        })();
+                    }
+                }
+            }
 
             setDragBlockInd(null);
         }
