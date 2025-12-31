@@ -58,10 +58,11 @@ void Pipeline::move(const u32 curr, const u32 target) {
 	_layers.erase(_layers.begin() + curr);
 
 	const u32 newSize = _layers.size();
-	u32 insertIndex = std::min(target, newSize);
+	u32 insertIndex = target;
 	if(curr < insertIndex){
 		insertIndex--;
 	}
+	insertIndex = std::min(insertIndex, newSize);
 	_layers.insert(_layers.begin() + insertIndex, std::move(item));
 }
 
