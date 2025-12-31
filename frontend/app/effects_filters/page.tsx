@@ -8,6 +8,7 @@ import {filters, effects} from "../utils/tables"
 import { LuChevronRight } from "react-icons/lu"
 import { SlidersItems } from "@/components/SlidersItems";
 import { z } from "zod"
+import { usePreset } from "@/components/ui/presetsProvider";
 
 
 const FiltersFormSchema = z.object({
@@ -215,6 +216,12 @@ function DraggableList({ attr }: DraggableListProps) {
     const [listData, setListData] = useState<string[]>(myData);
     const [blocks, setBlocks] = useState<string[]>([]);
 
+    const {
+        presetNr,
+        presetProperties,
+        setPresetProperties,
+    } = usePreset();
+
     useEffect(
         () => {
             setListData(myData ?? []);
@@ -222,8 +229,11 @@ function DraggableList({ attr }: DraggableListProps) {
             setBlocks(newArr);
         }, [myData]);
 
-        
+    const filtersKeys = ["filter1", "filter2", "filter3"] as const;  
     useEffect(() => {
+        for(const i in blocks){
+            setPresetProperties(prev => ({...prev,[filtersKeys[i]]: blocks[i]}));
+        }
         setOrderedData((prev: orderedDataType) => ({
             ...prev,
             filters: blocks.filter(item => item !== "")

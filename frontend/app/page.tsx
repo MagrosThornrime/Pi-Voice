@@ -72,7 +72,6 @@ export default function Home() {
       presetNr,
       presetProperties,
       setPresetProperties,
-      savePreset,
     } = usePreset();
 
   const [volumeValueVis, setVolumeValueVis] = useState(presetProperties.volume);
@@ -131,7 +130,6 @@ export default function Home() {
     onEnd: (v: number) => window.synthAPI.setRelease(10 ** (-v / 10))
   }
 ]
-  const isFirstRender = useRef(0);
 
   useEffect(() => {
     setVolumeValueVis(presetProperties.volume);
@@ -139,12 +137,6 @@ export default function Home() {
     setDecayValueVis(presetProperties.decay);
     setSustainValueVis(presetProperties.sustain);
     setReleaseValueVis(presetProperties.release);
-    if (isFirstRender.current<2){
-      isFirstRender.current = isFirstRender.current+1;
-    }else{
-      savePreset(String(presetNr));
-      console.log("saved adsr");
-    }
   }, [presetProperties.volume, presetProperties.attack, presetProperties.decay, presetProperties.sustain, presetProperties.release]);
 
 

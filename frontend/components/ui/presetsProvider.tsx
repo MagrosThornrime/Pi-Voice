@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode, Dispatch, SetStateAction } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, Dispatch, SetStateAction, useRef } from "react";
 
 export interface Preset {
   attack : number;
@@ -11,6 +11,12 @@ export interface Preset {
   oscilator1 : string;
   oscilator2 : string;
   oscilator3 : string;
+  filter1 : string;
+  filter2 : string;
+  filter3 : string;
+  effect1 : string;
+  effect2 : string;
+  effect3 : string;
 }
 
 export interface PresetFile {
@@ -24,17 +30,32 @@ interface PresetContextType {
   maxPresets: number;
   presetProperties: Preset;
   setPresetProperties: Dispatch<SetStateAction<Preset>>;
-  savePreset: (name: string) => void;
   loadPreset: (name: string) => void;
 }
 
 const PresetContext = createContext<PresetContextType | undefined>(undefined);
 
 export function PresetProvider({ children }: { children: ReactNode }) {
+  const isFirstRender = useRef(0);
   const [presetNr, setPresetNr] = useState(1);
   const maxPresets = 5;
 
-  const [presetProperties, setPresetProperties] = useState<Preset>({attack:10,decay:20,sustain:20,release:40,volume:10,oscilator1:"sine",oscilator2:"empty",oscilator3:"empty"})
+  const [presetProperties, setPresetProperties] = useState<Preset>({
+    attack:10,
+    decay:20,
+    sustain:20,
+    release:40,
+    volume:10,
+    oscilator1:"sine",
+    oscilator2:"empty",
+    oscilator3:"empty",
+    filter1:"",
+    filter2:"",
+    filter3:"",
+    effect1:"",
+    effect2:"",
+    effect3:"",
+  })
 
   useEffect(() => {
     window.presetsAPI.read().then((data) => {
@@ -72,6 +93,12 @@ export function PresetProvider({ children }: { children: ReactNode }) {
         oscilator1:preset.oscilator1,
         oscilator2:preset.oscilator2,
         oscilator3:preset.oscilator3,
+        filter1:preset.filter1,
+        filter2:preset.filter2,
+        filter3:preset.filter3,
+        effect1:preset.effect1,
+        effect2:preset.effect2,
+        effect3:preset.effect3,
       });
       window.synthAPI.setAttack(10 ** (-preset.attack * 10));
       window.synthAPI.setDecay(10 ** (-preset.decay * 10));
@@ -84,6 +111,15 @@ export function PresetProvider({ children }: { children: ReactNode }) {
     });
   }
 
+  useEffect(() => {
+    if (isFirstRender.current<2){
+      isFirstRender.current = isFirstRender.current+1;
+    }else{
+      savePreset(String(presetNr));
+      console.log("preset saved");
+    }
+  }, [presetProperties]);
+
   return (
     <PresetContext.Provider
       value={{
@@ -92,7 +128,6 @@ export function PresetProvider({ children }: { children: ReactNode }) {
         maxPresets,
         presetProperties,
         setPresetProperties,
-        savePreset,
         loadPreset,
       }}
     >

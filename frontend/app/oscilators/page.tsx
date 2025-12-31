@@ -209,7 +209,6 @@ export default function Page() {
     presetNr,
     presetProperties,
     setPresetProperties,
-    savePreset,
   } = usePreset();
 
   const [oscillators, setOscillator] = useState([presetProperties.oscilator1, presetProperties.oscilator2, presetProperties.oscilator3])
@@ -248,7 +247,6 @@ export default function Page() {
 
   useEffect(() => {
     setOscillator([presetProperties.oscilator1,presetProperties.oscilator2,presetProperties.oscilator3]);
-    savePreset(String(presetNr));
   }, [presetProperties.oscilator1, presetProperties.oscilator2, presetProperties.oscilator3]);
 
   useEffect(() => {
