@@ -47,8 +47,14 @@ export function PresetProvider({ children }: { children: ReactNode }) {
   }, []);
 
   function savePreset(name:string) {
-    const preset : Preset = presetProperties;
-
+    let preset: Preset = {
+      ...presetProperties,
+      attack: presetProperties.attack / 100,
+      decay: presetProperties.decay / 100,
+      sustain: presetProperties.sustain / 100,
+      release: presetProperties.release / 100,
+      volume: presetProperties.volume / 100,
+    };
     window.presetsAPI.saveOne(name, preset);
   }
 
