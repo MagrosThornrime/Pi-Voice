@@ -50,8 +50,12 @@ LayerRef Pipeline::remove(const u32 i) {
 void Pipeline::move(const u32 curr, const u32 target) {
 	auto lock = std::lock_guard(_layersMutex);
 	const u32 size = _layers.size();
-	if (curr >= size){
+	if (curr >= size || curr == target){
 		return;
+	}
+
+	if (curr < target) {
+		target--;
 	}
 
 	LayerRef item = std::move(_layers[curr]);
