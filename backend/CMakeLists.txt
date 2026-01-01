@@ -4,7 +4,7 @@ project(audio_platform_backend)
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(CMAKE_BUILD_TYPE "Release")
+#set(CMAKE_BUILD_TYPE "Release")
 
 if(MSVC)
     add_compile_options("/permissive-")

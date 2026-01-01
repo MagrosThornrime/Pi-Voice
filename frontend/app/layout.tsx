@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Provider } from "@/components/ui/provider"
+import { Providers } from "@/components/Providers";
 import Header from "@/components/layout/Header";
 import { Box, Center, Container } from "@chakra-ui/react"
 import { PresetProvider } from "@/components/ui/presetsProvider"
@@ -29,14 +30,16 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body>
-        <Provider>
-          <PresetProvider>
-            <Box p={0} m={0} minH="100vh" w="100vw">
-              <Header />
-              <Box as="main" w="100%" minH="100dvh" px={10} pt={24} pb={10}>{children}</Box>
-            </Box>
-          </PresetProvider>
-        </Provider>
+        <Providers>
+          <Provider>
+            <PresetProvider>
+              <Box p={0} m={0} minH="100vh" w="100vw">
+                <Header />
+                <Box as="main" w="100%" minH="100dvh" px={10} pt={24} pb={10}>{children}</Box>
+              </Box>
+            </PresetProvider>
+          </Provider>
+        </Providers>
       </body>
     </html>
   );

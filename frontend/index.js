@@ -110,6 +110,20 @@ ipcMain.handle("synth-pipelineSetFilterParam", (e, idx, param, value) => synth.p
 ipcMain.handle("synth-pipelineGetFilterParam", (e, idx, param) => synth.pipelineGetFilterParam(idx, param));
 ipcMain.handle("synth-pipelineLength", (e) => synth.pipelineLength());
 
+// sequencerAPI
+ipcMain.handle("synth-sequencerIsActive", (e) => synth.sequencerIsActive());
+ipcMain.handle("synth-sequencerIsRecording", (e) => synth.sequencerIsRecording());
+ipcMain.handle("synth-sequencerActivate", (e) => synth.sequencerActivate());
+ipcMain.handle("synth-sequencerDeactivate", (e) => synth.sequencerDeactivate());
+ipcMain.handle("synth-sequencerStartRecording", (e, sampleRate, channels, seconds) => synth.sequencerStartRecording(sampleRate, channels, seconds));
+ipcMain.handle("synth-sequencerStopRecording", (e) => synth.sequencerStopRecording());
+ipcMain.handle("synth-sequencerRemoveSample", (e, i) => synth.sequencerRemoveSample(i));
+ipcMain.handle("synth-sequencerClear", (e) => synth.sequencerClear());
+ipcMain.handle("synth-sequencerLength", (e) => synth.sequencerLength());
+ipcMain.handle("synth-sequencerMoveSample", (e, curr, target) => synth.sequencerMoveSample( curr, target));
+ipcMain.handle("synth-sequencerSwapSamples", (e, i1, i2) => synth.sequencerSwapSamples(i1, i2));
+ipcMain.handle("synth-sequencerAddSample", (e, name) => synth.sequencerAddSample(name));
+
 // Synth parameters
 ipcMain.handle("synth-setAmplitude", (e, v) => synth.setAmplitude(v));
 ipcMain.handle("synth-setOscillatorType", (e, type, index) =>

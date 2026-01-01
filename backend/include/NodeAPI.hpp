@@ -4,3 +4,4 @@
 #include <node_api/PipelineAPI.hpp>
 #include <node_api/MidiAPI.hpp>
 #include <node_api/VoiceManagerAPI.hpp>
+#include <node_api/SequencerAPI.hpp>

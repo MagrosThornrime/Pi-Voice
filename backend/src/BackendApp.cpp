@@ -28,6 +28,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 	node_api::initFiles(env, exports);
 	node_api::initVoiceManager(env, exports);
 	node_api::initFilters(env, exports);
+	node_api::initSequencer(env, exports);
 
     env.AddCleanupHook(destroyApplication, (void*)nullptr);
 

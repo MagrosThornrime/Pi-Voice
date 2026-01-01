@@ -12,6 +12,7 @@ include("cmake/oscillators.cmake")
 include("cmake/fileio.cmake")
 include("cmake/application.cmake")
 include("cmake/effects.cmake")
+include("cmake/sequencer.cmake")
 
 add_executable(ConsoleApp src/ConsoleApp.cpp)
 
@@ -30,6 +31,7 @@ if (MSVC)
             oscillators
             fileio
             application
+            sequencer
             effects
     )
     target_link_options(ConsoleApp PRIVATE
@@ -41,6 +43,7 @@ if (MSVC)
             /WHOLEARCHIVE:fileio
             /WHOLEARCHIVE:application
             /WHOLEARCHIVE:effects
+            /WHOLEARCHIVE:sequencer
     )
 else()
     target_link_libraries(ConsoleApp
@@ -58,6 +61,7 @@ else()
             oscillators
             fileio
             application
+            sequencer
             effects
             -Wl,--no-whole-archive
     )
