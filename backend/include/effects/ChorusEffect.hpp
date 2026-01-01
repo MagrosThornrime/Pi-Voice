@@ -3,6 +3,32 @@
 
 namespace effects {
 
+    struct ChorusParams {
+        enum Value: u32 {
+            baseDelayFactor,
+            modFrequency,
+            modDepth,
+            bufferFrames,
+            feedback,
+            wetAmount,
+            _count,
+        };
+
+        template<Value P>
+        struct _Type {
+            using type = float;
+        };
+
+        template<Value P>
+        using type = _Type<P>::type;
+    };
+
+#define PARAM_TYPE(param, T) template<> struct ChorusParams::_Type<param> { using type = T; }
+
+    PARAM_TYPE(ChorusParams::bufferFrames, u32);
+
+#undef PARAM_TYPE
+
     class ChorusEffect : public Effect {
 
         std::vector<f32> _buffer;

@@ -97,11 +97,6 @@ app.on("quit", () => {
   }
 });
 
-
-// ===================================================
-// IPC Mappings — EXACTLY matching your C++ module
-// ===================================================
-
 // MIDI
 ipcMain.handle("synth-midiPorts", () => synth.midiPorts());
 ipcMain.handle("synth-openMidi", (e, port) => synth.openMidi(port));

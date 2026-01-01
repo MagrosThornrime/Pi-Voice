@@ -10,13 +10,30 @@ void DelayEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>& 
     }
 }
 
+#define SET_PARAM(name) case DelayParams::name: if(value.type() == typeid(_##name)) { _##name = std::any_cast<decltype(_##name)>(std::move(value)); } break
 
 pipeline::Layer& DelayEffect::setParam(const u32 param, std::any value){
+	switch (param) {
+		SET_PARAM(delayTime);
+		SET_PARAM(feedback);
+		SET_PARAM(wetAmount);
+	}
+	refresh();
 	return *this;
 }
 
+#define GET_PARAM(name) case DelayParams::name: result = _##name; break
+
 std::any DelayEffect::getParam(const u32 param){
-	return std::any();
+	std::any result;
+
+	switch (param) {
+		GET_PARAM(delayTime);
+		GET_PARAM(feedback);
+		GET_PARAM(wetAmount);
+	}
+
+	return result;
 }
 
 DelayEffect::DelayEffect(const u32 channels, const u32 delayTime, const f32 feedback, const f32 wetAmount){

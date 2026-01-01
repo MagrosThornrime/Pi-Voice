@@ -1,4 +1,4 @@
-#include <node_api/FiltersAPI.hpp>
+#include <node_api/PipelineAPI.hpp>
 #include <pipeline/Pipeline.hpp>
 #include <BackendApp.hpp>
 #include <tuple>

@@ -3,6 +3,21 @@
 
 namespace effects {
 
+    struct RobotifyParams {
+        enum Value: u32 {
+            modFrequency,
+            _count,
+        };
+
+        template<Value P>
+        struct _Type {
+            using type = float;
+        };
+
+        template<Value P>
+        using type = _Type<P>::type;
+    };
+
     class RobotifyEffect : public Effect {
 
         f32 _modFrequency = 30.0f;

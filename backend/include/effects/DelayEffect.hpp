@@ -3,6 +3,29 @@
 
 namespace effects {
 
+struct DelayParams {
+	enum Value: u32 {
+		delayTime,
+    	feedback,
+    	wetAmount,
+		_count,
+	};
+
+	template<Value P>
+	struct _Type {
+		using type = float;
+	};
+
+	template<Value P>
+	using type = _Type<P>::type;
+};
+
+#define PARAM_TYPE(param, T) template<> struct DelayParams::_Type<param> { using type = T; }
+
+PARAM_TYPE(DelayParams::delayTime, u32);
+
+#undef PARAM_TYPE
+
 class DelayEffect : public Effect {
 
     std::vector<f32> _buffer;

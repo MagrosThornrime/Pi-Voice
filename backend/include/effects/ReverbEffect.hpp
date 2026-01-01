@@ -4,6 +4,22 @@
 
 namespace effects {
 
+    struct ReverbParams {
+        enum Value: u32 {
+            feedback,
+            wetAmount,
+            _count,
+        };
+
+        template<Value P>
+        struct _Type {
+            using type = float;
+        };
+
+        template<Value P>
+        using type = _Type<P>::type;
+    };
+
     class ReverbEffect : public Effect {
 
         const std::array<u32, 8> _bufferSizes = {
