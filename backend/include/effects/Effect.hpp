@@ -2,14 +2,15 @@
 
 #include "Types.hpp"
 #include <pipeline/Layer.hpp>
+#include <effects/EffectTypes.hpp>
+#include <memory>
 
 namespace effects {
     class Effect: public pipeline::Layer {
     public:
-        //static std::shared_ptr<Effect> create(EffectType::Value effect);
+        static std::shared_ptr<Effect> create(EffectType::Value effect);
 
-        Effect() = default;
-        explicit Effect(const u32 channels);
+        Effect();
 
     protected:
         u32 _channels = 2;

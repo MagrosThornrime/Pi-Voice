@@ -42,6 +42,10 @@ RobotifyEffect::RobotifyEffect(const u32 channels, const f32 modFrequency){
     refresh();
 }
 
+RobotifyEffect::RobotifyEffect(){
+    refresh();
+}
+
 void RobotifyEffect::_set(const u32 channels, const f32 modFrequency){
     _channels = channels;
     _modFrequency = modFrequency;

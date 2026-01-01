@@ -44,6 +44,7 @@ public:
     void processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames) override;
 
     DelayEffect(const u32 channels, const u32 delayTime, const f32 feedback, const f32 wetAmount);
+    DelayEffect();
 
 	void refresh() override;
 };

@@ -67,6 +67,10 @@ ChorusEffect::ChorusEffect(const u32 channels, const u32 bufferFrames, const f32
     refresh();
 }
 
+ChorusEffect::ChorusEffect(){
+    refresh();
+}
+
 void ChorusEffect::_set(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount,
         const f32 baseDelayFactor, const f32 modFrequency, const f32 modDepth){
     _channels = channels;

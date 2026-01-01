@@ -34,6 +34,7 @@ namespace effects {
         void processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames) override;
 
         RobotifyEffect(const u32 channels, const f32 modFrequency);
+        RobotifyEffect();
 
         void refresh() override;
     };

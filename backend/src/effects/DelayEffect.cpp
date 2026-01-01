@@ -41,6 +41,10 @@ DelayEffect::DelayEffect(const u32 channels, const u32 delayTime, const f32 feed
 	refresh();
 }
 
+DelayEffect::DelayEffect(){
+    refresh();
+}
+
 void DelayEffect::_set(const u32 channels, const u32 delayTime, const f32 feedback, const f32 wetAmount){
 	_channels = channels;
 	_delayTime = delayTime;

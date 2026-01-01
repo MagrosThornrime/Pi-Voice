@@ -42,9 +42,11 @@ std::any ReverbEffect::getParam(const u32 param){
 
 ReverbEffect::ReverbEffect(const u32 channels, const f32 feedback, const f32 wetAmount){
     _set(channels, feedback, wetAmount);
-    for(u32 i=0; i < _buffers.size(); i++){
-        _buffers[i].resize(_bufferSizes[i] * channels);
-    }
+    refresh();
+}
+
+ReverbEffect::ReverbEffect(){
+    refresh();
 }
 
 void ReverbEffect::_set(const u32 channels, const f32 feedback, const f32 wetAmount){
@@ -54,7 +56,11 @@ void ReverbEffect::_set(const u32 channels, const f32 feedback, const f32 wetAmo
 
 }
 
-void ReverbEffect::refresh(){}
+void ReverbEffect::refresh(){
+    for(u32 i=0; i < _buffers.size(); i++){
+        _buffers[i].resize(_bufferSizes[i] * _channels);
+    }
+}
 
 
 }

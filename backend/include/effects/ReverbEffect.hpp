@@ -48,6 +48,7 @@ namespace effects {
         void processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames) override;
 
         ReverbEffect(const u32 channels, const f32 feedback, const f32 wetAmount);
+        ReverbEffect();
 
         void refresh() override;
     };
