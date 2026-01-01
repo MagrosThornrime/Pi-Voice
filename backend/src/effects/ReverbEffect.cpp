@@ -62,5 +62,8 @@ void ReverbEffect::refresh(){
     }
 }
 
+EffectType::Value ReverbEffect::getEffectType(){
+    return EffectType::reverb;
+}
 
 }

@@ -50,6 +50,8 @@ namespace effects {
         ReverbEffect(const u32 channels, const f32 feedback, const f32 wetAmount);
         ReverbEffect();
 
+        EffectType::Value getEffectType() override;
+
         void refresh() override;
     };
 

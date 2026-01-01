@@ -56,5 +56,8 @@ void RobotifyEffect::refresh(){
     _phaseIncrement = 2.0f * std::numbers::pi * _modFrequency / _sampleRate;
 }
 
+EffectType::Value RobotifyEffect::getEffectType(){
+    return EffectType::robotify;
+}
 
 }

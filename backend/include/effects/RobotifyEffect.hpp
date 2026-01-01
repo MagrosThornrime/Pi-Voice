@@ -36,6 +36,8 @@ namespace effects {
         RobotifyEffect(const u32 channels, const f32 modFrequency);
         RobotifyEffect();
 
+        EffectType::Value getEffectType() override;
+
         void refresh() override;
     };
 

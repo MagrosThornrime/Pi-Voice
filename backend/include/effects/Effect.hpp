@@ -8,9 +8,12 @@
 namespace effects {
     class Effect: public pipeline::Layer {
     public:
+
         static std::shared_ptr<Effect> create(EffectType::Value effect);
 
         Effect();
+
+        virtual EffectType::Value getEffectType() = 0;
 
     protected:
         u32 _channels = 2;

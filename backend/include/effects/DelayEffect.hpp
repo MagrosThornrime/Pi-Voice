@@ -46,6 +46,8 @@ public:
     DelayEffect(const u32 channels, const u32 delayTime, const f32 feedback, const f32 wetAmount);
     DelayEffect();
 
+    EffectType::Value getEffectType() override;
+
 	void refresh() override;
 };
 

@@ -57,6 +57,8 @@ namespace effects {
             const f32 baseDelayFactor, const f32 modFrequency, const f32 modDepth);
         ChorusEffect();
 
+        EffectType::Value getEffectType() override;
+
         void refresh() override;
     };
 

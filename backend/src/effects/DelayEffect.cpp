@@ -68,5 +68,8 @@ void DelayEffect::refresh(){
 	_index = 0;
 }
 
+EffectType::Value DelayEffect::getEffectType(){
+    return EffectType::delay;
+}
 
 }

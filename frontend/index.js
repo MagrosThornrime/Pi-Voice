@@ -8,8 +8,8 @@ const presetFile = path.join(app.getPath("userData"), "presets.json");
 function ensurePresetFile() {
   if (!fs.existsSync(presetFile)) {
     fs.writeFileSync(
-      presetFile,
-      JSON.stringify({ presets: {}, lastUsed: null }, null, 2)
+        presetFile,
+        JSON.stringify({ presets: {}, lastUsed: null }, null, 2)
     );
   }
 }
@@ -70,7 +70,7 @@ function createWindow() {
   win.loadURL("http://localhost:3000");
 }
 
-app.whenReady().then(async() => {
+app.whenReady().then(async () => {
   nextProcess = spawn("npm", ["run", "dev"], {
     cwd: path.join(process.cwd(), "./frontend"),
     shell: true,
@@ -102,43 +102,106 @@ ipcMain.handle("synth-midiPorts", () => synth.midiPorts());
 ipcMain.handle("synth-openMidi", (e, port) => synth.openMidi(port));
 
 // pipelineAPI
-ipcMain.handle("synth-pipelineAddFilter", (e, filter, idx) => synth.pipelineAddFilter(filter, idx));
-ipcMain.handle("synth-pipelineRemove", (e, idx) => synth.pipelineRemove(idx));
-ipcMain.handle("synth-pipelineMove", (e, current, target) => synth.pipelineMove(current, target));
-ipcMain.handle("synth-pipelineSwap", (e, i1, i2) => synth.pipelineSwap(i1, i2));
-ipcMain.handle("synth-pipelineSetFilterParam", (e, idx, param, value) => synth.pipelineSetFilterParam(idx, param, value));
-ipcMain.handle("synth-pipelineGetFilterParam", (e, idx, param) => synth.pipelineGetFilterParam(idx, param));
-ipcMain.handle("synth-pipelineLength", (e) => synth.pipelineLength());
+ipcMain.handle("synth-pipelineAddFilter", (e, filter, idx) =>
+    synth.pipelineAddFilter(filter, idx)
+);
+ipcMain.handle("synth-pipelineAddEffect", (e, effect, idx) =>
+    synth.pipelineAddEffect(effect, idx)
+);
+ipcMain.handle("synth-pipelineRemove", (e, idx) =>
+    synth.pipelineRemove(idx)
+);
+ipcMain.handle("synth-pipelineMove", (e, current, target) =>
+    synth.pipelineMove(current, target)
+);
+ipcMain.handle("synth-pipelineSwap", (e, i1, i2) =>
+    synth.pipelineSwap(i1, i2)
+);
+ipcMain.handle("synth-pipelineSetFilterParam", (e, idx, param, value) =>
+    synth.pipelineSetFilterParam(idx, param, value)
+);
+ipcMain.handle("synth-pipelineGetFilterParam", (e, idx, param) =>
+    synth.pipelineGetFilterParam(idx, param)
+);
+ipcMain.handle("synth-pipelineSetEffectParam", (e, idx, param, value) =>
+    synth.pipelineSetEffectParam(idx, param, value)
+);
+ipcMain.handle("synth-pipelineGetEffectParam", (e, idx, param) =>
+    synth.pipelineGetEffectParam(idx, param)
+);
+ipcMain.handle("synth-pipelineLength", () =>
+    synth.pipelineLength()
+);
 
 // sequencerAPI
-ipcMain.handle("synth-sequencerIsActive", (e) => synth.sequencerIsActive());
-ipcMain.handle("synth-sequencerIsRecording", (e) => synth.sequencerIsRecording());
-ipcMain.handle("synth-sequencerActivate", (e) => synth.sequencerActivate());
-ipcMain.handle("synth-sequencerDeactivate", (e) => synth.sequencerDeactivate());
-ipcMain.handle("synth-sequencerStartRecording", (e, sampleRate, channels, seconds) => synth.sequencerStartRecording(sampleRate, channels, seconds));
-ipcMain.handle("synth-sequencerStopRecording", (e) => synth.sequencerStopRecording());
-ipcMain.handle("synth-sequencerRemoveSample", (e, i) => synth.sequencerRemoveSample(i));
-ipcMain.handle("synth-sequencerClear", (e) => synth.sequencerClear());
-ipcMain.handle("synth-sequencerLength", (e) => synth.sequencerLength());
-ipcMain.handle("synth-sequencerMoveSample", (e, curr, target) => synth.sequencerMoveSample( curr, target));
-ipcMain.handle("synth-sequencerSwapSamples", (e, i1, i2) => synth.sequencerSwapSamples(i1, i2));
-ipcMain.handle("synth-sequencerAddSample", (e, name) => synth.sequencerAddSample(name));
+ipcMain.handle("synth-sequencerIsActive", () =>
+    synth.sequencerIsActive()
+);
+ipcMain.handle("synth-sequencerIsRecording", () =>
+    synth.sequencerIsRecording()
+);
+ipcMain.handle("synth-sequencerActivate", () =>
+    synth.sequencerActivate()
+);
+ipcMain.handle("synth-sequencerDeactivate", () =>
+    synth.sequencerDeactivate()
+);
+ipcMain.handle(
+    "synth-sequencerStartRecording",
+    (e, sampleRate, channels, seconds) =>
+        synth.sequencerStartRecording(sampleRate, channels, seconds)
+);
+ipcMain.handle("synth-sequencerStopRecording", () =>
+    synth.sequencerStopRecording()
+);
+ipcMain.handle("synth-sequencerRemoveSample", (e, i) =>
+    synth.sequencerRemoveSample(i)
+);
+ipcMain.handle("synth-sequencerClear", () =>
+    synth.sequencerClear()
+);
+ipcMain.handle("synth-sequencerLength", () =>
+    synth.sequencerLength()
+);
+ipcMain.handle("synth-sequencerMoveSample", (e, curr, target) =>
+    synth.sequencerMoveSample(curr, target)
+);
+ipcMain.handle("synth-sequencerSwapSamples", (e, i1, i2) =>
+    synth.sequencerSwapSamples(i1, i2)
+);
+ipcMain.handle("synth-sequencerAddSample", (e, name) =>
+    synth.sequencerAddSample(name)
+);
 
 // Synth parameters
-ipcMain.handle("synth-setAmplitude", (e, v) => synth.setAmplitude(v));
+ipcMain.handle("synth-setAmplitude", (e, v) =>
+    synth.setAmplitude(v)
+);
 ipcMain.handle("synth-setOscillatorType", (e, type, index) =>
     synth.setOscillatorType(type, index)
 );
 
 // ADSR
-ipcMain.handle("synth-setAttack", (e, v) => synth.setAttack(v));
-ipcMain.handle("synth-setDecay", (e, v) => synth.setDecay(v));
-ipcMain.handle("synth-setSustain", (e, v) => synth.setSustain(v));
-ipcMain.handle("synth-setRelease", (e, v) => synth.setRelease(v));
+ipcMain.handle("synth-setAttack", (e, v) =>
+    synth.setAttack(v)
+);
+ipcMain.handle("synth-setDecay", (e, v) =>
+    synth.setDecay(v)
+);
+ipcMain.handle("synth-setSustain", (e, v) =>
+    synth.setSustain(v)
+);
+ipcMain.handle("synth-setRelease", (e, v) =>
+    synth.setRelease(v)
+);
 
 // Recording
-ipcMain.handle("synth-startRecording", () => synth.startRecording());
-ipcMain.handle("synth-stopRecording", () => synth.stopRecording());
+ipcMain.handle("synth-startRecording", () =>
+    synth.startRecording()
+);
+ipcMain.handle("synth-stopRecording", () =>
+    synth.stopRecording()
+);
 ipcMain.handle("synth-setRecordingPath", (e, path) =>
     synth.setRecordingPath(path)
 );
@@ -148,7 +211,7 @@ ipcMain.handle("synth-setSamplesPath", (e, path) =>
     synth.setSamplesPath(path)
 );
 ipcMain.handle("synth-getOscillatorNames", () =>
-    synth.getOscillatorsNames()
+    synth.getOscillatorNames()
 );
 
 // Waveforms

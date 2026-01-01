@@ -23,19 +23,25 @@ contextBridge.exposeInMainWorld("synthAPI", {
         ipcRenderer.invoke("synth-setRecordingPath", path),
 
     // pipelineAPI
-    pipelineAddFilter: (filter, idx) => 
+    pipelineAddFilter: (filter, idx) =>
         ipcRenderer.invoke("synth-pipelineAddFilter", filter, idx),
-    pipelineRemove: (idx) => 
+    pipelineAddEffect: (effect, idx) =>
+        ipcRenderer.invoke("synth-pipelineAddEffect", effect, idx),
+    pipelineRemove: (idx) =>
         ipcRenderer.invoke("synth-pipelineRemove", idx),
-    pipelineMove: (current, target) => 
+    pipelineMove: (current, target) =>
         ipcRenderer.invoke("synth-pipelineMove", current, target),
-    pipelineSwap: (i1, i2) => 
+    pipelineSwap: (i1, i2) =>
         ipcRenderer.invoke("synth-pipelineSwap", i1, i2),
-    pipelineSetFilterParam: (idx, param, value) => 
+    pipelineSetFilterParam: (idx, param, value) =>
         ipcRenderer.invoke("synth-pipelineSetFilterParam", idx, param, value),
-    pipelineGetFilterParam: (idx, param) => 
+    pipelineGetFilterParam: (idx, param) =>
         ipcRenderer.invoke("synth-pipelineGetFilterParam", idx, param),
-    pipelineLength: () => 
+    pipelineSetEffectParam: (idx, param, value) =>
+        ipcRenderer.invoke("synth-pipelineSetEffectParam", idx, param, value),
+    pipelineGetEffectParam: (idx, param) =>
+        ipcRenderer.invoke("synth-pipelineGetEffectParam", idx, param),
+    pipelineLength: () =>
         ipcRenderer.invoke("synth-pipelineLength"),
 
     // sequencerAPI
@@ -43,14 +49,27 @@ contextBridge.exposeInMainWorld("synthAPI", {
     sequencerIsRecording: () => ipcRenderer.invoke("synth-sequencerIsRecording"),
     sequencerActivate: () => ipcRenderer.invoke("synth-sequencerActivate"),
     sequencerDeactivate: () => ipcRenderer.invoke("synth-sequencerDeactivate"),
-    sequencerStartRecording: (sampleRate, channels, seconds) => ipcRenderer.invoke("synth-sequencerStartRecording", sampleRate, channels, seconds),
-    sequencerStopRecording: () => ipcRenderer.invoke("synth-sequencerStopRecording"),
-    sequencerRemoveSample: (i) => ipcRenderer.invoke("synth-sequencerRemoveSample", i),
-    sequencerClear: () => ipcRenderer.invoke("synth-sequencerClear"),
-    sequencerLength: () => ipcRenderer.invoke("synth-sequencerLength"),
-    sequencerMoveSample: (curr, target) => ipcRenderer.invoke("synth-sequencerMoveSample", curr, target),
-    sequencerSwapSamples: (i1, i2) => ipcRenderer.invoke("synth-sequencerSwapSamples", i1, i2),
-    sequencerAddSample: (name) => ipcRenderer.invoke("synth-sequencerAddSample", name),
+    sequencerStartRecording: (sampleRate, channels, seconds) =>
+        ipcRenderer.invoke(
+            "synth-sequencerStartRecording",
+            sampleRate,
+            channels,
+            seconds
+        ),
+    sequencerStopRecording: () =>
+        ipcRenderer.invoke("synth-sequencerStopRecording"),
+    sequencerRemoveSample: (i) =>
+        ipcRenderer.invoke("synth-sequencerRemoveSample", i),
+    sequencerClear: () =>
+        ipcRenderer.invoke("synth-sequencerClear"),
+    sequencerLength: () =>
+        ipcRenderer.invoke("synth-sequencerLength"),
+    sequencerMoveSample: (curr, target) =>
+        ipcRenderer.invoke("synth-sequencerMoveSample", curr, target),
+    sequencerSwapSamples: (i1, i2) =>
+        ipcRenderer.invoke("synth-sequencerSwapSamples", i1, i2),
+    sequencerAddSample: (name) =>
+        ipcRenderer.invoke("synth-sequencerAddSample", name),
 
     // Samples
     setSamplesPath: (path) =>
@@ -64,8 +83,10 @@ contextBridge.exposeInMainWorld("synthAPI", {
 });
 
 contextBridge.exposeInMainWorld("presetsAPI", {
-  read: () => ipcRenderer.invoke("presets:read"),
-  write: (data) => ipcRenderer.invoke("presets:write", data),
-  saveOne: (name, preset) => ipcRenderer.invoke("presets:saveOne", { name, preset }),
-  delete: (name) => ipcRenderer.invoke("presets:delete", name)
+    read: () => ipcRenderer.invoke("presets:read"),
+    write: (data) => ipcRenderer.invoke("presets:write", data),
+    saveOne: (name, preset) =>
+        ipcRenderer.invoke("presets:saveOne", { name, preset }),
+    delete: (name) =>
+        ipcRenderer.invoke("presets:delete", name),
 });

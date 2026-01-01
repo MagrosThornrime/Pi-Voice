@@ -98,5 +98,8 @@ void ChorusEffect::refresh(){
     _index = 0;
 }
 
+EffectType::Value ChorusEffect::getEffectType(){
+    return EffectType::chorus;
+}
 
 }
