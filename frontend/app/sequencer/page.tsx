@@ -25,17 +25,22 @@ function getRandomColor() {
 }
 
 export default function Page() {
-    const [sounds, setSounds] = useState<string[]>(() => {
-        const saved = sessionStorage.getItem("sounds");
-        return saved ? JSON.parse(saved) : [];
-    });
-    const [colorMap, setColorMap] = useState<Record<string, string>>(() => {
-        const saved = sessionStorage.getItem("colorMap");
-        return saved ? JSON.parse(saved) : {};
-    });
+    const [isPlaying, setIsPlaying] = useState<boolean>(false);
+    const [isRecording, setIsRecording] = useState<boolean>(false);
+    const [sounds, setSounds] = useState<string[]>([]);
+    const [colorMap, setColorMap] = useState<Record<string, string>>({});
     const [dragIndex, setDragIndex] = useState<number | null>(null);
     const [buttonText, setButtonText] = useState<string>("Record to sequencer");
     const [buttonText2, setButtonText2] = useState<string>("Play");
+
+    useEffect(() => {
+        const saved = sessionStorage.getItem("sounds");
+        if (saved){
+            setSounds(JSON.parse(saved));
+            const saved2 = sessionStorage.getItem("colorMap");
+            if (saved2) setColorMap(JSON.parse(saved2));
+        }
+    }, []);
 
     useEffect(() => {
         sessionStorage.setItem("sounds", JSON.stringify(sounds));
@@ -62,7 +67,7 @@ export default function Page() {
         e.preventDefault();
     };
     
-    const handleDrop = (index: number) => {
+    const handleDrop = async (index: number) => {
         if (dragIndex === null || dragIndex === index){setDragIndex(null); return;}
 
         const newArr = [...sounds];
@@ -72,18 +77,25 @@ export default function Page() {
 
         setSounds(newArr);
         setDragIndex(null);
+
+        await window.synthAPI.sequencerMoveSample(dragIndex,index);
     };
 
     return (
         <Box minH="100vh" bg="gray.50" p={10}>
             <Stack>
                 <Button
+                    disabled={isPlaying}
                     bg={buttonText === "Record to sequencer" ? "green.400" : "red.400"}
                     onClick={async () => {
                         try {
                             if (buttonText === "Record to sequencer") {
+                                setIsRecording(true);
+                                await window.synthAPI.sequencerStartRecording(44100,2,40);
                                 setButtonText("Stop recording");
                             } else {
+                                setIsRecording(false);
+                                await window.synthAPI.sequencerStopRecording();
                                 setButtonText("Record to sequencer");
                                 setSounds(prev => [...prev, generate_name()]);
                             }
@@ -111,7 +123,10 @@ export default function Page() {
                                     cursor="grab"
                                     opacity={dragIndex === index ? 0.4 : 1}
                                 >
-                                    <Button bg={colorMap[item]} onClick={() => setSounds(prev => prev.filter(s => s !== item))}>
+                                    <Button bg={colorMap[item]} onClick={() => {
+                                        setSounds(prev => prev.filter(s => s !== item));
+                                        window.synthAPI.sequencerRemoveSample(index);
+                                    }}>
                                         Remove {item}
                                     </Button>
                                 </Box>
@@ -121,12 +136,17 @@ export default function Page() {
                 </Grid>
                 <Box h="10"/>
                 <Button
+                    disabled={isRecording||sounds.length==0}
                     bg={buttonText2 === "Play" ? "green.400" : "red.400"}
                     onClick={async () => {
                         try {
                             if (buttonText2 === "Play") {
+                                setIsPlaying(true);
+                                await window.synthAPI.sequencerActivate();
                                 setButtonText2("Stop");
                             } else {
+                                setIsPlaying(false);
+                                await window.synthAPI.sequencerDeactivate();
                                 setButtonText2("Play");
                             }
                         } catch (err) {

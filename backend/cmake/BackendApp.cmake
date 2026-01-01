@@ -11,6 +11,7 @@ include("cmake/polyphonic.cmake")
 include("cmake/oscillators.cmake")
 include("cmake/fileio.cmake")
 include("cmake/application.cmake")
+include("cmake/sequencer.cmake")
 include("cmake/node_api.cmake")
 include("cmake/effects.cmake")
 
@@ -35,6 +36,7 @@ if (MSVC)
         oscillators
         fileio
         application
+        sequencer
         node_api
     )
     target_link_options(BackendApp PRIVATE
@@ -45,6 +47,8 @@ if (MSVC)
         /WHOLEARCHIVE:oscillators
         /WHOLEARCHIVE:fileio
         /WHOLEARCHIVE:application
+        /WHOLEARCHIVE:sequencer
+        /WHOLEARCHIVE:node_api
     )
 else()
     target_link_libraries(BackendApp
@@ -63,6 +67,7 @@ else()
         oscillators
         fileio
         application
+        sequencer
         node_api
         -Wl,--no-whole-archive
     )

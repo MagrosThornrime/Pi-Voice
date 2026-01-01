@@ -38,6 +38,20 @@ contextBridge.exposeInMainWorld("synthAPI", {
     pipelineLength: () => 
         ipcRenderer.invoke("synth-pipelineLength"),
 
+    // sequencerAPI
+    sequencerIsActive: () => ipcRenderer.invoke("synth-sequencerIsActive"),
+    sequencerIsRecording: () => ipcRenderer.invoke("synth-sequencerIsRecording"),
+    sequencerActivate: () => ipcRenderer.invoke("synth-sequencerActivate"),
+    sequencerDeactivate: () => ipcRenderer.invoke("synth-sequencerDeactivate"),
+    sequencerStartRecording: (sampleRate, channels, seconds) => ipcRenderer.invoke("synth-sequencerStartRecording", sampleRate, channels, seconds),
+    sequencerStopRecording: () => ipcRenderer.invoke("synth-sequencerStopRecording"),
+    sequencerRemoveSample: (i) => ipcRenderer.invoke("synth-sequencerRemoveSample", i),
+    sequencerClear: () => ipcRenderer.invoke("synth-sequencerClear"),
+    sequencerLength: () => ipcRenderer.invoke("synth-sequencerLength"),
+    sequencerMoveSample: (curr, target) => ipcRenderer.invoke("synth-sequencerMoveSample", curr, target),
+    sequencerSwapSamples: (i1, i2) => ipcRenderer.invoke("synth-sequencerSwapSamples", i1, i2),
+    sequencerAddSample: (name) => ipcRenderer.invoke("synth-sequencerAddSample", name),
+
     // Samples
     setSamplesPath: (path) =>
         ipcRenderer.invoke("synth-setSamplesPath", path),

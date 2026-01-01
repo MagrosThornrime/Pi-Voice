@@ -26,6 +26,8 @@ class Synthesiser {
 	/// @brief Loads samples to be used as oscillators
 	std::shared_ptr<fileio::SampleManager> _sampleManager;
 
+	std::shared_ptr<seq::Sequencer> _sequencer;
+
 	/// @brief Port audio configuration data
 	std::unique_ptr<portaudio::AutoSystem> _autoSys;
 
@@ -114,6 +116,8 @@ public:
 	std::vector<f32> getOscillatorPlot(const std::string& name, i32 length, i32 step=1);
 
 	pipeline::Pipeline& getPipeline();
+
+	seq::Sequencer& getSequencer();
 };
 
 }
