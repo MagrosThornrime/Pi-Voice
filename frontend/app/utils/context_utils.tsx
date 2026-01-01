@@ -1,7 +1,7 @@
 "use client";
 import { FiltersData } from "../effects_filters/page";
 import { useContext, ReactNode, createContext, useState } from "react";
-import { OptKey, FilterType, Filter, defaultOpts } from "./tables";
+import { OptKey, FilterType, defaultOpts, OptEffectKey } from "./tables";
 import { SliderProps } from "@/components/SlidersItems";
 import { v4 as uuidv4 } from "uuid";
 
