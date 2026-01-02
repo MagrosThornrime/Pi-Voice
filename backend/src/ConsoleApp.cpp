@@ -11,7 +11,7 @@ int main(){
     auto& pipeline = synthesiser->getPipeline();
 
 	pipeline.add(
-		std::make_shared<effects::ChorusEffect>(2, 10000, 0.1f, 0.5f, 0.03f, 1.5f, 0.005f),
+		std::make_shared<effects::ReverbEffect>(2, 1000, 0.1, 0.5),
 		std::nullopt
 	);
 

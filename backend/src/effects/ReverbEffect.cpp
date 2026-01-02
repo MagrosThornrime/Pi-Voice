@@ -20,6 +20,7 @@ void ReverbEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>&
 
 pipeline::Layer& ReverbEffect::setParam(const u32 param, std::any value){
     switch (param) {
+		SET_PARAM(bufferSize);
         SET_PARAM(feedback);
         SET_PARAM(wetAmount);
     }
@@ -33,6 +34,7 @@ std::any ReverbEffect::getParam(const u32 param){
     std::any result;
 
     switch (param) {
+		GET_PARAM(bufferSize);
         GET_PARAM(feedback);
         GET_PARAM(wetAmount);
     }
@@ -40,8 +42,8 @@ std::any ReverbEffect::getParam(const u32 param){
     return result;
 }
 
-ReverbEffect::ReverbEffect(const u32 channels, const f32 feedback, const f32 wetAmount){
-    _set(channels, feedback, wetAmount);
+ReverbEffect::ReverbEffect(const u32 channels, const u32 bufferSize, const f32 feedback, const f32 wetAmount){
+    _set(channels, bufferSize, feedback, wetAmount);
     refresh();
 }
 
@@ -49,7 +51,7 @@ ReverbEffect::ReverbEffect(){
     refresh();
 }
 
-void ReverbEffect::_set(const u32 channels, const f32 feedback, const f32 wetAmount){
+void ReverbEffect::_set(const u32 channels, const u32 bufferSize, const f32 feedback, const f32 wetAmount){
     _channels = channels;
     _feedback = feedback;
     _wetAmount = wetAmount;
@@ -57,9 +59,23 @@ void ReverbEffect::_set(const u32 channels, const f32 feedback, const f32 wetAmo
 }
 
 void ReverbEffect::refresh(){
-    for(u32 i=0; i < _buffers.size(); i++){
-        _buffers[i].resize(_bufferSizes[i] * _channels);
+	u32 firstSize = _bufferSizeFactors[0] * _bufferSize * _channels;
+	if(firstSize == _buffers[0].size()){
+        return;
     }
+	for(u32 i = 0; i < _buffers.size(); i++){
+		std::vector<f32> newBuffer(_bufferSizeFactors[i] * _bufferSize * _channels);
+		auto& currentBuffer = _buffers[i];
+		if(!_buffers[i].empty()){
+			for(u32 j = 0; j < newBuffer.size(); j++){
+				auto& currentIndex = _indices[j];
+				newBuffer[i] = currentBuffer[currentIndex];
+				currentIndex = (currentIndex + 1) % _buffers[i].size();
+			}
+		}
+		_buffers[i] = newBuffer;
+		_indices[i] = 0;
+	}
 }
 
 EffectType::Value ReverbEffect::getEffectType(){
