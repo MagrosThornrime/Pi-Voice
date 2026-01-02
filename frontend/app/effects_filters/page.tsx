@@ -67,10 +67,31 @@ function DraggableList({ attr }: DraggableListProps) {
     useEffect(
         () => {
             setListData(myData ?? []);
-            const newArr = Array.from({ length: FIELDS }, (_, i):blockType => {return { val: "", id:uuidv4() }});
-            setBlocks(newArr);
-            setParamsData([]);
+            if(presetProperties.filters){
+                let newArr = Array.from({ length: presetProperties.filters.length }, (_, i):blockType => {return { val: presetProperties.filters[i].params.value, id:uuidv4() }});
+                newArr = newArr.concat(Array.from({ length: FIELDS-newArr.length}, (_, i):blockType => {return { val: "", id:uuidv4() }}));
+                setBlocks(newArr);
+                setParamsData(presetProperties.filters);
+            }else{
+                const newArr = Array.from({ length: FIELDS }, (_, i):blockType => {return { val: "", id:uuidv4() }});
+                setBlocks(newArr);
+                setParamsData([]);
+            }
         }, [myData]);
+    
+    useEffect(
+        () => {
+            setPresetProperties(prev => ({...prev, filters: paramsData}));
+        }, [paramsData]);
+
+    useEffect(() => {
+        if(presetProperties.filters!=paramsData){
+            let newArr = Array.from({ length: presetProperties.filters.length }, (_, i):blockType => {return { val: presetProperties.filters[i].params.value, id:uuidv4() }});
+            newArr = newArr.concat(Array.from({ length: FIELDS-newArr.length}, (_, i):blockType => {return { val: "", id:uuidv4() }}));
+            setBlocks(newArr);
+            setParamsData(presetProperties.filters);
+        }
+    }, [presetProperties.filters.map(f => f.params.value).join("|")]);
 
     const [dragIndex, setDragIndex] = useState<number | null>(null);
     const [dragBlockInd, setDragBlockInd] = useState<number | null>(null);
@@ -224,7 +245,6 @@ function DraggableList({ attr }: DraggableListProps) {
                         </Box>
 
                         {
-                            listData.length > 0 &&
                             <>
                                 <Box h="5" />
 
