@@ -66,7 +66,7 @@ void addFilter(const Napi::CallbackInfo& info) {
 
 	auto&& [lock, p] = lockPipeline();
 
-	p.add(filters::BwFilter::create((filters::FilterType::Value)type), idx);
+	p.add(filters::BiquadFilter::create((filters::FilterType::Value)type), idx);
 
 	//fmt::println("Added filter {} to index {}", type, idx);
 	printState(p);
