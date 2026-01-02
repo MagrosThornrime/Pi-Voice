@@ -67,12 +67,6 @@ void BwFilter::processSound(std::vector<f32>& inputBuffer,
 	}
 }
 
-
-void BwFilter::_set(const std::array<float, 2>& a, const std::array<float, 3>& b) {
-	_a = a;
-	_b = b;
-}
-
 #define SET_PARAM(name) case FilterParams::name: if(value.type() == typeid(_##name)) { _##name = std::any_cast<decltype(_##name)>(std::move(value)); } break
 
 pipeline::Layer& BwFilter::setParam(const u32 param, std::any value) {

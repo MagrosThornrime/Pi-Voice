@@ -44,9 +44,6 @@ namespace effects {
         f32 _feedback = 0.1f;
         f32 _wetAmount = 0.5f;
 
-        void _set(const u32 bufferFrames, const f32 feedback, const f32 wetAmount, const f32 baseDelayFactor,
-            const f32 modFrequency, const f32 modDepth);
-
     public:
         pipeline::Layer& setParam(const u32 param, std::any value) override;
         std::any getParam(const u32 param) override;

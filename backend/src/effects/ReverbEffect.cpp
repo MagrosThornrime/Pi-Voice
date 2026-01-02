@@ -46,12 +46,6 @@ ReverbEffect::ReverbEffect(const u32 channels, const f32 sampleRate) : Effect(ch
     refresh();
 }
 
-void ReverbEffect::_set(const u32 bufferFrames, const f32 feedback, const f32 wetAmount){
-	_bufferFrames = bufferFrames;
-    _feedback = feedback;
-    _wetAmount = wetAmount;
-}
-
 void ReverbEffect::refresh(){
 	u32 firstSize = _bufferFramesFactors[0] * _bufferFrames * _channels;
 	if(firstSize == _buffers[0].size()){

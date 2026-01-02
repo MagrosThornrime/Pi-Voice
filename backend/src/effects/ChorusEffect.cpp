@@ -80,16 +80,6 @@ ChorusEffect::ChorusEffect(const u32 channels, const f32 sampleRate) : Effect(ch
     refresh();
 }
 
-void ChorusEffect::_set(const u32 bufferFrames, const f32 feedback, const f32 wetAmount,
-        const f32 baseDelayFactor, const f32 modFrequency, const f32 modDepth){
-    _bufferFrames = bufferFrames;
-    _feedback = feedback;
-    _wetAmount = wetAmount;
-    _baseDelayFactor = baseDelayFactor;
-    _modFrequency = modFrequency;
-    _modDepth = modDepth;
-}
-
 void ChorusEffect::refresh(){
     _phase = 0.0f;
     if(_bufferFrames * _channels == _buffer.size()){

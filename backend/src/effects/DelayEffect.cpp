@@ -40,12 +40,6 @@ DelayEffect::DelayEffect(const u32 channels, const f32 sampleRate) : Effect(chan
     refresh();
 }
 
-void DelayEffect::_set(const u32 bufferFrames, const f32 feedback, const f32 wetAmount){
-	_bufferFrames = bufferFrames;
-	_feedback = feedback;
-	_wetAmount = wetAmount;
-}
-
 void DelayEffect::refresh(){
     if(_bufferFrames * _channels == _buffer.size()){
         return;

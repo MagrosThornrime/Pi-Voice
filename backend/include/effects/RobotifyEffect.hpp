@@ -25,8 +25,6 @@ namespace effects {
         f32 _phaseIncrement;
         f32 _phase;
 
-        void _set(const f32 modFrequency);
-
     public:
         pipeline::Layer& setParam(const u32 param, std::any value) override;
         std::any getParam(const u32 param) override;

@@ -41,10 +41,6 @@ RobotifyEffect::RobotifyEffect(const u32 channels, const f32 sampleRate) : Effec
     refresh();
 }
 
-void RobotifyEffect::_set(const f32 modFrequency){
-    _modFrequency = modFrequency;
-}
-
 void RobotifyEffect::refresh(){
     _phase = 0.0f;
     _phaseIncrement = 2.0f * std::numbers::pi * _modFrequency / _sampleRate;

@@ -35,7 +35,5 @@ protected:
 	f32 _quality = std::numbers::sqrt2_v<f32> / 2;
 	f32 _gainDB = 0;
 	u32 _order = 2;
-
-	void _set(const std::array<float, 2>& a, const std::array<float, 3>& b);
 };
 }
