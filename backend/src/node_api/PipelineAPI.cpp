@@ -400,7 +400,7 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 	auto&& layer = *layerOpt;
 	auto effect = (effects::Effect*)&layer;
 
-#define GET_FILTER_PARAM(params, name) \
+#define GET_EFFECT_PARAM(params, name) \
 	case name: \
 		return Napi::Value::From(env, std::any_cast<params::type<name>>(layer.getParam(param))); \
 
@@ -408,34 +408,34 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 
 	case effects::EffectType::chorus:
 		switch (param) {
-			GET_FILTER_PARAM(effects::ChorusParams, effects::ChorusParams::baseDelayFactor);
-			GET_FILTER_PARAM(effects::ChorusParams, effects::ChorusParams::modFrequency);
-			GET_FILTER_PARAM(effects::ChorusParams, effects::ChorusParams::modDepth);
-			GET_FILTER_PARAM(effects::ChorusParams, effects::ChorusParams::bufferFrames);
-			GET_FILTER_PARAM(effects::ChorusParams, effects::ChorusParams::feedback);
-			GET_FILTER_PARAM(effects::ChorusParams, effects::ChorusParams::wetAmount);
+			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::baseDelayFactor);
+			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::modFrequency);
+			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::modDepth);
+			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::bufferFrames);
+			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::feedback);
+			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::wetAmount);
 		}
 		break;
 
 	case effects::EffectType::reverb:
 		switch (param) {
-			GET_FILTER_PARAM(effects::ReverbParams, effects::ReverbParams::bufferSize);
-			GET_FILTER_PARAM(effects::ReverbParams, effects::ReverbParams::feedback);
-			GET_FILTER_PARAM(effects::ReverbParams, effects::ReverbParams::wetAmount);
+			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::bufferSize);
+			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::feedback);
+			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::wetAmount);
 		}
 		break;
 
 	case effects::EffectType::delay:
 		switch (param) {
-			GET_FILTER_PARAM(effects::DelayParams, effects::DelayParams::delayTime);
-			GET_FILTER_PARAM(effects::DelayParams, effects::DelayParams::feedback);
-			GET_FILTER_PARAM(effects::DelayParams, effects::DelayParams::wetAmount);
+			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::delayTime);
+			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::feedback);
+			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::wetAmount);
 		}
 		break;
 
 	case effects::EffectType::robotify:
 		switch (param) {
-			GET_FILTER_PARAM(effects::RobotifyParams, effects::RobotifyParams::modFrequency);
+			GET_EFFECT_PARAM(effects::RobotifyParams, effects::RobotifyParams::modFrequency);
 		}
 		break;
 	}
