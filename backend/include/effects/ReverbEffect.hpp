@@ -29,7 +29,7 @@ namespace effects {
 
     class ReverbEffect : public Effect {
 
-        const std::array<f32, 8> _bufferFramesFactors = {
+        static constexpr std::array<f32, 8> _bufferFramesFactors = {
             1.4983f,
             1.5413f,
             1.4281f,

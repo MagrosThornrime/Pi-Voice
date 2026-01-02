@@ -29,9 +29,7 @@ protected:
 	std::vector<Prev> _prev;
 	std::array<f32, 2> _a;
 	std::array<f32, 3> _b;
-	u32 _channels = 2;
 	f32 _cutoff = 1000;
-	f32 _sampleRate = 44100;
 	f32 _quality = std::numbers::sqrt2_v<f32> / 2;
 	f32 _gainDB = 0;
 	u32 _order = 2;
