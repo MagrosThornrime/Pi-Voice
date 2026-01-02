@@ -3,49 +3,60 @@
 namespace effects {
 void DelayEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames){
     for(u32 i = 0; i < frames * _channels; i++){
-        f32 delayedSample = _delayBuffer[_delayIndex];
+        f32 delayedSample = _buffer[_index];
         outputBuffer[i] = inputBuffer[i] * (1 - _wetAmount) + delayedSample * _wetAmount;
-        _delayBuffer[_delayIndex] = inputBuffer[i] + delayedSample * _feedback;
-        _delayIndex = (_delayIndex + 1) % _delayBuffer.size();
+        _buffer[_index] = inputBuffer[i] * (1 - _feedback) + delayedSample * _feedback;
+        _index = (_index + 1) % _buffer.size();
     }
 }
 
+#define SET_PARAM(name) case DelayParams::name: if(value.type() == typeid(_##name)) { _##name = std::any_cast<decltype(_##name)>(std::move(value)); } break
 
 pipeline::Layer& DelayEffect::setParam(const u32 param, std::any value){
+	switch (param) {
+		SET_PARAM(bufferFrames);
+		SET_PARAM(feedback);
+		SET_PARAM(wetAmount);
+	}
+	refresh();
 	return *this;
 }
 
+#define GET_PARAM(name) case DelayParams::name: result = _##name; break
+
 std::any DelayEffect::getParam(const u32 param){
-	return std::any();
+	std::any result;
+
+	switch (param) {
+		GET_PARAM(bufferFrames);
+		GET_PARAM(feedback);
+		GET_PARAM(wetAmount);
+	}
+
+	return result;
 }
 
-DelayEffect::DelayEffect(const u32 channels, const u32 delayTime, const f32 feedback, const f32 wetAmount){
-	_set(channels, delayTime, feedback, wetAmount);
-	refresh();
-}
-
-void DelayEffect::_set(const u32 channels, const u32 delayTime, const f32 feedback, const f32 wetAmount){
-	_channels = channels;
-	_delayTime = delayTime;
-	_feedback = feedback;
-	_wetAmount = wetAmount;
-
+DelayEffect::DelayEffect(const u32 channels, const f32 sampleRate) : Effect(channels, sampleRate) {
+    refresh();
 }
 
 void DelayEffect::refresh(){
-    if(_delayTime * _channels == _delayBuffer.size()){
+    if(_bufferFrames * _channels == _buffer.size()){
         return;
     }
-	std::vector<f32> newBuffer(_delayTime * _channels);
-	if(!_delayBuffer.empty()){
-		for(u32 i = 0; i < _delayTime * _channels; i++){
-			newBuffer[i] = _delayBuffer[_delayIndex];
-			_delayIndex = (_delayIndex + 1) % _delayBuffer.size();
+	std::vector<f32> newBuffer(_bufferFrames * _channels);
+	if(!_buffer.empty()){
+		for(u32 i = 0; i < _bufferFrames * _channels; i++){
+			newBuffer[i] = _buffer[_index];
+			_index = (_index + 1) % _buffer.size();
 		}
 	}
-	_delayBuffer = newBuffer;
-	_delayIndex = 0;
+	_buffer = newBuffer;
+	_index = 0;
 }
 
+EffectType::Value DelayEffect::getEffectType(){
+    return EffectType::delay;
+}
 
 }

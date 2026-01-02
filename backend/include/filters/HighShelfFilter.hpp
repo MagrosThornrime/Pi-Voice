@@ -6,6 +6,7 @@
 namespace filters {
 class HighShelfFilter: public BiquadFilter {
 public:
+	using BiquadFilter::BiquadFilter;
 	void refresh() override;
 };
 }

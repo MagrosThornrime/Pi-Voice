@@ -32,6 +32,7 @@ if (MSVC)
             fileio
             application
             sequencer
+            effects
     )
     target_link_options(ConsoleApp PRIVATE
             /WHOLEARCHIVE:midi
@@ -41,6 +42,7 @@ if (MSVC)
             /WHOLEARCHIVE:oscillators
             /WHOLEARCHIVE:fileio
             /WHOLEARCHIVE:application
+            /WHOLEARCHIVE:effects
             /WHOLEARCHIVE:sequencer
     )
 else()
@@ -60,6 +62,7 @@ else()
             fileio
             application
             sequencer
+            effects
             -Wl,--no-whole-archive
     )
 endif()

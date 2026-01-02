@@ -1,5 +1,4 @@
 #include <application/Synthesiser.hpp>
-#include <effects/DelayEffect.hpp>
 
 namespace application {
 
@@ -10,7 +9,7 @@ Synthesiser::Synthesiser(const std::string& recordingPath, i32 channels, i32 sam
 	_sampleManager = std::make_shared<fileio::SampleManager>(samplesPath, _sampleRate);
 	_voiceManager = std::make_shared<polyphonic::VoiceManager>(6, (f32)sampleRate, channels, _sampleManager);
 	_sequencer = std::make_shared<seq::Sequencer>(_sampleManager);
-	_pipeline = std::make_shared<pipeline::Pipeline>(256, channels, _voiceManager, _recorder, _sequencer);
+	_pipeline = std::make_shared<pipeline::Pipeline>(256, channels, sampleRate, _voiceManager, _recorder, _sequencer);
 }
 
 void Synthesiser::start() {
@@ -39,13 +38,10 @@ void Synthesiser::start() {
 	);
 	_voiceManager->setOscillatorType("empty", 0);
 
+    _voiceManager->setRelease(0.001f);
 	auto& pipelineRef = *_pipeline.get();
-/*
-	pipelineRef.add(
-		std::make_shared<effects::DelayEffect>(_channels, 25000, .1f, .5f),
-		std::nullopt
-	);
-*/
+
+
 	_stream = std::make_unique<portaudio::InterfaceCallbackStream>(streamParams, pipelineRef);
 	_stream->start();
 	_running = true;

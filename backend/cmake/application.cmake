@@ -16,4 +16,4 @@ else()
 endif()
 
 target_include_directories(application PUBLIC include ${rtmidi_SOURCE_DIR}/include)
-target_link_libraries(application PUBLIC fmt::fmt range-v3::range-v3 portaudio portaudiocpp rtmidi fileio effects)
+target_link_libraries(application PUBLIC fmt::fmt range-v3::range-v3 portaudio portaudiocpp rtmidi fileio)

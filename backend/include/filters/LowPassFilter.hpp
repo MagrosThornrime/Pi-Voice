@@ -7,6 +7,7 @@
 namespace filters {
 class LowPassFilter: public BiquadFilter {
 public:
+	using BiquadFilter::BiquadFilter;
 	void refresh() override;
 };
 }
