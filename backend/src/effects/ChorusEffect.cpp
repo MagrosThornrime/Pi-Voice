@@ -22,7 +22,7 @@ void ChorusEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>&
             u32 channel0 = frame0 + j;
             u32 channel1 = frame1 + j;
             f32 delayedSample = _buffer[channel0] * (1.0f - factor) + _buffer[channel1] * factor;
-            outputBuffer[idx] = delayedSample;
+            outputBuffer[idx] = inputBuffer[idx] * (1.0f - _wetAmount) + delayedSample * _wetAmount;
             _buffer[_index] = inputBuffer[idx] * (1 - _feedback) + delayedSample * _feedback;
             _index = (_index + 1) % _buffer.size();
         }
