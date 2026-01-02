@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Preset,PresetFile } from "@/components/ui/presetsProvider";
 
 import {
   Box,
@@ -61,6 +62,11 @@ declare global {
             // waveform preview
             getOscillatorPlot: (name: string, length: number, step?: number) => Promise<number[]>;
 
+        };
+        presetsAPI: {
+            read: () => Promise<PresetFile>;
+            write: (data:PresetFile) => Promise<void>;
+            saveOne: (name:string, preset:Preset) => Promise<void>;
         };
     }
 }

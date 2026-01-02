@@ -201,30 +201,24 @@ function getOscillatorFunction(name: string){
   return oscillatorsFuncMapping[name] ?? oscillatorsFuncMapping["empty"]
 }
 
+const oscKeys = ["oscilator1", "oscilator2", "oscilator3"] as const;
 
 export default function Page() {
   
   const {
     presetNr,
-    oscilator1,
-    setOscillator1,
-    oscilator2,
-    setOscillator2,
-    oscilator3,
-    setOscillator3,
-    savePreset,
+    presetProperties,
+    setPresetProperties,
   } = usePreset();
 
-  const [oscillators, setOscillator] = useState([oscilator1, oscilator2, oscilator3])
+  const [oscillators, setOscillator] = useState([presetProperties.oscilator1, presetProperties.oscilator2, presetProperties.oscilator3])
   const [points1, setPoints1] = useState<Point[]>([]);
   const [points2, setPoints2] = useState<Point[]>([]);
   const [points3, setPoints3] = useState<Point[]>([]);
 
   function changeOscillators(i:number, val:string){
     if (i < 0 || i > 2) throw new Error("index out of range (0..2)");
-    if (i==0){setOscillator1(val)};
-    if (i==1){setOscillator2(val)};
-    if (i==2){setOscillator3(val)};
+    setPresetProperties(prev => ({...prev, [oscKeys[i]]: val}));
     setOscillator(prev => {
       const next = [...prev];
       next[i] = val;
@@ -252,37 +246,35 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    setOscillator([oscilator1,oscilator2,oscilator3]);
-    savePreset(String(presetNr));
-    getOscPlotData(oscilator1);
-  }, [oscilator1, oscilator2, oscilator3]);
+    setOscillator([presetProperties.oscilator1,presetProperties.oscilator2,presetProperties.oscilator3]);
+  }, [presetProperties.oscilator1, presetProperties.oscilator2, presetProperties.oscilator3]);
 
   useEffect(() => {
     const loadPoints = async () => {
-      const dataPoints = await getOscPlotData(oscilator1);
+      const dataPoints = await getOscPlotData(presetProperties.oscilator1);
       setPoints1(dataPoints);
     };
     loadPoints();
 
-  }, [oscilator1]);
+  }, [presetProperties.oscilator1]);
 
   useEffect(() => {
     const loadPoints = async () => {
-      const dataPoints = await getOscPlotData(oscilator2);
+      const dataPoints = await getOscPlotData(presetProperties.oscilator2);
       setPoints2(dataPoints);
     };
     loadPoints();
     
-  }, [oscilator2]);
+  }, [presetProperties.oscilator2]);
 
   useEffect(() => {
     const loadPoints = async () => {
-      const dataPoints = await getOscPlotData(oscilator3);
+      const dataPoints = await getOscPlotData(presetProperties.oscilator3);
       setPoints3(dataPoints);
     };
     loadPoints();
     
-  }, [oscilator3]);
+  }, [presetProperties.oscilator3]);
 
   const getPoints = (i:number):Point[] => {
     if (i < 0 || i > 2) { throw new Error("index out of range (0..2)"); }

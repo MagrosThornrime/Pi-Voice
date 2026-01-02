@@ -1,26 +1,66 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, Dispatch, SetStateAction, useRef } from "react";
 
-const PresetContext = createContext(null);
+export interface Preset {
+  attack : number;
+  decay : number;
+  sustain : number;
+  release : number;
+  volume : number;
+  oscilator1 : string;
+  oscilator2 : string;
+  oscilator3 : string;
+  filter1 : string;
+  filter2 : string;
+  filter3 : string;
+  effect1 : string;
+  effect2 : string;
+  effect3 : string;
+}
+
+export interface PresetFile {
+  presets: Record<string, Preset>;
+  lastUsed : string;
+}
+
+interface PresetContextType {
+  presetNr: number;
+  setPresetNr: Dispatch<SetStateAction<number>>;
+  maxPresets: number;
+  presetProperties: Preset;
+  setPresetProperties: Dispatch<SetStateAction<Preset>>;
+  loadPreset: (name: string) => void;
+}
+
+const PresetContext = createContext<PresetContextType | undefined>(undefined);
 
 export function PresetProvider({ children }: { children: ReactNode }) {
+  const isFirstRender = useRef(0);
   const [presetNr, setPresetNr] = useState(1);
   const maxPresets = 5;
 
-  const [volumeValue, setVolumeValue] = useState([10]);
-  const [attackValue, setAttackValue] = useState([10]);
-  const [decayValue, setDecayValue] = useState([20]);
-  const [sustainValue, setSustainValue] = useState([20]);
-  const [releaseValue, setReleaseValue] = useState([40]);
-  const [oscilator1, setOscillator1] = useState("sine")
-  const [oscilator2, setOscillator2] = useState("empty")
-  const [oscilator3, setOscillator3] = useState("empty")
+  const [presetProperties, setPresetProperties] = useState<Preset>({
+    attack:10,
+    decay:20,
+    sustain:20,
+    release:40,
+    volume:10,
+    oscilator1:"sine",
+    oscilator2:"empty",
+    oscilator3:"empty",
+    filter1:"",
+    filter2:"",
+    filter3:"",
+    effect1:"",
+    effect2:"",
+    effect3:"",
+  })
 
   useEffect(() => {
     window.presetsAPI.read().then((data) => {
       const last = Number(data.lastUsed) ?? 1;
-      const preset = data.presets[String(last)];
+      const preset = data.presets[last];
       if (!preset) return;
       loadPreset(String(last));
       setPresetNr(last);
@@ -28,43 +68,57 @@ export function PresetProvider({ children }: { children: ReactNode }) {
   }, []);
 
   function savePreset(name:string) {
-    const preset = {
-      attack: attackValue[0] / 100,
-      decay: decayValue[0] / 100,
-      sustain: sustainValue[0] / 100,
-      release: releaseValue[0] / 100,
-      volume: volumeValue[0] / 100,
-      oscilator1: oscilator1,
-      oscilator2: oscilator2,
-      oscilator3: oscilator3,
+    let preset: Preset = {
+      ...presetProperties,
+      attack: presetProperties.attack / 100,
+      decay: presetProperties.decay / 100,
+      sustain: presetProperties.sustain / 100,
+      release: presetProperties.release / 100,
+      volume: presetProperties.volume / 100,
     };
-
     window.presetsAPI.saveOne(name, preset);
   }
 
   function loadPreset(name:string) {
     window.presetsAPI.read().then((data) => {
-      const preset = data.presets[name];
+      const preset = data.presets[Number(name)];
       if (!preset) return;
-
-      setAttackValue([preset.attack * 100]);
+      
+      setPresetProperties({
+        attack:preset.attack * 100,
+        decay:preset.decay * 100,
+        sustain:preset.sustain * 100,
+        release:preset.release * 100,
+        volume:preset.volume * 100,
+        oscilator1:preset.oscilator1,
+        oscilator2:preset.oscilator2,
+        oscilator3:preset.oscilator3,
+        filter1:preset.filter1,
+        filter2:preset.filter2,
+        filter3:preset.filter3,
+        effect1:preset.effect1,
+        effect2:preset.effect2,
+        effect3:preset.effect3,
+      });
       window.synthAPI.setAttack(10 ** (-preset.attack * 10));
-      setDecayValue([preset.decay * 100]);
       window.synthAPI.setDecay(10 ** (-preset.decay * 10));
-      setSustainValue([preset.sustain * 100]);
       window.synthAPI.setSustain(preset.sustain);
-      setReleaseValue([preset.release * 100]);
       window.synthAPI.setRelease(10 ** (-preset.release * 10));
-      setVolumeValue([preset.volume * 100]);
       window.synthAPI.setAmplitude(preset.volume);
-      setOscillator1(preset.oscilator1);
       window.synthAPI.setOscillatorType(preset.oscilator1,0);
-      setOscillator2(preset.oscilator2);
       window.synthAPI.setOscillatorType(preset.oscilator1,1);
-      setOscillator3(preset.oscilator3);
       window.synthAPI.setOscillatorType(preset.oscilator1,2);
     });
   }
+
+  useEffect(() => {
+    if (isFirstRender.current<2){
+      isFirstRender.current = isFirstRender.current+1;
+    }else{
+      savePreset(String(presetNr));
+      console.log("preset saved");
+    }
+  }, [presetProperties]);
 
   return (
     <PresetContext.Provider
@@ -72,23 +126,8 @@ export function PresetProvider({ children }: { children: ReactNode }) {
         presetNr,
         setPresetNr,
         maxPresets,
-        attackValue,
-        setAttackValue,
-        decayValue,
-        setDecayValue,
-        sustainValue,
-        setSustainValue,
-        releaseValue,
-        setReleaseValue,
-        volumeValue,
-        setVolumeValue,
-        oscilator1,
-        setOscillator1,
-        oscilator2,
-        setOscillator2,
-        oscilator3,
-        setOscillator3,
-        savePreset,
+        presetProperties,
+        setPresetProperties,
         loadPreset,
       }}
     >
@@ -98,5 +137,7 @@ export function PresetProvider({ children }: { children: ReactNode }) {
 }
 
 export function usePreset() {
-  return useContext(PresetContext);
+  const ctx = useContext(PresetContext);
+  if (!ctx) throw new Error("usePreset must be used inside PresetProvider");
+  return ctx;
 }
