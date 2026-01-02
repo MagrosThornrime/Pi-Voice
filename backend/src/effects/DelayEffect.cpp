@@ -14,7 +14,7 @@ void DelayEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>& 
 
 pipeline::Layer& DelayEffect::setParam(const u32 param, std::any value){
 	switch (param) {
-		SET_PARAM(delayTime);
+		SET_PARAM(bufferFrames);
 		SET_PARAM(feedback);
 		SET_PARAM(wetAmount);
 	}
@@ -28,7 +28,7 @@ std::any DelayEffect::getParam(const u32 param){
 	std::any result;
 
 	switch (param) {
-		GET_PARAM(delayTime);
+		GET_PARAM(bufferFrames);
 		GET_PARAM(feedback);
 		GET_PARAM(wetAmount);
 	}
@@ -36,8 +36,8 @@ std::any DelayEffect::getParam(const u32 param){
 	return result;
 }
 
-DelayEffect::DelayEffect(const u32 channels, const u32 delayTime, const f32 feedback, const f32 wetAmount){
-	_set(channels, delayTime, feedback, wetAmount);
+DelayEffect::DelayEffect(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount){
+	_set(channels, bufferFrames, feedback, wetAmount);
 	refresh();
 }
 
@@ -45,21 +45,21 @@ DelayEffect::DelayEffect(){
     refresh();
 }
 
-void DelayEffect::_set(const u32 channels, const u32 delayTime, const f32 feedback, const f32 wetAmount){
+void DelayEffect::_set(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount){
 	_channels = channels;
-	_delayTime = delayTime;
+	_bufferFrames = bufferFrames;
 	_feedback = feedback;
 	_wetAmount = wetAmount;
 
 }
 
 void DelayEffect::refresh(){
-    if(_delayTime * _channels == _buffer.size()){
+    if(_bufferFrames * _channels == _buffer.size()){
         return;
     }
-	std::vector<f32> newBuffer(_delayTime * _channels);
+	std::vector<f32> newBuffer(_bufferFrames * _channels);
 	if(!_buffer.empty()){
-		for(u32 i = 0; i < _delayTime * _channels; i++){
+		for(u32 i = 0; i < _bufferFrames * _channels; i++){
 			newBuffer[i] = _buffer[_index];
 			_index = (_index + 1) % _buffer.size();
 		}

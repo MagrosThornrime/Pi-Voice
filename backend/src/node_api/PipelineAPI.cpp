@@ -351,7 +351,7 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 
 	case effects::EffectType::delay:
 		switch (param) {
-			SET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::delayTime);
+			SET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::bufferFrames);
 			SET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::feedback);
 			SET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::wetAmount);
 		}
@@ -427,7 +427,7 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 
 	case effects::EffectType::delay:
 		switch (param) {
-			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::delayTime);
+			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::bufferFrames);
 			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::feedback);
 			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::wetAmount);
 		}

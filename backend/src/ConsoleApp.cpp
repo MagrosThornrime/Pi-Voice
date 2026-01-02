@@ -10,10 +10,10 @@ int main(){
     auto midiApp = std::make_shared<application::MidiManager>(synthesiser);
     auto& pipeline = synthesiser->getPipeline();
 
-	auto reverb = std::make_shared<effects::ReverbEffect>(2, 1000, 0.1f, 0.5f);
+	auto delay = std::make_shared<effects::DelayEffect>();
 
 	pipeline.add(
-    	reverb,
+    	delay,
     	std::nullopt
 	);
 
@@ -27,16 +27,16 @@ int main(){
     	if (command == "quit") {
         	break;
     	}
-    	else if (command == "reverb") {
+    	else if (command == "delay") {
         	u32 newSize;
         	std::cin >> newSize;
 
-        	reverb->setParam(
-            	effects::ReverbParams::bufferFrames,
+        	delay->setParam(
+            	effects::DelayParams::bufferFrames,
             	newSize
         	);
 
-        	std::cout << "Reverb buffer size set to "
+        	std::cout << "Delay buffer size set to "
             	      << newSize << std::endl;
     	}
 	}
