@@ -3,31 +3,46 @@
 #include <numbers>
 
 namespace effects {
-void ChorusEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames){
+void ChorusEffect::processSound(std::vector<f32>& inputBuffer,
+                               std::vector<f32>& outputBuffer,
+                               u32 frames)
+{
     u32 idx = 0;
-    for(u32 i = 0; i < frames; i++){
-        f32 modDelayFactor = _baseDelayFactor + _modDepth * std::sin(2.0 * std::numbers::pi * _phase);
+
+    for (u32 i = 0; i < frames; i++)
+    {
+        f32 lfo = std::sin(2.0f * std::numbers::pi * _phase);
         _phase += _modFrequency / _sampleRate;
-        _phase = std::fmod(_phase, 1.0f);
-        f32 delayedFrames = modDelayFactor * _sampleRate;
+        _phase -= std::floor(_phase);
 
-        f32 readFrame = _index / _channels - delayedFrames;
-        readFrame = std::fmod(readFrame + _bufferFrames, _bufferFrames);
+        f32 delayFrames = (_baseDelayFactor + _modDepth * lfo) * _sampleRate;
 
-        i32 frame0 = readFrame;
-        i32 frame1 = (frame0 + 1) % _buffer.size();
-        f32 factor = readFrame - frame0;
+        delayFrames = std::clamp(delayFrames, 0.0f, (f32)(_bufferFrames - 2));
 
-        for(u32 j = 0; j < _channels; j++, idx++){
-            u32 channel0 = frame0 + j;
-            u32 channel1 = frame1 + j;
-            f32 delayedSample = _buffer[channel0] * (1.0f - factor) + _buffer[channel1] * factor;
-            outputBuffer[idx] = inputBuffer[idx] * (1.0f - _wetAmount) + delayedSample * _wetAmount;
-            _buffer[_index] = inputBuffer[idx] * (1 - _feedback) + delayedSample * _feedback;
+        f32 delaySamples = delayFrames * _channels;
+
+        for (u32 ch = 0; ch < _channels; ch++, idx++)
+        {
+            f32 readPos = (f32)_index - delaySamples + (f32)ch;
+
+            readPos = std::fmod(readPos + _buffer.size(), _buffer.size());
+
+            i32 i0 = readPos;
+            i32 i1 = (i0 + _channels) % _buffer.size();
+            f32 frac = readPos - i0;
+
+            f32 delayed = _buffer[i0] * (1.0f - frac) + _buffer[i1] * frac;
+
+            f32 in = inputBuffer[idx];
+            outputBuffer[idx] = in * (1.0f - _wetAmount) + delayed * _wetAmount;
+
+            _buffer[_index] = in * (1.0f - _feedback) + delayed * _feedback;
+
             _index = (_index + 1) % _buffer.size();
         }
     }
 }
+
 
 #define SET_PARAM(name) case ChorusParams::name: if(value.type() == typeid(_##name)) { _##name = std::any_cast<decltype(_##name)>(std::move(value)); } break
 
