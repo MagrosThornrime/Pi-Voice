@@ -1,15 +1,20 @@
 "use client";
-import { Box, Checkbox, Button, Fieldset, Stack, Text, Portal, Collapsible, CheckboxGroup, Heading,  Grid,  Menu} from "@chakra-ui/react";
-import { useContext, ReactNode, useEffect, createContext, useState, Fragment, DragEvent} from "react";
+import { Box, Button, Text, Collapsible } from "@chakra-ui/react";
+import { useEffect, useState,  DragEvent } from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { MdDelete } from "react-icons/md";
-import { useController, ControllerRenderProps, useForm, FieldError } from "react-hook-form"
-import {filters, effects} from "../utils/tables"
+import { useController, useForm, FieldError } from "react-hook-form"
+import { filters, effects, defaultOpts, OptKey, FilterType } from "../utils/tables"
 import { LuChevronRight } from "react-icons/lu"
 import { SlidersItems } from "@/components/SlidersItems";
 import { z } from "zod"
 import { usePreset } from "@/components/ui/presetsProvider";
+import { CheckboxesWithHeading } from "@/components/Checkboxes";
+import { useFilters, useFiltersParams, useFiltersLogic } from "../utils/context_utils";
+import { v4 as uuidv4 } from "uuid";
+import { clearFilters, addFilter, deleteFilter, swapFilters, moveFilter } from "../utils/integration_utils";
 
+const FIELDS = 4
 
 const FiltersFormSchema = z.object({
     filters: z.array(z.string()).max(3, {
@@ -20,201 +25,32 @@ const FiltersFormSchema = z.object({
     })
 })
 
-type FiltersData = z.infer<typeof FiltersFormSchema>
+export type FiltersData = z.infer<typeof FiltersFormSchema>
 
-type FiltersContextType = {
-    data: FiltersData;
-    setData: (value: FiltersData) => void;
-};
-
-export type orderedDataType = {
-    filters: string[];
-    effects: string[];
-}
-
-type FiltersOrderContextType = {
-    orderedData: orderedDataType;
-    setOrderedData: React.Dispatch<React.SetStateAction<orderedDataType>>;
-};
-
-const FiltersOrderedContext = createContext<FiltersOrderContextType | undefined> (undefined);
-
-const FiltersContext = createContext<FiltersContextType | undefined>(undefined);
-
-export function FiltersProvider({ children }: { children: ReactNode }) {
-    const [data, setData] = useState<FiltersData>({
-        filters: [],
-        effects: []
-    });
-
-    return (
-        <FiltersContext.Provider value={{ data, setData }}>
-            {children}
-        </FiltersContext.Provider>
-    );
-}
-
-export function FiltersOrderedProvider({ children }: { children: ReactNode }) {
-    const [orderedData, setOrderedData] = useState<orderedDataType>({
-        filters: [],
-        effects: []
-    });
-
-    return (
-        <FiltersOrderedContext.Provider value={{ orderedData, setOrderedData }}>
-            {children}
-        </FiltersOrderedContext.Provider>
-    );
-}
-
-export function useFilters() {
-    const ctx = useContext(FiltersContext);
-    if (!ctx) {
-        throw new Error("useFilters must be used inside FiltersProvider");
-    }
-    return ctx;
-}
-
-export function useOrderedFilters() {
-    const ctx = useContext(FiltersOrderedContext);
-    if (!ctx) {
-        throw new Error("useFilters must be used inside FiltersProvider");
-    }
-    return ctx;
-}
-
-type FormWithHeadingProps = {
-    formItems: { label: string; value: string }[];
-    field: ControllerRenderProps<any, any>;
-    ifButton: boolean;
-    headerText: string;
-    buttonText?: string;
-    error?: FieldError;
-    invalid?: boolean;
-};
-
-
-function CheckboxesWithHeading({
-    formItems,
-    field,
-    ifButton,
-    headerText,
-    buttonText,
-    error,
-    invalid,
-}: FormWithHeadingProps
-) {
-    return (
-        <Box>
-            <Heading size="3xl" textAlign="center" mb={10} color="teal.600">
-                {headerText}
-            </Heading>
-
-            <Fieldset.Root invalid={invalid}>
-                <Fieldset.Legend color={"teal.600"}> </Fieldset.Legend>
-                <CheckboxGroup color={"black"}
-                    invalid={invalid}
-                    value={field.value}
-                    onValueChange={(vals: string[]) => field.onChange(vals)}
-                    name={field.name}
-                >
-                    <Fieldset.Content>
-                        <Grid templateColumns={{
-                            base: "2fr",
-                            md: "repeat(4, 1fr)",
-                            lg: "repeat(4, 1fr)",
-                        }}
-                            gap={10} maxW="800px" mx="auto">
-                            {
-                                formItems.map((item) => (
-                                    <Checkbox.Root key={item.value} value={item.value}>
-                                        <Checkbox.HiddenInput />
-                                        <Checkbox.Control />
-                                        <Checkbox.Label>{item.label}</Checkbox.Label>
-                                    </Checkbox.Root>
-                                ))
-                            }
-
-                        </Grid>
-
-                    </Fieldset.Content>
-
-                    <Box h="5" />
-
-                </CheckboxGroup>
-
-                <Box textAlign="center">
-                    {
-                        error && (
-                            <Fieldset.ErrorText>{error.message}</Fieldset.ErrorText>
-                        )
-                    }
-                    <Box h="2" />
-
-                    {
-                        ifButton &&
-                        <Button size="sm" type="submit" alignSelf="flex-start">
-                            {buttonText || "Submit"}
-                        </Button>
-                    }
-
-                </Box>
-
-            </Fieldset.Root>
-        </Box>
-    )
-}
-
-
-async function clearFilters(filtersNumber: number) {
-    for(let i=filtersNumber-1; i>=0; i--){
-        await window.synthAPI.pipelineRemove(i);
-    }
-}
-
-async function addFilters(filtersArr: string[]) {
-    for (let [actIndex, actFilter] of filtersArr.entries()) {
-        const filterNumber = filters.findIndex(i => i.value === actFilter);
-        await window.synthAPI.pipelineAddFilter(filterNumber, actIndex);
-    }
-}
-
-async function addFilter(item: string, idx: number){
-    const filterNumber = filters.findIndex(i => i.value === item);
-    await window.synthAPI.pipelineAddFilter(filterNumber, idx);
-}
-
-export async function setFilterParam(filtersList:string[], filterName: string, param: number, value: number){
-    const filterNumber = filtersList.findIndex(i => i === filterName);
-    console.log("FILTER IDX", filterNumber);
-    await window.synthAPI.pipelineSetFilterParam(filterNumber, param, value)
-}
-
-async function deleteFilter(idx:number){
-    await window.synthAPI.pipelineRemove(idx);
-}
-
-async function swapFilters(idx1:number, idx2:number){
-    console.log("idxs:", idx1, idx2)
-    await window.synthAPI.pipelineSwap(idx1, idx2);
-}
 
 type DraggableListProps = {
-    attr:"filters" | "effects";
+    attr: "filters" | "effects";
 }
 
-function getPosFromFiltered(list1: string[], idx:number){
-    const elem = list1[idx];
-    return list1.filter(item => item !== "").findIndex(i => i === elem);
+type blockType = {
+    val: string;
+    id: string;
+}
+
+function getPosFromFiltered(list1: blockType[], idx: string) {
+    const res:number = list1.filter(item => item.val !== "").findIndex(i => i.id === idx);
+    return res;
 }
 
 function DraggableList({ attr }: DraggableListProps) {
+
     const { data, setData } = useFilters();
-    const { orderedData, setOrderedData } = useOrderedFilters();
+    const { paramsData, setParamsData } = useFiltersParams();
+    const { deleteFilterFromList, addFilterToList, swapFiltersFromList, moveFilterInList } = useFiltersLogic();
 
     const myData = data[attr];
     const [listData, setListData] = useState<string[]>(myData);
-    const [blocks, setBlocks] = useState<string[]>([]);
+    const [blocks, setBlocks] = useState<blockType[]>([]);
 
     const {
         presetNr,
@@ -225,23 +61,10 @@ function DraggableList({ attr }: DraggableListProps) {
     useEffect(
         () => {
             setListData(myData ?? []);
-            const newArr = Array.from({ length: 3 }, (_, i) => "");
+            const newArr = Array.from({ length: FIELDS }, (_, i):blockType => {return { val: "", id:uuidv4() }});
             setBlocks(newArr);
+            setParamsData([]);
         }, [myData]);
-
-    const filtersKeys = ["filter1", "filter2", "filter3"] as const;  
-    useEffect(() => {
-        for(const i in blocks){
-            setPresetProperties(prev => ({...prev,[filtersKeys[i]]: blocks[i]}));
-        }
-        setOrderedData((prev: orderedDataType) => ({
-            ...prev,
-            filters: blocks.filter(item => item !== "")
-        }));
-        console.log("ordered data", orderedData);
-    }, [blocks]);
-
-
 
 
     const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -268,46 +91,84 @@ function DraggableList({ attr }: DraggableListProps) {
 
         if (dragIndex !== null) { // we drop filter from list to the blocks array
             const draggedItem = listData[dragIndex];
-            newBlocks[index] = draggedItem;
+            const newID:string = uuidv4();
+        
+            let index1:number = -1;
+            
+            if (newBlocks[index].val !== "") {
+                index1 = getPosFromFiltered(newBlocks, newBlocks[index].id); // element that is there before change
+                deleteFilterFromList(index1);
+            }
+            newBlocks[index] = {val: draggedItem, id: newID}; // update
 
-            (async () => { 
-                if (blocks[index] !== ""){
-                    const index1 = getPosFromFiltered(blocks, index ); // element that was there previously
+            const index2 = getPosFromFiltered(newBlocks, newID) // actual position after adding
+            addFilterToList(draggedItem as FilterType, Object.keys(defaultOpts) as OptKey[], index2);
+
+            (async () => {
+                if (blocks[index].val !== "") {
                     await deleteFilter(index1);
                 }
-                const index2 = getPosFromFiltered(newBlocks, index) // actual position after adding
                 await addFilter(draggedItem, index2);
-            } )();
+            })();
 
             setDragIndex(null);
         }
 
-        else if (dragBlockInd !== null) { 
+        else if (dragBlockInd !== null) {
             const draggedItem = blocks[dragBlockInd];
 
             const temp = newBlocks[dragBlockInd];
-            newBlocks[dragBlockInd] = blocks[index];
+
+            const condDrag:boolean = newBlocks[dragBlockInd].val !== "";
+            const condInd: boolean = newBlocks[index].val !== ""
+
+            if (condDrag || condInd){
+                const index1 = getPosFromFiltered(newBlocks, newBlocks[index].id);
+                const index2 = getPosFromFiltered(newBlocks, newBlocks[dragBlockInd].id);
+
+                if (condDrag && condInd){
+                    swapFiltersFromList(index1, index2);
+                    (async () => { await swapFilters(index1, index2) })(); // swap 2 existing filters
+                }
+                else if (condDrag){
+                    const index3 = newBlocks.slice(0, index).filter(item => item.val !== "").length;
+                    if (index2 + 1 != index3){ // we insert before index3
+                        moveFilterInList(index2, index3);
+                        (async () => {
+                            await moveFilter(index2, index3);
+                        })();
+                    }
+                }
+                else if (condInd){
+                    const index3 = newBlocks.slice(0, dragBlockInd).filter(item => item.val !== "").length;
+                    if (index1 + 1 != index3){ // we insert before index1
+                        moveFilterInList(index1, index3);
+                        (async () => {
+                            await moveFilter(index1, index3);
+                        })();
+                    }
+                }
+            }
+            newBlocks[dragBlockInd] = newBlocks[index];
             newBlocks[index] = temp;
-
-            const index1 = getPosFromFiltered(blocks, index);
-            const index2 = getPosFromFiltered(blocks, dragBlockInd);
-
-            (async () => { await swapFilters(index1, index2) })(); // swap 2 existing filters
 
             setDragBlockInd(null);
         }
+
         setBlocks(newBlocks);
     }
 
 
     const handleDelete = (index: number) => {
         const newBlocks = [...blocks];
-        newBlocks[index] = "";
+
+        const index1 = getPosFromFiltered(newBlocks, newBlocks[index].id); // we search in arr before change
+        newBlocks[index].val = "";
+        deleteFilterFromList(index1);
 
         (async () => {
-            const index1 = getPosFromFiltered(blocks, index); // we search in arr before change
-            await deleteFilter(index1) 
-            } )();
+            await deleteFilter(index1)
+        })();
 
         setBlocks(newBlocks);
     }
@@ -334,30 +195,30 @@ function DraggableList({ attr }: DraggableListProps) {
 
                 <Box>
                     <>
-                            <Box
-                                as="ul"
-                                display="flex"
-                                flexDirection="row"
-                                listStyleType="none"
-                                p={0}
-                                gap={2}
-                            >
-                                {
-                                    listData.map((item, index) => {
-                                        return (
-                                            <Box key={index} as="li" color="white" bg="gray.500" rounded="2xl" maxW="30%" shadow="md" p={2}
-                                                draggable
-                                                onDragStart={() => dragStartList(index)}
-                                                cursor="grab"
-                                                className={index === dragIndex ? "dragging" : ""} >
-                                                {item}
-                                            </Box>
-                                        )
-                                    })
-                                }
-                            </Box>
+                        <Box
+                            as="ul"
+                            display="flex"
+                            flexDirection="row"
+                            listStyleType="none"
+                            p={0}
+                            gap={2}
+                        >
+                            {
+                                listData.map((item, index) => {
+                                    return (
+                                        <Box key={index} as="li" color="white" bg="gray.500" rounded="2xl" maxW="30%" shadow="md" p={2}
+                                            draggable
+                                            onDragStart={() => dragStartList(index)}
+                                            cursor="grab"
+                                            className={index === dragIndex ? "dragging" : ""} >
+                                            {item}
+                                        </Box>
+                                    )
+                                })
+                            }
+                        </Box>
 
-                        { 
+                        {
                             listData.length > 0 &&
                             <>
                                 <Box h="5" />
@@ -367,12 +228,12 @@ function DraggableList({ attr }: DraggableListProps) {
                                         blocks.map((item, index) => {
                                             return (
                                                 <Box key={index} as="li" color="white" bg="green.500"
-                                                rounded="2xl" minHeight="40px" minWidth="7%" shadow="md" p={2}
+                                                    rounded="2xl" minHeight="40px" minWidth="7%" shadow="md" p={2}
 
                                                     draggable
 
                                                     onDragStart={() => {
-                                                        if (blocks[index] == "") { return; }
+                                                        if (blocks[index].val == "") { return; }
                                                         dragStartBlock(index);
                                                     }}
 
@@ -397,7 +258,7 @@ function DraggableList({ attr }: DraggableListProps) {
 
                                                     </Button>
 
-                                                    {item}
+                                                    {item.val}
 
                                                 </Box>
                                             )
@@ -433,52 +294,35 @@ function Page() {
 
     const { data, setData } = useFilters();
 
-    const { orderedData, setOrderedData } = useOrderedFilters();
+    const { paramsData} = useFiltersParams();
 
     const invalid = !!errors.filters
     const invalid_eff = !!errors.effects
 
 
     return (
-        <Box minH="100vh" bg="gray.50" p={10} justifyItems={"center"} alignItems="center">
+        <Box minH="100vh" bg="gray.50" p={10} justifyItems={"left"} alignItems="center">
             <form
                 onSubmit={handleSubmit(async (formData) => {
                     setData(formData);
 
-                    await clearFilters(orderedData.filters.length);
-
-                    //currentFilters = formData.filters;
-                    //await addFilters(currentFilters);
+                    await clearFilters(paramsData.length);
 
                     console.log("SUBMITTED", formData);
                 })}
             >
 
-                <Stack direction="row" gap={40} >
-                    <CheckboxesWithHeading field={filtersField.field}
-                        formItems={filters}
-                        invalid={invalid}
-                        error={Array.isArray(errors.filters)
-                            ? errors.filters[0]
-                            : errors.filters
-                        }
-                        ifButton={false}
-                        headerText="Select filters" >
+                <CheckboxesWithHeading field={filtersField.field}
+                    formItems={filters}
+                    invalid={invalid}
+                    error={Array.isArray(errors.filters)
+                        ? errors.filters[0]
+                        : errors.filters
+                    }
+                    ifButton={false}
+                    headerText="Select filters" >
 
-                    </CheckboxesWithHeading>
-
-                    <CheckboxesWithHeading field={effectsField.field}
-                        formItems={effects}
-                        invalid={invalid_eff}
-                        error={Array.isArray(errors.effects)
-                            ? errors.effects[0]
-                            : errors.effects
-                        }
-                        ifButton={false}
-                        headerText="Select effects" >
-
-                    </CheckboxesWithHeading>
-                </Stack>
+                </CheckboxesWithHeading>
 
                 <Box display="flex" justifyContent="center" minW="60%">
                     <Button size="sm" type="submit">
@@ -490,14 +334,16 @@ function Page() {
 
             <Box h="10" />
 
-            <Box minW = "80%">
-                <DraggableList attr = "filters" />
-                <Box h="10" /> 
-                <SlidersItems neededItems = {filters} attr = "filters" idx={0}/>
+            <Box minW="80%">
+                <DraggableList attr="filters" />
                 <Box h="10" />
-                <DraggableList attr = "effects" />
+                <SlidersItems neededItems={filters} attr="filters" idx={0} />
                 <Box h="10" />
-                <SlidersItems neededItems = {effects} attr = "effects" idx={1}/>
+                <DraggableList attr="effects" />
+                <Box h="10" />
+                <SlidersItems neededItems={effects} attr="effects" idx={1} />
+                <Box h="10" />
+
             </Box>
         </Box>
     )
@@ -505,11 +351,5 @@ function Page() {
 
 
 export default function Home() {
-    return (
-        <FiltersOrderedProvider>
-            <FiltersProvider>
-                <Page />
-            </FiltersProvider>
-        </FiltersOrderedProvider>
-    )
+    return ( <Page /> )
 }
