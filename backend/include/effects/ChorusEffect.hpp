@@ -44,8 +44,8 @@ namespace effects {
         f32 _feedback = 0.1f;
         f32 _wetAmount = 0.5f;
 
-        void _set(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount,
-            const f32 baseDelayFactor, const f32 modFrequency, const f32 modDepth);
+        void _set(const u32 bufferFrames, const f32 feedback, const f32 wetAmount, const f32 baseDelayFactor,
+            const f32 modFrequency, const f32 modDepth);
 
     public:
         pipeline::Layer& setParam(const u32 param, std::any value) override;
@@ -53,9 +53,7 @@ namespace effects {
 
         void processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames) override;
 
-        ChorusEffect(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount,
-            const f32 baseDelayFactor, const f32 modFrequency, const f32 modDepth);
-        ChorusEffect();
+        ChorusEffect(const u32 channels, const f32 sampleRate);
 
         EffectType::Value getEffectType() override;
 

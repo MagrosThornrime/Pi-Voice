@@ -42,17 +42,11 @@ std::any ReverbEffect::getParam(const u32 param){
     return result;
 }
 
-ReverbEffect::ReverbEffect(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount){
-    _set(channels, bufferFrames, feedback, wetAmount);
+ReverbEffect::ReverbEffect(const u32 channels, const f32 sampleRate) : Effect(channels, sampleRate) {
     refresh();
 }
 
-ReverbEffect::ReverbEffect(){
-    refresh();
-}
-
-void ReverbEffect::_set(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount){
-    _channels = channels;
+void ReverbEffect::_set(const u32 bufferFrames, const f32 feedback, const f32 wetAmount){
 	_bufferFrames = bufferFrames;
     _feedback = feedback;
     _wetAmount = wetAmount;

@@ -7,6 +7,7 @@
 namespace filters {
 class LowPassFilter: public BwFilter {
 public:
+	using BwFilter::BwFilter;
 	void refresh() override;
 };
 }

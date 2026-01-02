@@ -25,7 +25,7 @@ namespace effects {
         f32 _phaseIncrement;
         f32 _phase;
 
-        void _set(const u32 channels, const f32 modFrequency);
+        void _set(const f32 modFrequency);
 
     public:
         pipeline::Layer& setParam(const u32 param, std::any value) override;
@@ -33,8 +33,7 @@ namespace effects {
 
         void processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames) override;
 
-        RobotifyEffect(const u32 channels, const f32 modFrequency);
-        RobotifyEffect();
+        RobotifyEffect(const u32 channels, const f32 sampleRate);
 
         EffectType::Value getEffectType() override;
 

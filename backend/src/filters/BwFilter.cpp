@@ -16,21 +16,21 @@
 
 namespace filters {
 
-BwFilter::BwFilter(const u32 channels, const std::array<float, 2>& a, const std::array<float, 3>& b) {
-	_set(channels, a, b);
+BwFilter::BwFilter(const u32 channels, const f32 sampleRate) : Layer(channels, sampleRate) {
+	_prev = decltype(_prev)(_channels);
 }
 
-std::shared_ptr<BwFilter> BwFilter::create(FilterType::Value filter) {
+std::shared_ptr<BwFilter> BwFilter::create(FilterType::Value filter, const u32 channels, const f32 sampleRate) {
 	std::shared_ptr<BwFilter> result = nullptr;
 	switch (filter) {
-		case FilterType::allPass: result = std::make_shared<AllPassFilter>(); break;
-		case FilterType::bandPass: result = std::make_shared<BandPassFilter>(); break;
-		case FilterType::highPass: result = std::make_shared<HighPassFilter>(); break;
-		case FilterType::highShelf: result = std::make_shared<HighShelfFilter>(); break;
-		case FilterType::lowPass: result = std::make_shared<LowPassFilter>(); break;
-		case FilterType::lowShelf: result = std::make_shared<LowShelfFilter>(); break;
-		case FilterType::notch: result = std::make_shared<NotchFilter>(); break;
-		case FilterType::peakingEQ: result = std::make_shared<PeakingEQFilter>(); break;
+		case FilterType::allPass: result = std::make_shared<AllPassFilter>(channels, sampleRate); break;
+		case FilterType::bandPass: result = std::make_shared<BandPassFilter>(channels, sampleRate); break;
+		case FilterType::highPass: result = std::make_shared<HighPassFilter>(channels, sampleRate); break;
+		case FilterType::highShelf: result = std::make_shared<HighShelfFilter>(channels, sampleRate); break;
+		case FilterType::lowPass: result = std::make_shared<LowPassFilter>(channels, sampleRate); break;
+		case FilterType::lowShelf: result = std::make_shared<LowShelfFilter>(channels, sampleRate); break;
+		case FilterType::notch: result = std::make_shared<NotchFilter>(channels, sampleRate); break;
+		case FilterType::peakingEQ: result = std::make_shared<PeakingEQFilter>(channels, sampleRate); break;
 	}
 	if (result) {
 		result->refresh();
@@ -68,11 +68,9 @@ void BwFilter::processSound(std::vector<f32>& inputBuffer,
 }
 
 
-void BwFilter::_set(const u32 channels, const std::array<float, 2>& a, const std::array<float, 3>& b) {
-	_channels = channels;
+void BwFilter::_set(const std::array<float, 2>& a, const std::array<float, 3>& b) {
 	_a = a;
 	_b = b;
-	_prev = decltype(_prev)(channels);
 }
 
 #define SET_PARAM(name) case FilterParams::name: if(value.type() == typeid(_##name)) { _##name = std::any_cast<decltype(_##name)>(std::move(value)); } break

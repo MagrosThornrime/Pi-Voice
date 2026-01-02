@@ -6,6 +6,7 @@
 namespace filters {
 class AllPassFilter: public BwFilter {
 public:
+	using BwFilter::BwFilter;
 	void refresh() override;
 };
 }

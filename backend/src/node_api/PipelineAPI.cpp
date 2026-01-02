@@ -70,7 +70,9 @@ void addFilter(const Napi::CallbackInfo& info) {
 
 	auto&& [lock, p] = lockPipeline();
 
-	p.add(filters::BwFilter::create((filters::FilterType::Value)type), idx);
+	auto channels = p.getChannels();
+	auto sampleRate = p.getSampleRate();
+	p.add(filters::BwFilter::create((filters::FilterType::Value)type, channels, sampleRate), idx);
 
 	//fmt::println("Added filter {} to index {}", type, idx);
 	printState(p);
@@ -98,7 +100,9 @@ void addEffect(const Napi::CallbackInfo& info) {
 
 	auto&& [lock, p] = lockPipeline();
 
-	p.add(effects::Effect::create((effects::EffectType::Value)type), idx);
+	auto channels = p.getChannels();
+	auto sampleRate = p.getSampleRate();
+	p.add(effects::Effect::create((effects::EffectType::Value)type, channels, sampleRate), idx);
 
 	//fmt::println("Added filter {} to index {}", type, idx);
 	printState(p);

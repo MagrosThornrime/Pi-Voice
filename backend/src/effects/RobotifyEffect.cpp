@@ -37,17 +37,11 @@ std::any RobotifyEffect::getParam(const u32 param){
     return result;
 }
 
-RobotifyEffect::RobotifyEffect(const u32 channels, const f32 modFrequency){
-    _set(channels, modFrequency);
+RobotifyEffect::RobotifyEffect(const u32 channels, const f32 sampleRate) : Effect(channels, sampleRate) {
     refresh();
 }
 
-RobotifyEffect::RobotifyEffect(){
-    refresh();
-}
-
-void RobotifyEffect::_set(const u32 channels, const f32 modFrequency){
-    _channels = channels;
+void RobotifyEffect::_set(const f32 modFrequency){
     _modFrequency = modFrequency;
 }
 

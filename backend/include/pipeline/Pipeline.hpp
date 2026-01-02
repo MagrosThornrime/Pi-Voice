@@ -28,10 +28,14 @@ public:
 	Pipeline(
 		u32 framesPerCall,
 		u32 channels,
+		f32 sampleRate,
 		std::shared_ptr<polyphonic::VoiceManager> voiceManager,
 		std::shared_ptr<fileio::FileRecorder> recorder,
 		std::shared_ptr<seq::Sequencer> sequencer
 	);
+
+    u32 getChannels() const;
+    f32 getSampleRate() const;
 
 private:
 	std::vector<std::shared_ptr<Layer>> _layers;
@@ -43,6 +47,7 @@ private:
 	mutable std::mutex _layersMutex;
 	utils::SPSCQueue<f32> _outputQueue;
 	const u32 _channels;
+	const f32 _sampleRate;
 
 	void _mixWithSequencer(std::vector<f32>& buffer);
 

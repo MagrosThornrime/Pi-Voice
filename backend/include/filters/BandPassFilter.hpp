@@ -6,6 +6,7 @@
 namespace filters {
 class BandPassFilter: public BwFilter {
 public:
+	using BwFilter::BwFilter;
 	void refresh() override;
 };
 }

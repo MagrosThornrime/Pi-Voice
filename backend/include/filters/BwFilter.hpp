@@ -12,10 +12,9 @@ namespace filters {
 // Bw - Butterworth
 class BwFilter: public pipeline::Layer {
 public:
-	static std::shared_ptr<BwFilter> create(FilterType::Value filter);
+	static std::shared_ptr<BwFilter> create(FilterType::Value filter, const u32 channels, const f32 sampleRate);
 
-	BwFilter() = default;
-	BwFilter(const u32 channels, const std::array<float, 2>& a, const std::array<float, 3>& b);
+	BwFilter(const u32 channels, const f32 sampleRate);
 
 	pipeline::Layer& setParam(const u32 param, std::any value) override;
 	std::any getParam(const u32 param) override;
@@ -37,6 +36,6 @@ protected:
 	f32 _gainDB = 0;
 	u32 _order = 2;
 
-	void _set(const u32 channels, const std::array<float, 2>& a, const std::array<float, 3>& b);
+	void _set(const std::array<float, 2>& a, const std::array<float, 3>& b);
 };
 }

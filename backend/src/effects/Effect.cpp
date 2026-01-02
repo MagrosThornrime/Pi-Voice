@@ -6,13 +6,13 @@
 
 namespace effects {
 
-std::shared_ptr<Effect> Effect::create(EffectType::Value effect) {
+std::shared_ptr<Effect> Effect::create(EffectType::Value effect, u32 channels, f32 sampleRate) {
     std::shared_ptr<Effect> result = nullptr;
     switch (effect) {
-    case EffectType::chorus: result = std::make_shared<ChorusEffect>(); break;
-    case EffectType::delay: result = std::make_shared<DelayEffect>(); break;
-    case EffectType::reverb: result = std::make_shared<ReverbEffect>(); break;
-    case EffectType::robotify: result = std::make_shared<RobotifyEffect>(); break;
+    case EffectType::chorus: result = std::make_shared<ChorusEffect>(channels, sampleRate); break;
+    case EffectType::delay: result = std::make_shared<DelayEffect>(channels, sampleRate); break;
+    case EffectType::reverb: result = std::make_shared<ReverbEffect>(channels, sampleRate); break;
+    case EffectType::robotify: result = std::make_shared<RobotifyEffect>(channels, sampleRate); break;
     }
     if (result) {
         result->refresh();
@@ -21,7 +21,7 @@ std::shared_ptr<Effect> Effect::create(EffectType::Value effect) {
     return result;
 }
 
-Effect::Effect() {
+Effect::Effect(const u32 channels, const f32 sampleRate) : Layer(channels, sampleRate) {
     refresh();
 }
 

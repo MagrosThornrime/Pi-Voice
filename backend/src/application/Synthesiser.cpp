@@ -9,7 +9,7 @@ Synthesiser::Synthesiser(const std::string& recordingPath, i32 channels, i32 sam
 	_sampleManager = std::make_shared<fileio::SampleManager>(samplesPath, _sampleRate);
 	_voiceManager = std::make_shared<polyphonic::VoiceManager>(6, (f32)sampleRate, channels, _sampleManager);
 	_sequencer = std::make_shared<seq::Sequencer>(_sampleManager);
-	_pipeline = std::make_shared<pipeline::Pipeline>(256, channels, _voiceManager, _recorder, _sequencer);
+	_pipeline = std::make_shared<pipeline::Pipeline>(256, channels, sampleRate, _voiceManager, _recorder, _sequencer);
 }
 
 void Synthesiser::start() {

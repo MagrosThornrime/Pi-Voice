@@ -76,19 +76,12 @@ std::any ChorusEffect::getParam(const u32 param){
     return result;
 }
 
-ChorusEffect::ChorusEffect(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount,
-        const f32 baseDelayFactor, const f32 modFrequency, const f32 modDepth){
-    _set(channels, bufferFrames, feedback, wetAmount, baseDelayFactor, modFrequency, modDepth);
+ChorusEffect::ChorusEffect(const u32 channels, const f32 sampleRate) : Effect(channels, sampleRate) {
     refresh();
 }
 
-ChorusEffect::ChorusEffect(){
-    refresh();
-}
-
-void ChorusEffect::_set(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount,
+void ChorusEffect::_set(const u32 bufferFrames, const f32 feedback, const f32 wetAmount,
         const f32 baseDelayFactor, const f32 modFrequency, const f32 modDepth){
-    _channels = channels;
     _bufferFrames = bufferFrames;
     _feedback = feedback;
     _wetAmount = wetAmount;

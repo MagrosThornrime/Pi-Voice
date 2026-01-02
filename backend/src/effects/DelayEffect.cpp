@@ -36,21 +36,14 @@ std::any DelayEffect::getParam(const u32 param){
 	return result;
 }
 
-DelayEffect::DelayEffect(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount){
-	_set(channels, bufferFrames, feedback, wetAmount);
-	refresh();
-}
-
-DelayEffect::DelayEffect(){
+DelayEffect::DelayEffect(const u32 channels, const f32 sampleRate) : Effect(channels, sampleRate) {
     refresh();
 }
 
-void DelayEffect::_set(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount){
-	_channels = channels;
+void DelayEffect::_set(const u32 bufferFrames, const f32 feedback, const f32 wetAmount){
 	_bufferFrames = bufferFrames;
 	_feedback = feedback;
 	_wetAmount = wetAmount;
-
 }
 
 void DelayEffect::refresh(){
