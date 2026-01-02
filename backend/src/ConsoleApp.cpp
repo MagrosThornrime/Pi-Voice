@@ -13,10 +13,10 @@ int main(){
     auto midiApp = std::make_shared<application::MidiManager>(synthesiser);
     auto& pipeline = synthesiser->getPipeline();
 
-	auto delay = std::make_shared<effects::DelayEffect>(channels, sampleRate);
+	auto chorus = std::make_shared<effects::ChorusEffect>(channels, sampleRate);
 
 	pipeline.add(
-    	delay,
+    	chorus,
     	std::nullopt
 	);
 
@@ -30,16 +30,16 @@ int main(){
     	if (command == "quit") {
         	break;
     	}
-    	else if (command == "delay") {
+    	else if (command == "chorus") {
         	u32 newSize;
         	std::cin >> newSize;
 
-        	delay->setParam(
-            	effects::DelayParams::bufferFrames,
+        	chorus->setParam(
+            	effects::ChorusParams::bufferFrames,
             	newSize
         	);
 
-        	std::cout << "Delay buffer size set to "
+        	std::cout << "Chorus buffer size set to "
             	      << newSize << std::endl;
     	}
 	}

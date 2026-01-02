@@ -12,7 +12,7 @@ void ChorusEffect::processSound(std::vector<f32>& inputBuffer,
     for (u32 i = 0; i < frames; i++)
     {
         f32 lfo = std::sin(2.0f * std::numbers::pi * _phase);
-        _phase += _modFrequency / _sampleRate;
+        _phase += _phaseIncrement;
         _phase -= std::floor(_phase);
 
         f32 delayFrames = (_baseDelayFactor + _modDepth * lfo) * _sampleRate;
@@ -82,6 +82,7 @@ ChorusEffect::ChorusEffect(const u32 channels, const f32 sampleRate) : Effect(ch
 
 void ChorusEffect::refresh(){
     _phase = 0.0f;
+	_phaseIncrement = _modFrequency / _sampleRate;
     if(_bufferFrames * _channels == _buffer.size()){
         return;
     }

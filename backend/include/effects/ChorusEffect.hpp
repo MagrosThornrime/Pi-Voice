@@ -40,6 +40,8 @@ namespace effects {
         f32 _modFrequency = 1.5f;
         f32 _modDepth = 0.005f;
 
+		f32 _phaseIncrement;
+
         u32 _bufferFrames = 10000;
         f32 _feedback = 0.1f;
         f32 _wetAmount = 0.5f;
