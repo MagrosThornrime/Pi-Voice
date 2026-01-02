@@ -5,11 +5,6 @@
 
 namespace filters {
 void AllPassFilter::refresh() {
-	_prev.resize(_channels);
-	for (auto&& v : _prev) {
-		v = {};
-	}
-
 	constexpr auto pi = std::numbers::pi_v<f32>;
 
 	const auto omega = (2 * pi) * _cutoff / _sampleRate;

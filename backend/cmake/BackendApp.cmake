@@ -38,6 +38,7 @@ if (MSVC)
         application
         sequencer
         node_api
+        effects
     )
     target_link_options(BackendApp PRIVATE
         /WHOLEARCHIVE:midi
@@ -49,6 +50,7 @@ if (MSVC)
         /WHOLEARCHIVE:application
         /WHOLEARCHIVE:sequencer
         /WHOLEARCHIVE:node_api
+        /WHOLEARCHIVE:effects
     )
 else()
     target_link_libraries(BackendApp
@@ -69,6 +71,7 @@ else()
         application
         sequencer
         node_api
+        effects
         -Wl,--no-whole-archive
     )
 endif()

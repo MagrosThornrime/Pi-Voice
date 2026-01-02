@@ -6,6 +6,7 @@
 namespace filters {
 class HighPassFilter: public BiquadFilter {
 public:
+	using BiquadFilter::BiquadFilter;
 	void refresh() override;
 };
 }

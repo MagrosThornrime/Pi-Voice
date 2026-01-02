@@ -6,9 +6,9 @@
 namespace utils {
 
 template<class T>
-struct alignas(std::hardware_destructive_interference_size) OneLineAtomic {
+struct alignas(64) OneLineAtomic {
 	std::atomic<T> atomic;
-	char _padding[std::hardware_destructive_interference_size - sizeof(atomic)];
+	char _padding[64 - sizeof(atomic)];
 };
 
 }

@@ -8,11 +8,12 @@ namespace pipeline {
 
 using LayerRef = std::shared_ptr<Layer>;
 
-Pipeline::Pipeline(u32 framesPerCall, u32 channels,
+Pipeline::Pipeline(u32 framesPerCall, u32 channels, f32 sampleRate,
 	std::shared_ptr<polyphonic::VoiceManager> voiceManager,
 	std::shared_ptr<fileio::FileRecorder> recorder,
 	std::shared_ptr<seq::Sequencer> sequencer)
 	: _channels(channels),
+	_sampleRate(sampleRate),
 	_outputQueue(framesPerCall * channels * 4),
 	_voiceManager(voiceManager),
 	_recorder(recorder),
@@ -145,6 +146,14 @@ void Pipeline::_generateSound(std::stop_token stopToken, u32 framesPerCall) {
 			}
 		}
 	}
+}
+
+u32 Pipeline::getChannels() const {
+	return _channels;
+}
+
+f32 Pipeline::getSampleRate() const {
+	return _sampleRate;
 }
 
 } // namespace pipeline

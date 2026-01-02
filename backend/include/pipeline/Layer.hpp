@@ -10,7 +10,7 @@ namespace pipeline {
 
 class Layer {
 public:
-	Layer() = default;
+	Layer(const u32 channels, const f32 sampleRate);
 
 	virtual Layer& setParam(const u32 param, std::any value) = 0;
 	virtual std::any getParam(const u32 param) = 0;
@@ -19,6 +19,9 @@ public:
 	virtual void refresh();
 
 	virtual ~Layer() = default;
+protected:
+	u32 _channels;
+	f32 _sampleRate;
 };
 
 }

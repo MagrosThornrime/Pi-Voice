@@ -2,19 +2,18 @@
 
 #include "Types.hpp"
 #include <pipeline/Layer.hpp>
+#include <effects/EffectTypes.hpp>
+#include <memory>
 
 namespace effects {
     class Effect: public pipeline::Layer {
     public:
-        //static std::shared_ptr<Effect> create(EffectType::Value effect);
 
-        Effect() = default;
-        explicit Effect(const u32 channels);
+        static std::shared_ptr<Effect> create(EffectType::Value effect, const u32 channels, const f32 sampleRate);
 
-    protected:
-        u32 _channels = 2;
-        f32 _sampleRate = 44100;
+        Effect(const u32 channels, const f32 sampleRate);
 
-        void _set(const u32 channels);
+        virtual EffectType::Value getEffectType() = 0;
+
     };
 }

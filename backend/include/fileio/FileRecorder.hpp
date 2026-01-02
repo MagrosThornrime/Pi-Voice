@@ -6,7 +6,6 @@
 #include <Types.hpp>
 #include <sndfile.h>
 #include <thread>
-#include <mutex>
 
 namespace fileio {
 class FileRecorder {
@@ -24,7 +23,6 @@ private:
 	bool _canWriteToDirectory(const std::string& dir);
 
 
-	std::mutex _mutex;
 	bool _isRunning = false;
 	std::string _outputDirectory;
 
