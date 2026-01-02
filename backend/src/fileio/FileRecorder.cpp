@@ -26,8 +26,6 @@ FileRecorder::FileRecorder(const u32 sampleRate, const u32 channels, const float
 
 void FileRecorder::write(const float* buffer, u32 numFrames)
 {
-    auto lock = std::lock_guard(_mutex);
-
     if (!_isRunning)
         return;
 
@@ -55,7 +53,6 @@ std::string FileRecorder::_getFilename() {
 }
 
 void FileRecorder::start() {
-	auto lock = std::lock_guard(_mutex);
 	if (_isRunning) {
 		return;
 	}
@@ -87,7 +84,6 @@ void FileRecorder::start() {
 }
 
 void FileRecorder::stop() {
-	auto lock = std::lock_guard(_mutex);
 	if (!_isRunning) {
 		return;
 	}
