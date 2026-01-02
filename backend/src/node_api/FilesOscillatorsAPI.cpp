@@ -8,7 +8,7 @@ void initFiles(Napi::Env env, Napi::Object exports){
 	exports.Set("stopRecording", Napi::Function::New(env, stopRecording));
 	exports.Set("setRecordingPath", Napi::Function::New(env, setRecordingPath));
 	exports.Set("setSamplesPath", Napi::Function::New(env, setSamplesPath));
-	exports.Set("getOscillatorsNames", Napi::Function::New(env, getOscillatorNames));
+	exports.Set("getOscillatorNames", Napi::Function::New(env, getOscillatorNames));
 	exports.Set("getOscillatorPlot", Napi::Function::New(env, getOscillatorPlot));
 }
 
