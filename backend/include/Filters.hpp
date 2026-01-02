@@ -2,7 +2,7 @@
 
 #include <filters/AllPassFilter.hpp>
 #include <filters/BandPassFilter.hpp>
-#include <filters/BwFilter.hpp>
+#include <filters/BiquadFilter.hpp>
 #include <filters/HighPassFilter.hpp>
 #include <filters/HighShelfFilter.hpp>
 #include <filters/LowPassFilter.hpp>

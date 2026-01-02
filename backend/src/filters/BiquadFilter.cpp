@@ -1,4 +1,4 @@
-#include <filters/BwFilter.hpp>
+#include <filters/BiquadFilter.hpp>
 #include <filters/FilterParams.hpp>
 #include <span>
 #include <range/v3/view/zip.hpp>
@@ -16,12 +16,12 @@
 
 namespace filters {
 
-BwFilter::BwFilter(const u32 channels, const std::array<float, 2>& a, const std::array<float, 3>& b) {
+BiquadFilter::BiquadFilter(const u32 channels, const std::array<float, 2>& a, const std::array<float, 3>& b) {
 	_set(channels, a, b);
 }
 
-std::shared_ptr<BwFilter> BwFilter::create(FilterType::Value filter) {
-	std::shared_ptr<BwFilter> result = nullptr;
+std::shared_ptr<BiquadFilter> BiquadFilter::create(FilterType::Value filter) {
+	std::shared_ptr<BiquadFilter> result = nullptr;
 	switch (filter) {
 		case FilterType::allPass: result = std::make_shared<AllPassFilter>(); break;
 		case FilterType::bandPass: result = std::make_shared<BandPassFilter>(); break;
@@ -39,7 +39,7 @@ std::shared_ptr<BwFilter> BwFilter::create(FilterType::Value filter) {
 	return result;
 }
 
-void BwFilter::processSound(std::vector<f32>& inputBuffer,
+void BiquadFilter::processSound(std::vector<f32>& inputBuffer,
 	std::vector<f32>& outputBuffer,
 	u32 frames) {
 
@@ -68,7 +68,7 @@ void BwFilter::processSound(std::vector<f32>& inputBuffer,
 }
 
 
-void BwFilter::_set(const u32 channels, const std::array<float, 2>& a, const std::array<float, 3>& b) {
+void BiquadFilter::_set(const u32 channels, const std::array<float, 2>& a, const std::array<float, 3>& b) {
 	_channels = channels;
 	_a = a;
 	_b = b;
@@ -77,7 +77,7 @@ void BwFilter::_set(const u32 channels, const std::array<float, 2>& a, const std
 
 #define SET_PARAM(name) case FilterParams::name: if(value.type() == typeid(_##name)) { _##name = std::any_cast<decltype(_##name)>(std::move(value)); } break
 
-pipeline::Layer& BwFilter::setParam(const u32 param, std::any value) {
+pipeline::Layer& BiquadFilter::setParam(const u32 param, std::any value) {
 	switch (param) {
 		SET_PARAM(cutoff);
 		SET_PARAM(quality);
@@ -90,7 +90,7 @@ pipeline::Layer& BwFilter::setParam(const u32 param, std::any value) {
 
 #define GET_PARAM(name) case FilterParams::name: result = _##name; break
 
-std::any BwFilter::getParam(const u32 param) {
+std::any BiquadFilter::getParam(const u32 param) {
 	std::any result;
 
 	switch (param) {
