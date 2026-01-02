@@ -2,13 +2,11 @@ import { Box, Text, Collapsible, Grid } from "@chakra-ui/react";
 import { useEffect, useState, Fragment } from "react";
 import { LuChevronRight } from "react-icons/lu"
 import { Opt, OptKey, OptEffectKey, Filter, filters, defaultOpts } from "../app/utils/tables"
-import { buildInitialOptsState, buildInitialPropsState } from "../app/utils/state_utils";
 import { LogSlider } from "./SliderLinLog";
 import { OrderSwitch } from "./OrderSwitch";
 import { SliderNormal } from "./SliderNormal";
 import { setOpts, useFiltersParams } from "@/app/utils/context_utils";
 import { OptParams } from "@/app/utils/context_utils";
-import { FiltersParams, EffectsParams } from "@/app/utils/context_utils";
 
 
 export type SliderProps = {
@@ -17,12 +15,10 @@ export type SliderProps = {
 }
 
 type SlidersItemsProps = {
-  neededItems: Filter[];
   attr: "filters" | "effects";
-  idx: number;
 };
 
-export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
+export function SlidersItems({ attr }: SlidersItemsProps) {
   const { paramsData, setParamsData } = useFiltersParams();
 
 
@@ -79,7 +75,7 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
     <Fragment key={obj.id}>
       <Box
         p={5}
-        bg="grey"
+        bg={(obj.params.group === "filters") ? "grey" : "green.600"}
         rounded="2xl"
         shadow="md"
       >

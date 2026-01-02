@@ -3,7 +3,7 @@ import { Box, Button, Text, Collapsible } from "@chakra-ui/react";
 import { useEffect, useState,  DragEvent } from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { MdDelete } from "react-icons/md";
-import { useController, useForm, FieldError } from "react-hook-form"
+import { useController, useForm } from "react-hook-form"
 import { filters, effects, defaultOpts, OptKey, FilterType } from "../utils/tables"
 import { LuChevronRight } from "react-icons/lu"
 import { SlidersItems } from "@/components/SlidersItems";
@@ -37,6 +37,12 @@ type blockType = {
     id: string;
 }
 
+
+type listType = {
+    val: string;
+    group: "filters" | "effects";
+}
+
 function getPosFromFiltered(list1: blockType[], idx: string) {
     const res:number = list1.filter(item => item.val !== "").findIndex(i => i.id === idx);
     return res;
@@ -66,7 +72,6 @@ function DraggableList({ attr }: DraggableListProps) {
             setParamsData([]);
         }, [myData]);
 
-
     const [dragIndex, setDragIndex] = useState<number | null>(null);
     const [dragBlockInd, setDragBlockInd] = useState<number | null>(null);
 
@@ -77,7 +82,7 @@ function DraggableList({ attr }: DraggableListProps) {
 
     const dragStartBlock = (index: number) => {
         setDragBlockInd(index);
-    }
+    };
 
 
     const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -141,7 +146,7 @@ function DraggableList({ attr }: DraggableListProps) {
                 }
                 else if (condInd){
                     const index3 = newBlocks.slice(0, dragBlockInd).filter(item => item.val !== "").length;
-                    if (index1 + 1 != index3){ // we insert before index1
+                    if (index1 + 1 != index3){ // we insert before index3
                         moveFilterInList(index1, index3);
                         (async () => {
                             await moveFilter(index1, index3);
@@ -337,11 +342,11 @@ function Page() {
             <Box minW="80%">
                 <DraggableList attr="filters" />
                 <Box h="10" />
-                <SlidersItems neededItems={filters} attr="filters" idx={0} />
+                <SlidersItems attr="filters" />
                 <Box h="10" />
                 <DraggableList attr="effects" />
                 <Box h="10" />
-                <SlidersItems neededItems={effects} attr="effects" idx={1} />
+                <SlidersItems attr="effects"/>
                 <Box h="10" />
 
             </Box>
