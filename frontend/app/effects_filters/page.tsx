@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Text, Collapsible } from "@chakra-ui/react";
+import { Box, Button, Text, Collapsible, Stack } from "@chakra-ui/react";
 import { useEffect, useState,  DragEvent } from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { MdDelete } from "react-icons/md";
@@ -35,6 +35,7 @@ type DraggableListProps = {
 type blockType = {
     val: string;
     id: string;
+    group: "filters" | "effects" | "empty"
 }
 
 
@@ -43,9 +44,21 @@ type listType = {
     group: "filters" | "effects";
 }
 
+const groupColor:Record<string, string> = {
+    "filters" : "green.500",
+    "effects" : "purple.600",
+    "empty" : "blue.500"
+}
+
 function getPosFromFiltered(list1: blockType[], idx: string) {
     const res:number = list1.filter(item => item.val !== "").findIndex(i => i.id === idx);
     return res;
+}
+
+function getListFromData(data:FiltersData):listType[] {
+    const dataFilters = data.filters.map((x, _):listType => {return {val: x, group: "filters"}});
+    const dataEffects = data.effects.map((x, _):listType => {return {val: x, group: "effects"}});
+    return dataFilters.concat(dataEffects);
 }
 
 function DraggableList({ attr }: DraggableListProps) {
@@ -54,8 +67,7 @@ function DraggableList({ attr }: DraggableListProps) {
     const { paramsData, setParamsData } = useFiltersParams();
     const { deleteFilterFromList, addFilterToList, swapFiltersFromList, moveFilterInList } = useFiltersLogic();
 
-    const myData = data[attr];
-    const [listData, setListData] = useState<string[]>(myData);
+    const [listData, setListData] = useState<listType[]>(getListFromData(data));
     const [blocks, setBlocks] = useState<blockType[]>([]);
 
     const {
@@ -66,18 +78,22 @@ function DraggableList({ attr }: DraggableListProps) {
 
     useEffect(
         () => {
-            setListData(myData ?? []);
+            setListData(getListFromData(data) ?? []);
             if(presetProperties.filters){
-                let newArr = Array.from({ length: presetProperties.filters.length }, (_, i):blockType => {return { val: presetProperties.filters[i].params.value, id:uuidv4() }});
-                newArr = newArr.concat(Array.from({ length: FIELDS-newArr.length}, (_, i):blockType => {return { val: "", id:uuidv4() }}));
+                let newArr = Array.from({ length: presetProperties.filters.length },
+                     (_, i):blockType => {return { val: presetProperties.filters[i].params.value, id:uuidv4(), group: presetProperties.filters[i].params.group}});
+
+                newArr = newArr.concat(Array.from({ length: FIELDS-newArr.length}, (_, i):blockType => {return { val: "", id:uuidv4(), group: "empty" }}));
                 setBlocks(newArr);
                 setParamsData(presetProperties.filters);
             }else{
-                const newArr = Array.from({ length: FIELDS }, (_, i):blockType => {return { val: "", id:uuidv4() }});
+                const newArr = Array.from({ length: FIELDS }, (_, i):blockType => {return { val: "", id:uuidv4(), group: "empty" }});
+
                 setBlocks(newArr);
+                setListData(getListFromData(data));
                 setParamsData([]);
             }
-        }, [myData]);
+        }, [data]);
     
     useEffect(
         () => {
@@ -86,8 +102,10 @@ function DraggableList({ attr }: DraggableListProps) {
 
     useEffect(() => {
         if(presetProperties.filters!=paramsData){
-            let newArr = Array.from({ length: presetProperties.filters.length }, (_, i):blockType => {return { val: presetProperties.filters[i].params.value, id:uuidv4() }});
-            newArr = newArr.concat(Array.from({ length: FIELDS-newArr.length}, (_, i):blockType => {return { val: "", id:uuidv4() }}));
+            let newArr = Array.from({ length: presetProperties.filters.length },
+                 (_, i):blockType => {return { val: presetProperties.filters[i].params.value, id:uuidv4(), group: presetProperties.filters[i].params.group }});
+            newArr = newArr.concat(Array.from({ length: FIELDS-newArr.length}, (_, i):blockType => {return { val: "", id:uuidv4(), group: "empty" }}));
+
             setBlocks(newArr);
             setParamsData(presetProperties.filters);
         }
@@ -125,16 +143,16 @@ function DraggableList({ attr }: DraggableListProps) {
                 index1 = getPosFromFiltered(newBlocks, newBlocks[index].id); // element that is there before change
                 deleteFilterFromList(index1);
             }
-            newBlocks[index] = {val: draggedItem, id: newID}; // update
+            newBlocks[index] = {val: draggedItem.val, id: newID, group:draggedItem.group}; // update
 
             const index2 = getPosFromFiltered(newBlocks, newID) // actual position after adding
-            addFilterToList(draggedItem as FilterType, Object.keys(defaultOpts) as OptKey[], index2);
+            addFilterToList(draggedItem.val as FilterType, Object.keys(defaultOpts) as OptKey[], index2);
 
             (async () => {
                 if (blocks[index].val !== "") {
                     await deleteFilter(index1);
                 }
-                await addFilter(draggedItem, index2);
+                await addFilter(draggedItem.val, index2);
             })();
 
             setDragIndex(null);
@@ -189,7 +207,10 @@ function DraggableList({ attr }: DraggableListProps) {
         const newBlocks = [...blocks];
 
         const index1 = getPosFromFiltered(newBlocks, newBlocks[index].id); // we search in arr before change
+
         newBlocks[index].val = "";
+        newBlocks[index].group = "empty";
+
         deleteFilterFromList(index1);
 
         (async () => {
@@ -232,12 +253,12 @@ function DraggableList({ attr }: DraggableListProps) {
                             {
                                 listData.map((item, index) => {
                                     return (
-                                        <Box key={index} as="li" color="white" bg="gray.500" rounded="2xl" maxW="30%" shadow="md" p={2}
+                                        <Box key={index} as="li" color="white" bg={ (item.group === "filters") ? "gray.500" : "green.600"} rounded="2xl" maxW="30%" shadow="md" p={2}
                                             draggable
                                             onDragStart={() => dragStartList(index)}
                                             cursor="grab"
                                             className={index === dragIndex ? "dragging" : ""} >
-                                            {item}
+                                            {item.val}
                                         </Box>
                                     )
                                 })
@@ -252,7 +273,7 @@ function DraggableList({ attr }: DraggableListProps) {
                                     {
                                         blocks.map((item, index) => {
                                             return (
-                                                <Box key={index} as="li" color="white" bg="green.500"
+                                                <Box key={index} as="li" color="white" bg={groupColor[item.group]}
                                                     rounded="2xl" minHeight="40px" minWidth="7%" shadow="md" p={2}
 
                                                     draggable
@@ -336,21 +357,33 @@ function Page() {
                     console.log("SUBMITTED", formData);
                 })}
             >
+                <Stack direction={"row"} gap={40}>
+                    <CheckboxesWithHeading field={filtersField.field}
+                        formItems={filters}
+                        invalid={invalid}
+                        error={Array.isArray(errors.filters)
+                            ? errors.filters[0]
+                            : errors.filters
+                        }
+                        ifButton={false}
+                        headerText="Select filters" >
+                    </CheckboxesWithHeading>
 
-                <CheckboxesWithHeading field={filtersField.field}
-                    formItems={filters}
-                    invalid={invalid}
-                    error={Array.isArray(errors.filters)
-                        ? errors.filters[0]
-                        : errors.filters
-                    }
-                    ifButton={false}
-                    headerText="Select filters" >
+                    <CheckboxesWithHeading field={effectsField.field}
+                        formItems={effects}
+                        invalid={invalid_eff}
+                        error={Array.isArray(errors.effects)
+                            ? errors.effects[0]
+                            : errors.effects
+                        }
+                        ifButton={false}
+                        headerText="Select effects" >
 
-                </CheckboxesWithHeading>
+                    </CheckboxesWithHeading>
+                </Stack>
 
                 <Box display="flex" justifyContent="center" minW="60%">
-                    <Button size="sm" type="submit">
+                    <Button size="2xl" type="submit">
                         Submit
                     </Button>
                 </Box>
