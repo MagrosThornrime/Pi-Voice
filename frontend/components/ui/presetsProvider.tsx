@@ -1,5 +1,6 @@
 "use client";
 
+import { ItemsParams } from "@/app/utils/context_utils";
 import { createContext, useContext, useState, useEffect, ReactNode, Dispatch, SetStateAction, useRef } from "react";
 
 export interface Preset {
@@ -11,12 +12,7 @@ export interface Preset {
   oscilator1 : string;
   oscilator2 : string;
   oscilator3 : string;
-  filter1 : string;
-  filter2 : string;
-  filter3 : string;
-  effect1 : string;
-  effect2 : string;
-  effect3 : string;
+  filters : ItemsParams[];
 }
 
 export interface PresetFile {
@@ -49,12 +45,7 @@ export function PresetProvider({ children }: { children: ReactNode }) {
     oscilator1:"sine",
     oscilator2:"empty",
     oscilator3:"empty",
-    filter1:"",
-    filter2:"",
-    filter3:"",
-    effect1:"",
-    effect2:"",
-    effect3:"",
+    filters:[],
   })
 
   useEffect(() => {
@@ -93,12 +84,7 @@ export function PresetProvider({ children }: { children: ReactNode }) {
         oscilator1:preset.oscilator1,
         oscilator2:preset.oscilator2,
         oscilator3:preset.oscilator3,
-        filter1:preset.filter1,
-        filter2:preset.filter2,
-        filter3:preset.filter3,
-        effect1:preset.effect1,
-        effect2:preset.effect2,
-        effect3:preset.effect3,
+        filters:preset.filters,
       });
       window.synthAPI.setAttack(10 ** (-preset.attack * 10));
       window.synthAPI.setDecay(10 ** (-preset.decay * 10));

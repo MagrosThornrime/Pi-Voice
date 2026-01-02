@@ -37,7 +37,7 @@ export type ItemsParams = {
 }
 
 
-type FiltersParamsContextType = {
+export type FiltersParamsContextType = {
     paramsData: ItemsParams[];
     setParamsData: React.Dispatch<React.SetStateAction<ItemsParams[]>>;
 };
