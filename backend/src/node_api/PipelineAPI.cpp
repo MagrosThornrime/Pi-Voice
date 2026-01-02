@@ -72,7 +72,7 @@ void addFilter(const Napi::CallbackInfo& info) {
 
 	auto channels = p.getChannels();
 	auto sampleRate = p.getSampleRate();
-	p.add(filters::BwFilter::create((filters::FilterType::Value)type, channels, sampleRate), idx);
+	p.add(filters::BiquadFilter::create((filters::FilterType::Value)type, channels, sampleRate), idx);
 
 	//fmt::println("Added filter {} to index {}", type, idx);
 	printState(p);

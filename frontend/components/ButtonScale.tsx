@@ -1,34 +1,39 @@
 import { Box, Button, Text, Collapsible, Flex, Grid, Slider } from "@chakra-ui/react";
 import {useState, Fragment} from "react";
 import { SliderProps } from "./SlidersItems";
-import { Opt, OptKey, Filter, defaultOpts } from "@/app/utils/tables";
+import { Opt, OptKey, Filter, defaultOpts, OptEffectKey } from "@/app/utils/tables";
 import { calcValueFromLogScale, calcValueFromLinScale,calcLinearPosFromLogarithmic, calcLogaritmicPosFromLinear, getBounds} from "@/app/utils/maths_utils";
-import { setFilterParam} from "@/app/effects_filters/page";
-import { FiltersParams } from "@/app/utils/context_utils";
+import { setFilterParam } from "@/app/utils/integration_utils";
+import { FiltersParams, ItemsParams, EffectsParams, OptParams} from "@/app/utils/context_utils";
+import { getOptParams } from "./SliderLinLog";
 
-type ButtonScaleProps = {
-    setSliderVal: (itemIdx: string, opt: string, newValue: number) => void;
-    setSliderEndVal: (itemIdx: string, opt: string, newValue: number) => void;
-    setSliderProps: (itemIdx: string, opt: string, newValue: SliderProps) => void;
-    optKey: OptKey;
-    opt:Opt;
+type ButtonScaleProps<P extends keyof OptParams = keyof OptParams>  = {
+    setSliderValue: (
+        itemID: string,
+        opt: OptKey | OptEffectKey,
+        property: P,
+        newValue: OptParams[P]
+    ) => void;
+    optKey: OptKey | OptEffectKey;
+    opt: Opt;
+    itemID: string;
+    paramsData: ItemsParams[];
     status: string;
-    itemID:string;
-    paramsData: FiltersParams[];
     setStatus: React.Dispatch<React.SetStateAction<string>>;
 }
 
 
-export function ButtonScale({ setStatus, status, setSliderVal, setSliderEndVal, setSliderProps, optKey, opt, itemID, paramsData }: ButtonScaleProps) {
+export function ButtonScale({ setStatus, status, setSliderValue, optKey, opt, itemID, paramsData }: ButtonScaleProps) {
     const obj = paramsData.find(f => f.id === itemID);
     if (!obj) return null;
-
-    const state_key = `${obj.value}.${optKey}`;
-
+    const group = obj.params.group;
+    
     const handleClick = () => {
         const newStatus = status === "linear" ? "logarithmic" : "linear";
-        const sliderVal = obj.record[optKey].EndVal;
-        const actProps = obj.record[optKey].Props;
+        const rec = (group == "filters") ? getOptParams(obj.params, optKey as OptKey) : getOptParams(obj.params, optKey as OptEffectKey);
+
+        const sliderVal = rec.EndVal;
+        const actProps = rec.Props;
 
         const logPos = calcLogaritmicPosFromLinear(
             sliderVal,
@@ -55,9 +60,9 @@ export function ButtonScale({ setStatus, status, setSliderVal, setSliderEndVal, 
                 : { bounds: linRange, actValue: actVal };
 
         setStatus(newStatus);
-        setSliderVal(itemID, optKey, nextPos);
-        setSliderEndVal(itemID, optKey, nextPos);
-        setSliderProps(itemID, optKey, nextProps);
+        setSliderValue(itemID, optKey, "Val", nextPos);
+        setSliderValue(itemID, optKey, "EndVal", nextPos);
+        setSliderValue(itemID, optKey, "Props", nextProps);
     };
 
     return (

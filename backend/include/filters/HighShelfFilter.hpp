@@ -1,10 +1,10 @@
 #pragma once
 
-#include "BwFilter.hpp"
+#include "BiquadFilter.hpp"
 #include <numbers>
 
 namespace filters {
-class HighShelfFilter: public BwFilter {
+class HighShelfFilter: public BiquadFilter {
 public:
 	using BwFilter::BwFilter;
 	void refresh() override;

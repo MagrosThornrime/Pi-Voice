@@ -10,11 +10,11 @@
 
 namespace filters {
 // Bw - Butterworth
-class BwFilter: public pipeline::Layer {
+class BiquadFilter: public pipeline::Layer {
 public:
-	static std::shared_ptr<BwFilter> create(FilterType::Value filter, const u32 channels, const f32 sampleRate);
+	static std::shared_ptr<BiquadFilter> create(FilterType::Value filter, const u32 channels, const f32 sampleRate);
 
-	BwFilter(const u32 channels, const f32 sampleRate);
+	BiquadFilter(const u32 channels, const f32 sampleRate);
 
 	pipeline::Layer& setParam(const u32 param, std::any value) override;
 	std::any getParam(const u32 param) override;

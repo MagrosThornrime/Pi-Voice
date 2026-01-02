@@ -1,10 +1,10 @@
 #pragma once
 
-#include "BwFilter.hpp"
+#include "BiquadFilter.hpp"
 #include <numbers>
 
 namespace filters {
-class BandPassFilter: public BwFilter {
+class BandPassFilter: public BiquadFilter {
 public:
 	using BwFilter::BwFilter;
 	void refresh() override;
