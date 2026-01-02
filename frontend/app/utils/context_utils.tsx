@@ -1,7 +1,7 @@
 "use client";
 import { FiltersData } from "../effects_filters/page";
 import { useContext, ReactNode, createContext, useState } from "react";
-import { OptKey, FilterType, Filter, defaultOpts } from "./tables";
+import { OptKey, FilterType, defaultOpts, OptEffectKey, EffectType,} from "./tables";
 import { SliderProps } from "@/components/SlidersItems";
 import { v4 as uuidv4 } from "uuid";
 
@@ -11,6 +11,7 @@ type FiltersContextType = {
     setData: React.Dispatch<React.SetStateAction<FiltersData>>;
 };
 
+export type setOpts = "Val" | "EndVal" | "Props";
 
 export type OptParams = {
     Val: number;
@@ -18,17 +19,27 @@ export type OptParams = {
     Props: SliderProps;
 }
 
-
 export type FiltersParams = {
+    group: "filters";
     record: Record<OptKey, OptParams>;
     value: FilterType;
+}
+
+export type EffectsParams = {
+    group: "effects";
+    record: Record<OptEffectKey, OptParams>;
+    value: EffectType;
+}
+
+export type ItemsParams = {
+    params: EffectsParams | FiltersParams
     id: string;
 }
 
 
 type FiltersParamsContextType = {
-    paramsData: FiltersParams[];
-    setParamsData: React.Dispatch<React.SetStateAction<FiltersParams[]>>;
+    paramsData: ItemsParams[];
+    setParamsData: React.Dispatch<React.SetStateAction<ItemsParams[]>>;
 };
 
 
@@ -51,7 +62,7 @@ export function FiltersProvider({ children }: { children: ReactNode }) {
 
 
 export function FiltersParamsProvider({ children }: { children: ReactNode }) {
-    const [paramsData, setParamsData] = useState<FiltersParams[]>([]);
+    const [paramsData, setParamsData] = useState<ItemsParams[]>([]);
 
     return (
         <FiltersParamsContext.Provider value={{ paramsData, setParamsData }}>
@@ -112,9 +123,12 @@ export function useFiltersLogic() {
 
     const addFilterToList = (itemName: FilterType, names: OptKey[], idx: number, initial = 0) => {
         console.log("ADDING", itemName, idx);
-        const newParams: FiltersParams = { id: uuidv4(), value: itemName, record: {} as Record<OptKey, OptParams> };
+        const newParams: ItemsParams = { id: uuidv4(),
+            params: { group: "filters", value: itemName, record: {} as Record<OptKey, OptParams> }
+        };
+        const record = newParams.params.record as Record<OptKey, OptParams>;
         names.forEach((key, _) => {
-            newParams.record[key] = { EndVal: initial, Val: initial, Props: { bounds: defaultOpts[key].range, actValue: initial } }
+            record[key] = { EndVal: initial, Val: initial, Props: { bounds: defaultOpts[key].range, actValue: initial } }
         })
 
         setParamsData(prev => {

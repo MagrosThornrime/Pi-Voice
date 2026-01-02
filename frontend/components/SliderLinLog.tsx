@@ -1,31 +1,58 @@
 import { Box, Text, Flex, Slider } from "@chakra-ui/react";
 import { useState, Fragment } from "react";
 import { SliderProps } from "./SlidersItems";
-import { Opt, OptKey, Filter, defaultOpts } from "@/app/utils/tables";
+import { Opt, OptKey, defaultOpts, OptEffectKey } from "@/app/utils/tables";
 import { calcValueFromLogScale, calcValueFromLinScale } from "@/app/utils/maths_utils";
 import { setFilterParam } from "@/app/utils/integration_utils";
 import { ButtonScale } from "./ButtonScale";
-import { FiltersParams } from "@/app/utils/context_utils";
+import { FiltersParams, ItemsParams, EffectsParams, OptParams} from "@/app/utils/context_utils";
 
 
-type LogSliderProps = {
-    setSliderVal: (itemIdx: string, opt: string, newValue: number) => void;
-    setSliderEndVal: (itemIdx: string, opt: string, newValue: number) => void;
-    setSliderProps: (itemIdx: string, opt: string, newValue: SliderProps) => void;
-    optKey: OptKey;
+type LogSliderProps<P extends keyof OptParams = keyof OptParams> = {
+    setSliderValue: (
+        itemID: string,
+        opt: OptKey | OptEffectKey,
+        property: P,
+        newValue: OptParams[P]
+    ) => void;
+    optKey: OptKey | OptEffectKey;
     opt: Opt;
     itemID: string;
-    paramsData:FiltersParams[];
-
+    paramsData: ItemsParams[];
 
 };
-export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, opt, optKey, itemID, paramsData}: LogSliderProps) {
+
+export function getOptParams(
+  params: FiltersParams,
+  key: OptKey
+): OptParams
+export function getOptParams(
+  params: EffectsParams,
+  key: OptEffectKey
+): OptParams
+export function getOptParams(
+  params: FiltersParams | EffectsParams,
+  key: OptKey | OptEffectKey
+) {
+  return params.group === "filters"
+    ? params.record[key as OptKey]
+    : params.record[key as OptEffectKey]
+}
+
+
+export function LogSlider({ setSliderValue, opt, optKey, itemID, paramsData}: LogSliderProps) {
     const obj = paramsData.find(f => f.id === itemID);
     if (!obj) return null;
 
+    const group = obj.params.group;
+    const rec = (group == "filters") ? getOptParams(obj.params, optKey as OptKey) : getOptParams(obj.params, optKey as OptEffectKey);
+    
+
+    const Value = rec.Val;
+    const Props = rec.Props;
+
+    
     const [status, setStatus] = useState<string>("logarithmic");
-    const state_key = `${obj.value}.${optKey}`;
-    const Value = obj.record[optKey].Val;
 
     return (
         <Fragment key={`${itemID}${optKey}`}>
@@ -39,8 +66,8 @@ export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, opt, 
                 <Text fontWeight="medium" color="white"> {optKey} </Text>
                 <Box flex="1" display="flex" justifyContent="center">
                     <ButtonScale setStatus={setStatus} status={status}
-                        optKey={optKey} setSliderVal={setSliderVal} setSliderEndVal={setSliderEndVal}
-                        setSliderProps={setSliderProps} paramsData={paramsData}
+                        optKey={optKey} setSliderValue={setSliderValue} 
+                        paramsData={paramsData}
                         opt={opt} itemID = {itemID} />
                 </Box>
 
@@ -51,9 +78,11 @@ export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, opt, 
 
                 onValueChange={(details) => {
                     const sliderVal = details.value[0]
-                    const actProps = obj.record[optKey].Props;
-                    setSliderVal(itemID, optKey, sliderVal)
-                    setSliderProps(itemID, optKey, {
+                    const rec = (group == "filters") ? getOptParams(obj.params, optKey as OptKey) : getOptParams(obj.params, optKey as OptEffectKey);
+                    const actProps = rec.Props;
+
+                    setSliderValue(itemID, optKey, "Val", sliderVal)
+                    setSliderValue(itemID, optKey, "Props", {
                         bounds: actProps.bounds,
                         actValue: status === "logarithmic"
                             ? calcValueFromLogScale(sliderVal, opt.range)
@@ -65,19 +94,22 @@ export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, opt, 
 
                 onValueChangeEnd={async (details) => {
                     const sliderVal = details.value[0];
-                    const actProps = obj.record[optKey].Props;
+
+                    const rec = (group == "filters") ? getOptParams(obj.params, optKey as OptKey) : getOptParams(obj.params, optKey as OptEffectKey);
+                    const actProps = rec.Props;
 
                     const newVal = status === "logarithmic"
                                 ? (calcValueFromLogScale(sliderVal, opt.range))
                                 : (calcValueFromLinScale(sliderVal, actProps.bounds))
 
-                    setSliderEndVal(itemID, optKey, sliderVal);
-                    setSliderProps( itemID, optKey,{ bounds: actProps.bounds,actValue: newVal } )
+                    setSliderValue(itemID, optKey, "EndVal", sliderVal);
+                    setSliderValue( itemID, optKey, "Props", { bounds: actProps.bounds, actValue: newVal } )
 
-                    console.log("SLIDER END VALUE: ", obj.record[optKey].EndVal);
-
-                    await setFilterParam(paramsData.findIndex((f) => f.id === itemID), defaultOpts[optKey].index, newVal);
-                    console.log("FILTER LOG PARAM", obj.value, defaultOpts[optKey].index, Math.round(newVal))
+                    console.log("SLIDER END VALUE: ", sliderVal);
+                    if (group == "filters"){
+                        await setFilterParam(paramsData.findIndex((f) => f.id === itemID), defaultOpts[optKey as OptKey].index, newVal);
+                        console.log("FILTER LOG PARAM", obj.params.value, defaultOpts[optKey as OptKey].index, Math.round(newVal))
+                    }
                 }}>
 
 
@@ -93,15 +125,15 @@ export function LogSlider({ setSliderVal, setSliderEndVal, setSliderProps, opt, 
             <Flex justify="space-between" align="center" mb={2} w="100%">
 
                 <Text>
-                    {obj.record[optKey].Props.bounds[0]}
+                    {Props.bounds[0]}
                 </Text>
                 <Box flex="1" textAlign="center" minW="0">
                     <Text> Val:
-                        {Math.round(obj.record[optKey].Props.actValue)}
+                        {Math.round(Props.actValue)}
                     </Text>
                 </Box>
 
-                <Text> {obj.record[optKey].Props.bounds[1]} </Text>
+                <Text> {Props.bounds[1]} </Text>
             </Flex>
 
             <Box h="5" />

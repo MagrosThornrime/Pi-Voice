@@ -1,6 +1,5 @@
 import { SliderProps } from "@/components/SlidersItems";
 import {Opt, OptKey, Filter, defaultOpts, FilterType } from "../utils/tables"
-import { FiltersParams, OptParams, useFiltersParams, useFiltersLogic } from "./context_utils";
 
 export const buildInitialOptsState = (items:Filter[], initial:number= 0):Record<string, number>[] => {
     const state: Record<string, number> = {};

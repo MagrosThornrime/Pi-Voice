@@ -1,19 +1,20 @@
 import { Box, Text, Collapsible, Grid } from "@chakra-ui/react";
 import { useEffect, useState, Fragment } from "react";
 import { LuChevronRight } from "react-icons/lu"
-import { Opt, OptKey, Filter, filters, defaultOpts } from "../app/utils/tables"
+import { Opt, OptKey, OptEffectKey, Filter, filters, defaultOpts } from "../app/utils/tables"
 import { buildInitialOptsState, buildInitialPropsState } from "../app/utils/state_utils";
 import { LogSlider } from "./SliderLinLog";
 import { OrderSwitch } from "./OrderSwitch";
 import { SliderNormal } from "./SliderNormal";
-import { useFiltersParams } from "@/app/utils/context_utils";
+import { setOpts, useFiltersParams } from "@/app/utils/context_utils";
+import { OptParams } from "@/app/utils/context_utils";
+import { FiltersParams, EffectsParams } from "@/app/utils/context_utils";
 
 
 export type SliderProps = {
   bounds: number[];
   actValue: number;
 }
-
 
 type SlidersItemsProps = {
   neededItems: Filter[];
@@ -24,57 +25,57 @@ type SlidersItemsProps = {
 export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
   const { paramsData, setParamsData } = useFiltersParams();
 
-  const setSliderValue = (id: string, opt: string, newValue: number) => {
+
+  const setSliderValue = <P extends keyof OptParams>(
+    id: string,
+    opt: OptKey | OptEffectKey,
+    property: P,
+    newValue: OptParams[P]
+  ) => {
     setParamsData(prev =>
-      prev.map(obj =>
-        obj.id === id
-          ? {
-            ...obj,
-            record: {
-              ...obj.record,
-              [opt as OptKey]: { ...obj.record[opt as OptKey], Val: newValue }
+      prev.map(item => {
+        if (item.id !== id) return item
+
+        if (item.params.group === "filters") {
+          //filters
+          const key = opt as OptKey
+          return {
+            ...item,
+            params: {
+              ...item.params,
+              record: {
+                ...item.params.record,
+                [key]: {
+                  ...item.params.record[key],
+                  [property]: newValue
+                }
+              }
             }
           }
-          : obj
-      )
-    );
-  };
-
-  const setEndSliderValue = (id: string, opt: string, newValue: number) => {
-    setParamsData(prev =>
-      prev.map(obj =>
-        obj.id === id
-          ? {
-            ...obj,
+        }
+        //effects
+        const key = opt as OptEffectKey
+        return {
+          ...item,
+          params: {
+            ...item.params,
             record: {
-              ...obj.record,
-              [opt as OptKey]: { ...obj.record[opt as OptKey], EndVal: newValue }
+              ...item.params.record,
+              [key]: {
+                ...item.params.record[key],
+                [property]: newValue
+              }
             }
           }
-          : obj
-      )
-    );
-  };
-
-  const setSliderProps = (id: string, opt: string, newProps: SliderProps) => {
-    setParamsData(prev =>
-      prev.map(obj =>
-        obj.id === id
-          ? {
-            ...obj,
-            record: {
-              ...obj.record,
-              [opt as OptKey]: { ...obj.record[opt as OptKey], Props: newProps }
-            }
-          }
-          : obj
-      )
-    );
-  };
+        }
+      })
+    )
+  }
 
 
 
-  const sliders = paramsData.map((obj, idx1) => (
+
+  const sliders = paramsData.map((obj, _) => (
     <Fragment key={obj.id}>
       <Box
         p={5}
@@ -83,36 +84,34 @@ export function SlidersItems({ neededItems, attr }: SlidersItemsProps) {
         shadow="md"
       >
         <Text mb={2} fontWeight="medium" textAlign="center">
-          {obj.value}
+          {obj.params.value}
         </Text>
 
-        {(Object.entries(defaultOpts) as [OptKey, Opt][]).map(([optKey, opt], idxMap) => {
-          const stateKey = `${obj.value}.${optKey}`;
-          //const value = paramsData[idx1].record[optKey].Val;
+        {(Object.entries(defaultOpts) as [OptKey, Opt][]).map(([optKey, opt], _) => {
+          const stateKey = `${obj.id}.${optKey}`;
 
           return (
-            <Fragment key={`${stateKey}${idxMap}`}>
+            <Fragment key={stateKey}>
               {
                 "logScale" in opt && opt.logScale ? (
 
-                  <LogSlider setSliderVal={setSliderValue} setSliderEndVal={setEndSliderValue}
-                    setSliderProps={setSliderProps} opt={opt} paramsData={paramsData}
+                  <LogSlider setSliderValue={setSliderValue} opt={opt} paramsData={paramsData}
                     itemID={obj.id} optKey={optKey}
                   />
 
-                ) : 
-                !("step" in opt) ? (
-                  <SliderNormal setEndSliderValue={setEndSliderValue} setSliderValue={setSliderValue}
-                    opt={opt} paramsData={paramsData} itemID={obj.id}
-                    optKey={optKey} 
-                  />
                 ) :
-                (
-                  <>
-                    <OrderSwitch label={optKey} />
-                    <Box h="5" />
-                  </>
-                )
+                  !("step" in opt) ? (
+                    <SliderNormal setSliderValue={setSliderValue}
+                      opt={opt} paramsData={paramsData} itemID={obj.id}
+                      optKey={optKey}
+                    />
+                  ) :
+                    (
+                      <>
+                        <OrderSwitch label={optKey} />
+                        <Box h="5" />
+                      </>
+                    )
               }
             </Fragment>
           );
