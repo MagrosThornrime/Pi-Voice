@@ -32,6 +32,8 @@ export const defaultEffectOpts: Record <OptEffectKey, Opt> = {
 }
 
 export type FilterType = "allpass" | "bandpass" | "highpass" | "lowpass" | "highshelf" | "lowshelf" | "notch" | "peakingeq";
+export type EffectType = "echo" | "chorus" | "delay" | "glitches" | "reverb" | "equalizer" | "fades" | "noise reduction"
+
 
 export const filters:Filter[] = [
     { 
