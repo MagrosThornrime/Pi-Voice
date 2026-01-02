@@ -8,6 +8,7 @@ import { filters, effects, defaultOpts, OptKey, FilterType } from "../utils/tabl
 import { LuChevronRight } from "react-icons/lu"
 import { SlidersItems } from "@/components/SlidersItems";
 import { z } from "zod"
+import { usePreset } from "@/components/ui/presetsProvider";
 import { CheckboxesWithHeading } from "@/components/Checkboxes";
 import { useFilters, useFiltersParams, useFiltersLogic } from "../utils/context_utils";
 import { v4 as uuidv4 } from "uuid";
@@ -50,6 +51,12 @@ function DraggableList({ attr }: DraggableListProps) {
     const myData = data[attr];
     const [listData, setListData] = useState<string[]>(myData);
     const [blocks, setBlocks] = useState<blockType[]>([]);
+
+    const {
+        presetNr,
+        presetProperties,
+        setPresetProperties,
+    } = usePreset();
 
     useEffect(
         () => {
