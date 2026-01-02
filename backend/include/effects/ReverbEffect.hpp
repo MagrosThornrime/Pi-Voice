@@ -6,7 +6,7 @@ namespace effects {
 
     struct ReverbParams {
         enum Value: u32 {
-			bufferSize,
+			bufferFrames,
             feedback,
             wetAmount,
             _count,
@@ -21,9 +21,15 @@ namespace effects {
         using type = _Type<P>::type;
     };
 
+#define PARAM_TYPE(param, T) template<> struct ReverbParams::_Type<param> { using type = T; }
+
+    PARAM_TYPE(ReverbParams::bufferFrames, u32);
+
+#undef PARAM_TYPE
+
     class ReverbEffect : public Effect {
 
-        const std::array<f32, 8> _bufferSizeFactors = {
+        const std::array<f32, 8> _bufferFramesFactors = {
             1.4983f,
             1.5413f,
             1.4281f,
@@ -36,12 +42,12 @@ namespace effects {
 
         std::array<std::vector<f32>, 8> _buffers{};
         std::array<u32, 8> _indices{};
-		u32 _bufferSize = 10000;
+		u32 _bufferFrames = 10000;
 
         f32 _feedback = 0.1f;
         f32 _wetAmount = 0.5f;
 
-        void _set(const u32 channels, const u32 bufferSize, const f32 feedback, const f32 wetAmount);
+        void _set(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount);
 
     public:
         pipeline::Layer& setParam(const u32 param, std::any value) override;
@@ -49,7 +55,7 @@ namespace effects {
 
         void processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames) override;
 
-        ReverbEffect(const u32 channels, const u32 bufferSize, const f32 feedback, const f32 wetAmount);
+        ReverbEffect(const u32 channels, const u32 bufferFrames, const f32 feedback, const f32 wetAmount);
         ReverbEffect();
 
         EffectType::Value getEffectType() override;

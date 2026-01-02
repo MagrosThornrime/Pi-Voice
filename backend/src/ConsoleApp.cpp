@@ -10,21 +10,36 @@ int main(){
     auto midiApp = std::make_shared<application::MidiManager>(synthesiser);
     auto& pipeline = synthesiser->getPipeline();
 
+	auto reverb = std::make_shared<effects::ReverbEffect>(2, 1000, 0.1f, 0.5f);
+
 	pipeline.add(
-		std::make_shared<effects::ReverbEffect>(2, 1000, 0.1, 0.5),
-		std::nullopt
+    	reverb,
+    	std::nullopt
 	);
+
 
     synthesiser->start();
     midiApp->openMidiPort(1);
     synthesiser->setOscillatorType("square", 0);
 
-    std::string command;
-    while(std::cin >> command){
-        if(command == "quit"){
-            break;
-        }
-    }
+	std::string command;
+	while (std::cin >> command) {
+    	if (command == "quit") {
+        	break;
+    	}
+    	else if (command == "reverb") {
+        	u32 newSize;
+        	std::cin >> newSize;
+
+        	reverb->setParam(
+            	effects::ReverbParams::bufferFrames,
+            	newSize
+        	);
+
+        	std::cout << "Reverb buffer size set to "
+            	      << newSize << std::endl;
+    	}
+	}
 
     synthesiser->stop();
     midiApp.reset();

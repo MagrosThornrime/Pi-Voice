@@ -343,7 +343,7 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 
 	case effects::EffectType::reverb:
 		switch (param) {
-			SET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::bufferSize);
+			SET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::bufferFrames);
 			SET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::feedback);
 			SET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::wetAmount);
 		}
@@ -419,7 +419,7 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 
 	case effects::EffectType::reverb:
 		switch (param) {
-			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::bufferSize);
+			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::bufferFrames);
 			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::feedback);
 			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::wetAmount);
 		}
