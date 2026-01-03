@@ -86,12 +86,13 @@ function sawtooth_func(x:number, interv: number){
 
 async function getOscPlotData(oscName:string){
   let data : number[];
-  if(oscName=="meow"){
-    data = await window.synthAPI.getOscillatorPlot(oscName, 500, 100);
-  }else{
-    data = await window.synthAPI.getOscillatorPlot(oscName, 500, 1);
-  }
-
+  try{
+    if(oscName=="meow"){
+      data = await window.synthAPI.getOscillatorPlot(oscName, 500, 100);
+    }else{
+      data = await window.synthAPI.getOscillatorPlot(oscName, 500, 1);
+    }
+  }catch{data = []}
   const dataPoints = data.map((y, x):Point => {
     return { x, y };
   })
@@ -303,7 +304,9 @@ export default function Page() {
               <Select.Root collection={oscillatorTypes} variant={"subtle"}
                 onValueChange={(e) => {
                   changeOscillators(i, e.value[0]);
-                  window.synthAPI.setOscillatorType(e.value[0], i);
+                  try{
+                    window.synthAPI.setOscillatorType(e.value[0], i);
+                  }catch{}
                 }}>
 
                 <Select.HiddenSelect />
