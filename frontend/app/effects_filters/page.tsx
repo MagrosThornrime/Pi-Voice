@@ -76,10 +76,12 @@ function DraggableList({ attr }: DraggableListProps) {
         setPresetProperties,
     } = usePreset();
 
+    const isFirstRender = useRef(0);
+
     useEffect(
         () => {
             setListData(getListFromData(data) ?? []);
-            if(presetProperties.filters){
+            if (isFirstRender.current<1 && presetProperties.filters){
                 let newArr = Array.from({ length: presetProperties.filters.length },
                      (_, i):blockType => {return { val: presetProperties.filters[i].params.value, id:uuidv4(), group: presetProperties.filters[i].params.group}});
 
@@ -94,8 +96,6 @@ function DraggableList({ attr }: DraggableListProps) {
                 setParamsData([]);
             }
         }, [data]);
-    
-    const isFirstRender = useRef(0);
     
     useEffect(
         () => {
