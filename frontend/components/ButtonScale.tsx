@@ -1,10 +1,7 @@
-import { Box, Button, Text, Collapsible, Flex, Grid, Slider } from "@chakra-ui/react";
-import {useState, Fragment} from "react";
-import { SliderProps } from "./SlidersItems";
-import { Opt, OptKey, Filter, defaultOpts, OptEffectKey } from "@/app/utils/tables";
+import {Button } from "@chakra-ui/react";
+import { Opt, OptKey, OptEffectKey } from "@/app/utils/tables";
 import { calcValueFromLogScale, calcValueFromLinScale,calcLinearPosFromLogarithmic, calcLogaritmicPosFromLinear, getBounds} from "@/app/utils/maths_utils";
-import { setFilterParam } from "@/app/utils/integration_utils";
-import { FiltersParams, ItemsParams, EffectsParams, OptParams} from "@/app/utils/context_utils";
+import { ItemsParams, OptParams} from "@/app/utils/context_utils";
 import { getOptParams } from "./SliderLinLog";
 
 type ButtonScaleProps<P extends keyof OptParams = keyof OptParams>  = {

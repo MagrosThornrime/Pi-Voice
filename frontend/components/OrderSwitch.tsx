@@ -1,5 +1,5 @@
 import { Switch, Text } from "@chakra-ui/react"
-import { HiCheck, HiX } from "react-icons/hi"
+import { HiCheck, HiX } from "react-icons/hi" // in order to memorize previously used icon
 import { FaAngleUp, FaAnglesUp } from "react-icons/fa6";
 
 type OrderSwitchProps = {

@@ -1,5 +1,5 @@
 import { SliderProps } from "@/components/SlidersItems";
-import {Opt, OptKey, Filter, defaultOpts, FilterType } from "../utils/tables"
+import {Opt, OptKey, Filter, defaultOpts } from "../utils/tables"
 
 export const buildInitialOptsState = (items:Filter[], initial:number= 0):Record<OptKey, number>[] => {
     const state: Record<string, number> = {};

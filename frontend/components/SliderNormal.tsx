@@ -1,9 +1,9 @@
 import { Box, Text, Flex, Slider } from "@chakra-ui/react";
 import { Fragment } from "react";
-import { Opt, OptEffectKey, OptKey, defaultOpts } from "@/app/utils/tables";
+import { Opt, OptEffectKey, OptKey, defaultOpts, defaultEffectOpts } from "@/app/utils/tables";
 import { calcValueFromLinScale } from "@/app/utils/maths_utils";
-import { setFilterParam} from "@/app/utils/integration_utils";
-import { EffectsParams, FiltersParams, ItemsParams } from "@/app/utils/context_utils";
+import { setFilterParam, setEffectParam} from "@/app/utils/integration_utils";
+import { ItemsParams } from "@/app/utils/context_utils";
 import { getOptParams } from "./SliderLinLog";
 import { OptParams } from "@/app/utils/context_utils";
 
@@ -45,8 +45,20 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
                     setSliderValue(itemID, optKey, "EndVal", sliderVal);
 
                     if (group == "filters"){
-                        console.log("FILTER PARAMS", itemID, defaultOpts[optKey as OptKey].index, Math.round(linVal))
-                        await setFilterParam(paramsData.findIndex((f) => f.id === itemID), defaultOpts[optKey as OptKey].index, linVal );
+                        const filterName = obj.params.value;
+                        const optionIndex = defaultOpts[optKey as OptKey].index;
+                        const filterIndex = paramsData.findIndex((f) => f.id === itemID);
+
+                        console.log("FILTER PARAMS", filterIndex, optionIndex, Math.round(linVal))
+                        await setFilterParam(filterName, filterIndex, optionIndex, linVal );
+                    }
+                    else{
+                        const effectName = obj.params.value;
+                        const optionIndex = defaultEffectOpts[effectName][optKey as OptEffectKey].index;
+                        const effectIndex = paramsData.findIndex((f) => f.id === itemID);
+
+                        console.log("EFFECT LOG PARAM", effectIndex, optionIndex, Math.round(linVal))
+                        await setEffectParam(effectName, effectIndex, optionIndex, linVal);
                     }
 
                 }}

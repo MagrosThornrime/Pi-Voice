@@ -4,7 +4,7 @@ import "./globals.css";
 import { Provider } from "@/components/ui/provider"
 import { Providers } from "@/components/Providers";
 import Header from "@/components/layout/Header";
-import { Box, Center, Container } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/react"
 import { PresetProvider } from "@/components/ui/presetsProvider"
 
 const geistSans = Geist({

@@ -1,11 +1,11 @@
 import { Box, Text, Collapsible, Grid } from "@chakra-ui/react";
-import { useEffect, useState, Fragment } from "react";
+import { Fragment } from "react";
 import { LuChevronRight } from "react-icons/lu"
 import { Opt, OptKey, OptEffectKey, defaultOpts, defaultEffectOpts, EffectType } from "../app/utils/tables"
 import { LogSlider } from "./SliderLinLog";
 import { OrderSwitch } from "./OrderSwitch";
 import { SliderNormal } from "./SliderNormal";
-import { setOpts, useFiltersParams } from "@/app/utils/context_utils";
+import { useFiltersParams } from "@/app/utils/context_utils";
 import { OptParams } from "@/app/utils/context_utils";
 
 
@@ -98,7 +98,7 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
                   />
 
                 ) :
-                  !("step" in opt) ? (
+                  !("step" in opt && opt.range[1] - opt.range[0] === opt.step) ? (
                     <SliderNormal setSliderValue={setSliderValue}
                       opt={opt} paramsData={paramsData} itemID={obj.id}
                       optKey={optKey}

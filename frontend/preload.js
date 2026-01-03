@@ -27,20 +27,24 @@ contextBridge.exposeInMainWorld("synthAPI", {
         ipcRenderer.invoke("synth-pipelineAddFilter", filter, idx),
     pipelineAddEffect: (effect, idx) =>
         ipcRenderer.invoke("synth-pipelineAddEffect", effect, idx),
+
     pipelineRemove: (idx) =>
         ipcRenderer.invoke("synth-pipelineRemove", idx),
     pipelineMove: (current, target) =>
         ipcRenderer.invoke("synth-pipelineMove", current, target),
     pipelineSwap: (i1, i2) =>
         ipcRenderer.invoke("synth-pipelineSwap", i1, i2),
+
     pipelineSetFilterParam: (idx, param, value) =>
         ipcRenderer.invoke("synth-pipelineSetFilterParam", idx, param, value),
     pipelineGetFilterParam: (idx, param) =>
         ipcRenderer.invoke("synth-pipelineGetFilterParam", idx, param),
+
     pipelineSetEffectParam: (idx, param, value) =>
         ipcRenderer.invoke("synth-pipelineSetEffectParam", idx, param, value),
     pipelineGetEffectParam: (idx, param) =>
         ipcRenderer.invoke("synth-pipelineGetEffectParam", idx, param),
+    
     pipelineLength: () =>
         ipcRenderer.invoke("synth-pipelineLength"),
 

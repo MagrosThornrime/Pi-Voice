@@ -41,35 +41,49 @@ export const defaultOpts: Record<OptKey, Opt> = {
     quality: { continuous: true, logScale: false, range: [0.1, 20.0], index: 1 }
 }
 
-export const exampleParamsLin = { continuous: true, logScale: false, range: [-24, 24], index: 1 }
-export const exampleParamsLog = { continuous: true, logScale: false, range: [100, 50000], index: 2 }
+
+function getLinParams(range:number[], idx:number, step?: number):Opt{
+    if (step != undefined){
+        return { continuous: true, logScale: false, range: range, index: idx, step: step};
+    }
+
+    return { continuous: true, logScale: false, range: range, index: idx };
+}
+
+function getLogParams( range: number[], idx: number, step?: number): Opt {
+  if (step !== undefined) {
+    return { continuous: true, logScale: true, range: range, index: idx, step: step };
+  }
+
+  return { continuous: true, logScale: true, range: range, index: idx };
+}
 
 
 export const defaultEffectOpts: Record<EffectType, Record<string, Opt>> = {
     chorus: {
-        baseDelayFactor: exampleParamsLin,
-        modFrequency: exampleParamsLog,
-        modDepth: exampleParamsLin,
-        bufferFrames: exampleParamsLin,
-        feedback: exampleParamsLog,
-        wetAmount: exampleParamsLin,
-        count: exampleParamsLin
+        baseDelayFactor: getLinParams([0, 2], 0),
+        modFrequency: getLinParams([0.5, 5], 1),
+        modDepth: getLinParams([0, 2], 2),
+        bufferFrames: getLogParams([50, 20000], 3),
+        feedback: getLinParams([0, 1], 4),
+        wetAmount: getLinParams([0, 1], 5),
+        count: getLinParams([1, 10], 6, 1)
     },
     delay: {
-        bufferFrames: exampleParamsLin,
-        feedback: exampleParamsLog,
-        wetAmount: exampleParamsLin,
-        count: exampleParamsLin
+        bufferFrames: getLogParams([50, 20000], 0),
+        feedback: getLinParams([0, 1], 1),
+        wetAmount: getLinParams([0, 1], 2),
+        count: getLinParams([1, 10], 3, 1)
     },
     reverb: {
-        bufferFrames: exampleParamsLin,
-        feedback: exampleParamsLog,
-        wetAmount: exampleParamsLin,
-        count: exampleParamsLin
+        bufferFrames: getLogParams([50, 20000], 0),
+        feedback: getLinParams([0, 1], 1),
+        wetAmount: getLinParams([0, 1], 2),
+        count: getLinParams([1, 10], 3, 1)
     },
     robotify: {
-        modFrequency: exampleParamsLog,
-        count: exampleParamsLin
+        modFrequency: getLinParams([0.5, 5], 0),
+        count: getLinParams([1, 10], 1, 1)
     }
 }
 
@@ -129,3 +143,10 @@ export const effects: Effect[] = [
     // { label: "noise reduction", value: "noiseReduction" }
     // { label: "glitches", value: "glitches" },
     // { label: "echo", value: "echo" },
+
+export const effectIDs:Record<EffectType, number> = {
+    chorus: 0,
+    delay: 1,
+    reverb: 2,
+    robotify: 3
+}
