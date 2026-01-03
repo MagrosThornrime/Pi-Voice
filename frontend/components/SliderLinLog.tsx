@@ -1,8 +1,8 @@
 import { Box, Text, Flex, Slider } from "@chakra-ui/react";
 import { useState, Fragment } from "react";
-import { Opt, OptKey, defaultOpts, OptEffectKey } from "@/app/utils/tables";
+import { Opt, OptKey, defaultOpts, OptEffectKey, FilterType, defaultEffectOpts } from "@/app/utils/tables";
 import { calcValueFromLogScale, calcValueFromLinScale } from "@/app/utils/maths_utils";
-import { setFilterParam } from "@/app/utils/integration_utils";
+import { setEffectParam, setFilterParam } from "@/app/utils/integration_utils";
 import { ButtonScale } from "./ButtonScale";
 import { FiltersParams, ItemsParams, EffectsParams, OptParams} from "@/app/utils/context_utils";
 
@@ -105,9 +105,22 @@ export function LogSlider({ setSliderValue, opt, optKey, itemID, paramsData}: Lo
                     setSliderValue( itemID, optKey, "Props", { bounds: actProps.bounds, actValue: newVal } )
 
                     console.log("SLIDER END VALUE: ", sliderVal);
+
                     if (group == "filters"){
-                        await setFilterParam(paramsData.findIndex((f) => f.id === itemID), defaultOpts[optKey as OptKey].index, newVal);
-                        console.log("FILTER LOG PARAM", obj.params.value, defaultOpts[optKey as OptKey].index, Math.round(newVal))
+                        const filterName = obj.params.value;
+                        const optionIndex = defaultOpts[optKey as OptKey].index;
+                        const filterIndex = paramsData.findIndex((f) => f.id === itemID);
+
+                        console.log("FILTER LOG PARAM", filterIndex, optionIndex, Math.round(newVal))
+                        await setFilterParam(filterName, filterIndex, optionIndex, newVal);
+                    }
+                    else{
+                        const effectName = obj.params.value;
+                        const optionIndex = defaultEffectOpts[effectName][optKey as OptEffectKey].index;
+                        const effectIndex = paramsData.findIndex((f) => f.id === itemID);
+
+                        console.log("EFFECT LOG PARAM", effectIndex, optionIndex, Math.round(newVal))
+                        await setEffectParam(effectName, effectIndex, optionIndex, newVal);
                     }
                 }}>
 

@@ -129,3 +129,10 @@ export const effects: Effect[] = [
     // { label: "noise reduction", value: "noiseReduction" }
     // { label: "glitches", value: "glitches" },
     // { label: "echo", value: "echo" },
+
+export const effectIDs:Record<EffectType, number> = {
+    chorus: 0,
+    reverb: 1,
+    delay: 2,
+    robotify: 3
+}

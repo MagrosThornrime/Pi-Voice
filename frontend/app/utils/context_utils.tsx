@@ -93,7 +93,7 @@ export function useFiltersParams() {
 export function useFiltersLogic() {
     const { paramsData, setParamsData } = useFiltersParams();
 
-    const deleteFilterFromList = (idx: number) => {
+    const deleteItemFromList = (idx: number) => {
         setParamsData(prev => {
             console.log("DELETING", idx, prev.length);
 
@@ -105,7 +105,7 @@ export function useFiltersLogic() {
         });
     };
 
-    const swapFiltersFromList = (idx1: number, idx2: number) => {
+    const swapItemsFromList = (idx1: number, idx2: number) => {
         setParamsData(prev => {
             console.log("SWAPPING", idx1, idx2, "SIZE BEFORE:", prev.length);
 
@@ -140,7 +140,7 @@ export function useFiltersLogic() {
     }
 
 
-    const addEffectToList = (itemName: EffectType, names: OptEffectKey[], idx: number, initial = 0) => {
+    const addEffectToList = (itemName: EffectType, names: OptEffectKey[], idx: number, initial:number = 0) => {
         console.log("ADDING", itemName, idx);
         const newParams: ItemsParams = {
             id: uuidv4(),
@@ -158,7 +158,7 @@ export function useFiltersLogic() {
         });
     }
 
-    const moveFilterInList = (idxFrom:number, idxTo:number) => {
+    const moveItemInList = (idxFrom:number, idxTo:number) => {
         setParamsData(prev => {
             console.log("MOVING", idxFrom, idxTo);
             const newParamsData = [...prev];
@@ -168,5 +168,5 @@ export function useFiltersLogic() {
         });
     }
 
-    return { paramsData, swapFiltersFromList, addFilterToList, deleteFilterFromList, moveFilterInList, addEffectToList };
+    return { paramsData, swapItemsFromList, addFilterToList, deleteItemFromList, moveItemInList, addEffectToList };
 }

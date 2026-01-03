@@ -12,7 +12,7 @@ import { usePreset } from "@/components/ui/presetsProvider";
 import { CheckboxesWithHeading } from "@/components/Checkboxes";
 import { useFilters, useFiltersParams, useFiltersLogic } from "../utils/context_utils";
 import { v4 as uuidv4 } from "uuid";
-import { clearFilters, addFilter, deleteFilter, swapFilters, moveFilter, addEffect } from "../utils/integration_utils";
+import { clearFilters, addFilter, deleteItem, swapItems, moveItem, addEffect } from "../utils/integration_utils";
 
 const FIELDS = 4
 
@@ -65,7 +65,7 @@ function DraggableList({ attr }: DraggableListProps) {
 
     const { data, setData } = useFilters();
     const { paramsData, setParamsData } = useFiltersParams();
-    const { deleteFilterFromList, addFilterToList, swapFiltersFromList, moveFilterInList, addEffectToList } = useFiltersLogic();
+    const { deleteItemFromList, addFilterToList, swapItemsFromList, moveItemInList, addEffectToList } = useFiltersLogic();
 
     const [listData, setListData] = useState<listType[]>(getListFromData(data));
     const [blocks, setBlocks] = useState<blockType[]>([]);
@@ -147,7 +147,7 @@ function DraggableList({ attr }: DraggableListProps) {
             
             if (newBlocks[index].val !== "") {
                 index1 = getPosFromFiltered(newBlocks, newBlocks[index].id); // element that is there before change
-                deleteFilterFromList(index1);
+                deleteItemFromList(index1);
             }
             newBlocks[index] = {val: draggedItem.val, id: newID, group:draggedItem.group}; // update
 
@@ -163,13 +163,13 @@ function DraggableList({ attr }: DraggableListProps) {
 
             (async () => {
                 if (blocks[index].val !== "") {
-                    await deleteFilter(index1);
+                    await deleteItem(index1);
                 }
                 if (newBlocks[index].group == "filters"){
-                    await addFilter(draggedItem.val, index2);
+                    await addFilter(draggedItem.val as FilterType, index2);
                 }
                 else{
-                    await addEffect(draggedItem.val, index2); // not implemented yet
+                    await addEffect(draggedItem.val as EffectType, index2); // not implemented yet
                 }
             })();
 
@@ -189,24 +189,24 @@ function DraggableList({ attr }: DraggableListProps) {
                 const index2 = getPosFromFiltered(newBlocks, newBlocks[dragBlockInd].id);
 
                 if (condDrag && condInd){
-                    swapFiltersFromList(index1, index2);
-                    (async () => { await swapFilters(index1, index2) })(); // swap 2 existing filters
+                    swapItemsFromList(index1, index2);
+                    (async () => { await swapItems(index1, index2) })(); // swap 2 existing filters
                 }
                 else if (condDrag){
                     const index3 = newBlocks.slice(0, index).filter(item => item.val !== "").length;
                     if (index2 + 1 != index3){ // we insert before index3
-                        moveFilterInList(index2, index3);
+                        moveItemInList(index2, index3);
                         (async () => {
-                            await moveFilter(index2, index3);
+                            await moveItem(index2, index3);
                         })();
                     }
                 }
                 else if (condInd){
                     const index3 = newBlocks.slice(0, dragBlockInd).filter(item => item.val !== "").length;
                     if (index1 + 1 != index3){ // we insert before index3
-                        moveFilterInList(index1, index3);
+                        moveItemInList(index1, index3);
                         (async () => {
-                            await moveFilter(index1, index3);
+                            await moveItem(index1, index3);
                         })();
                     }
                 }
@@ -229,10 +229,10 @@ function DraggableList({ attr }: DraggableListProps) {
         newBlocks[index].val = "";
         newBlocks[index].group = "empty";
 
-        deleteFilterFromList(index1);
+        deleteItemFromList(index1);
 
         (async () => {
-            await deleteFilter(index1)
+            await deleteItem(index1)
         })();
 
         setBlocks(newBlocks);
@@ -362,7 +362,6 @@ function Page() {
 
     const invalid = !!errors.filters
     const invalid_eff = !!errors.effects
-
 
     return (
         <Box minH="100vh" bg="gray.50" p={10} justifyItems={"left"} alignItems="center">

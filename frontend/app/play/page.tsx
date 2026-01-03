@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Preset,PresetFile } from "@/components/ui/presetsProvider";
+import { FilterType, EffectType } from "../utils/tables";
 
 import {
   Box,
@@ -34,11 +35,14 @@ declare global {
 
             // pipelineAPI
             pipelineAddFilter: (filter: number, idx: number) => Promise<void>;
+            pipelineAddEffect: (effect: number, idx: number) => Promise<void>;
             pipelineRemove: (idx: number) => Promise<void>;
             pipelineMove: (current: number, target: number) => Promise<void>;
             pipelineSwap: (i1: number, i2: number) => Promise<void>;
             pipelineSetFilterParam: (idx: number, param: number, value: number) => Promise<void>;
+            pipelineSetEffectParam: (idx: number, param: number, value: number) => Promise<void>;
             pipelineGetFilterParam: (idx: number, param: number) => Promise<number>;
+            pipelineGetEffectParam: (idx: number, param: number) => Promise<number>;
             pipelineLength: () => Promise<number>;
 
             // sequencerAPI
