@@ -18,10 +18,10 @@ export type Filter = {
 };
 
 export type EffectOptionsMap = {
-    chorus: "baseDelayFactor" | "modFrequency" | "modDepth" | "bufferFrames" | "feedback" | "wetAmount" | "count",
-    delay: "bufferFrames" | "feedback" | "wetAmount" | "count",
-    reverb: "bufferFrames" | "feedback" | "wetAmount" | "count",
-    robotify: "modFrequency" | "count",
+    chorus: "baseDelayFactor" | "modFrequency" | "modDepth" | "bufferFrames" | "feedback" | "wetAmount",
+    delay: "bufferFrames" | "feedback" | "wetAmount",
+    reverb: "bufferFrames" | "feedback" | "wetAmount",
+    robotify: "modFrequency",
 };
 
 export type Effect<T extends EffectType = EffectType> = {
@@ -67,23 +67,19 @@ export const defaultEffectOpts: Record<EffectType, Record<string, Opt>> = {
         bufferFrames: getLogParams([50, 20000], 3),
         feedback: getLinParams([0, 1], 4),
         wetAmount: getLinParams([0, 1], 5),
-        count: getLinParams([1, 10], 6, 1)
     },
     delay: {
         bufferFrames: getLogParams([50, 20000], 0),
         feedback: getLinParams([0, 1], 1),
         wetAmount: getLinParams([0, 1], 2),
-        count: getLinParams([1, 10], 3, 1)
     },
     reverb: {
         bufferFrames: getLogParams([50, 20000], 0),
         feedback: getLinParams([0, 1], 1),
         wetAmount: getLinParams([0, 1], 2),
-        count: getLinParams([1, 10], 3, 1)
     },
     robotify: {
         modFrequency: getLinParams([0.5, 5], 0),
-        count: getLinParams([1, 10], 1, 1)
     }
 }
 
