@@ -98,7 +98,7 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
                   />
 
                 ) :
-                  !("step" in opt) ? (
+                  !("step" in opt && opt.range[1] - opt.range[0] === opt.step) ? (
                     <SliderNormal setSliderValue={setSliderValue}
                       opt={opt} paramsData={paramsData} itemID={obj.id}
                       optKey={optKey}
