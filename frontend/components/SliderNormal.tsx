@@ -30,19 +30,30 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
     const rec = (group == "filters") ? getOptParams(obj.params, optKey as OptKey) : getOptParams(obj.params, optKey as OptEffectKey);
     const Value = rec.Val;
     const EndValue = rec.EndVal;
+    const Props = rec.Props;
 
     return (
         <Fragment key={`${itemID}${optKey}`}>
             <Text mb={2} fontWeight="medium" color="white" textAlign="left"> {optKey} </Text>
             <Slider.Root
                 value={[Value]}
+
+
                 onValueChange={details => {
-                    setSliderValue(itemID, optKey, "Val", details.value[0]);
-                }}
+                    const sliderVal = details.value[0];
+                    const linVal = calcValueFromLinScale(sliderVal, opt.range);
+
+                    setSliderValue(itemID, optKey, "Val", sliderVal);
+                    setSliderValue( itemID, optKey, "Props", { bounds: opt.range, actValue: linVal } )
+                } }
+
+
                 onValueChangeEnd={async details => {
                     const sliderVal = details.value[0];
                     const linVal = calcValueFromLinScale(sliderVal, opt.range)
+
                     setSliderValue(itemID, optKey, "EndVal", sliderVal);
+                    setSliderValue( itemID, optKey, "Props", { bounds: opt.range, actValue: linVal } )
 
                     if (group == "filters"){
                         const filterName = obj.params.value;
@@ -50,18 +61,18 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
                         const filterIndex = paramsData.findIndex((f) => f.id === itemID);
 
                         console.log("FILTER PARAMS", filterIndex, optionIndex, Math.round(linVal))
-                        await setFilterParam(filterName, filterIndex, optionIndex, linVal );
+                        await setFilterParam(filterName, filterIndex, optionIndex, linVal);
                     }
                     else{
                         const effectName = obj.params.value;
                         const optionIndex = defaultEffectOpts[effectName][optKey as OptEffectKey].index;
                         const effectIndex = paramsData.findIndex((f) => f.id === itemID);
 
-                        console.log("EFFECT LOG PARAM", effectIndex, optionIndex, Math.round(linVal))
+                        console.log("EFFECT PARAM", effectIndex, optionIndex, Math.round(linVal))
                         await setEffectParam(effectName, effectIndex, optionIndex, linVal);
                     }
 
-                }}
+                } }
             >
 
                 <Slider.Control>
@@ -79,12 +90,7 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
                 <Box flex="1" textAlign="center" minW="0">
                     <Text>
                         Val:{" "}
-                        {Math.round(
-                            calcValueFromLinScale(
-                                EndValue,
-                                opt.range
-                            )
-                        )}
+                        { Math.round(Props.actValue * 100)/100 }
                     </Text>
                 </Box>
 
