@@ -1,6 +1,6 @@
 "use client";
 import { Box, Button, Text, Collapsible, Stack } from "@chakra-ui/react";
-import { useEffect, useState,  DragEvent } from "react";
+import { useEffect, useState,  DragEvent, useRef } from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { MdDelete } from "react-icons/md";
 import { useController, useForm } from "react-hook-form"
@@ -95,9 +95,15 @@ function DraggableList({ attr }: DraggableListProps) {
             }
         }, [data]);
     
+    const isFirstRender = useRef(0);
+    
     useEffect(
         () => {
-            setPresetProperties(prev => ({...prev, filters: paramsData}));
+            if (isFirstRender.current<2){
+                isFirstRender.current = isFirstRender.current+1;
+            }else{
+                setPresetProperties(prev => ({...prev, filters: paramsData}));
+            }
         }, [paramsData]);
 
     useEffect(() => {
