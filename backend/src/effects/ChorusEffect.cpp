@@ -1,6 +1,7 @@
 #include <effects/ChorusEffect.hpp>
 #include <cmath>
 #include <numbers>
+#include <algorithm>
 
 namespace effects {
 void ChorusEffect::processSound(std::vector<f32>& inputBuffer,
