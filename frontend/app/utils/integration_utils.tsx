@@ -18,6 +18,10 @@ export async function addFilter(item: string, idx: number) {
     await window.synthAPI.pipelineAddFilter(filterNumber, idx);
 }
 
+export async function addEffect(item: string, idx: number){
+    
+}
+
 export async function setFilterParam(idx:number, param: number, value: number) {
     console.log("FILTER IDX", idx);
     await window.synthAPI.pipelineSetFilterParam(idx, param, value)

@@ -1,5 +1,4 @@
 export type Opt = {
-    mutable: boolean;
     continuous?: boolean;
     logScale?: boolean;
     range: number[];
@@ -7,69 +6,109 @@ export type Opt = {
     index: number;
 }
 
+export type FilterType = "allpass" | "bandpass" | "highpass" | "lowpass" | "highshelf" | "lowshelf" | "notch" | "peakingeq";
+
+export type EffectType = "chorus" | "delay" | "reverb" | "robotify";
+//"noiseReduction" | "equalizer" | "fades" | "echo" | "glitches" 
+
 export type Filter = {
     label: string;
     value: string;
-    opts: Record<string, Opt>;
+    opts: Record<OptKey, Opt>;
 };
+
+export type EffectOptionsMap = {
+    chorus: "baseDelayFactor" | "modFrequency" | "modDepth" | "bufferFrames" | "feedback" | "wetAmount" | "count",
+    delay: "bufferFrames" | "feedback" | "wetAmount" | "count",
+    reverb: "bufferFrames" | "feedback" | "wetAmount" | "count",
+    robotify: "modFrequency" | "count",
+};
+
+export type Effect<T extends EffectType = EffectType> = {
+    label: string;
+    value: T;
+    //opts: Record<EffectOptionsMap[T], Opt>;
+}
 
 export type OptKey = "order" | "cutoff" | "gainDB" | "quality";
 
-export type OptEffectKey = "param" | "param1" | "param2" | "param3";
+export type OptEffectKey = "baseDelayFactor" | "modFrequency" | "modDepth" | "bufferFrames" | "feedback" | "wetAmount" | "count";
 
 export const defaultOpts: Record<OptKey, Opt> = {
-    order: { mutable: true, continuous: false, logScale: false, range: [0, 1], step: 1, index: 3 } ,
-    cutoff: { mutable: true, continuous: false, logScale: true, range: [10, 20000], index: 0 } ,
-    gainDB: {mutable: true, continuous: true, logScale: false, range: [-24, 24], index: 2 },
-    quality: {mutable: true, continuous: true, logScale: false, range: [0.1, 20.0], index: 1 }
+    order: { continuous: false, logScale: false, range: [0, 1], step: 1, index: 3 },
+    cutoff: { continuous: false, logScale: true, range: [10, 20000], index: 0 },
+    gainDB: { continuous: true, logScale: false, range: [-24, 24], index: 2 },
+    quality: { continuous: true, logScale: false, range: [0.1, 20.0], index: 1 }
 }
 
-export const defaultEffectOpts: Record <OptEffectKey, Opt> = {
-    param: { mutable: true, continuous: false, logScale: false, range: [0, 1], step: 1, index: 3 } ,
-    param1: { mutable: true, continuous: false, logScale: true, range: [10, 20000], index: 0 } ,
-    param2: {mutable: true, continuous: true, logScale: false, range: [-24, 24], index: 2 },
-    param3: {mutable: true, continuous: true, logScale: false, range: [0.1, 20.0], index: 1 }
+export const exampleParamsLin = { continuous: true, logScale: false, range: [-24, 24], index: 1 }
+export const exampleParamsLog = { continuous: true, logScale: false, range: [100, 50000], index: 2 }
+
+
+export const defaultEffectOpts: Record<EffectType, Record<string, Opt>> = {
+    chorus: {
+        baseDelayFactor: exampleParamsLin,
+        modFrequency: exampleParamsLog,
+        modDepth: exampleParamsLin,
+        bufferFrames: exampleParamsLin,
+        feedback: exampleParamsLog,
+        wetAmount: exampleParamsLin,
+        count: exampleParamsLin
+    },
+    delay: {
+        bufferFrames: exampleParamsLin,
+        feedback: exampleParamsLog,
+        wetAmount: exampleParamsLin,
+        count: exampleParamsLin
+    },
+    reverb: {
+        bufferFrames: exampleParamsLin,
+        feedback: exampleParamsLog,
+        wetAmount: exampleParamsLin,
+        count: exampleParamsLin
+    },
+    robotify: {
+        modFrequency: exampleParamsLog,
+        count: exampleParamsLin
+    }
 }
 
-export type FilterType = "allpass" | "bandpass" | "highpass" | "lowpass" | "highshelf" | "lowshelf" | "notch" | "peakingeq";
-export type EffectType = "echo" | "chorus" | "delay" | "glitches" | "reverb" | "equalizer" | "fades" | "noise reduction"
 
-
-export const filters:Filter[] = [
-    { 
-        label: "AllPass", 
-        value: "allpass", 
+export const filters: Filter[] = [
+    {
+        label: "AllPass",
+        value: "allpass",
         opts: defaultOpts
     },
-    { 
+    {
         label: "BandPass",
         value: "bandpass",
         opts: defaultOpts
     },
-    { 
+    {
         label: "HighPass",
         value: "highpass",
         opts: defaultOpts
     },
-    { 
+    {
         label: "LowPass",
         value: "lowpass",
-        opts: defaultOpts 
+        opts: defaultOpts
     },
     {
         label: "HighShelf",
         value: "highshelf",
         opts: defaultOpts
     },
-    { 
+    {
         label: "LowShelf",
         value: "lowshelf",
-        opts: defaultOpts 
+        opts: defaultOpts
     },
-    { 
+    {
         label: "Notch",
         value: "notch",
-        opts: defaultOpts 
+        opts: defaultOpts
     },
     {
         label: "PeakingEQ",
@@ -79,13 +118,14 @@ export const filters:Filter[] = [
 ]
 
 
-export const effects:Filter[] = [
-    { label: "echo", value: "echo", opts: defaultEffectOpts },
-    { label: "chorus", value: "chorus", opts: defaultEffectOpts},
-    { label: "delay", value: "delay", opts: defaultEffectOpts },
-    { label: "glitches", value: "glitches", opts: defaultEffectOpts },
-    { label: "reverb", value: "reverb", opts: defaultEffectOpts},
-    { label: "equalizer", value: "equalizer", opts: defaultEffectOpts},
-    { label: "fades", value: "fades", opts: defaultEffectOpts },
-    { label: "noise reduction", value: "noise reduction", opts: defaultEffectOpts}
+export const effects: Effect[] = [
+    { label: "chorus", value: "chorus" },
+    { label: "delay", value: "delay" },
+    { label: "reverb", value: "reverb" },
+    { label: "robotify", value: "robotify" }
 ]
+    // { label: "equalizer", value: "equalizer" },
+    // { label: "fades", value: "fades" },
+    // { label: "noise reduction", value: "noiseReduction" }
+    // { label: "glitches", value: "glitches" },
+    // { label: "echo", value: "echo" },

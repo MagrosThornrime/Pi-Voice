@@ -1,7 +1,7 @@
 "use client";
 import { FiltersData } from "../effects_filters/page";
 import { useContext, ReactNode, createContext, useState } from "react";
-import { OptKey, FilterType, defaultOpts, OptEffectKey, EffectType,} from "./tables";
+import { OptKey, FilterType, defaultOpts, defaultEffectOpts, EffectType, EffectOptionsMap, OptEffectKey,} from "./tables";
 import { SliderProps } from "@/components/SlidersItems";
 import { v4 as uuidv4 } from "uuid";
 
@@ -25,10 +25,10 @@ export type FiltersParams = {
     value: FilterType;
 }
 
-export type EffectsParams = {
+export type EffectsParams<T extends EffectType = EffectType>= {
     group: "effects";
-    record: Record<OptEffectKey, OptParams>;
-    value: EffectType;
+    record: Record<EffectOptionsMap[T], OptParams>;
+    value: T;
 }
 
 export type ItemsParams = {
@@ -139,6 +139,25 @@ export function useFiltersLogic() {
 
     }
 
+
+    const addEffectToList = (itemName: EffectType, names: OptEffectKey[], idx: number, initial = 0) => {
+        console.log("ADDING", itemName, idx);
+        const newParams: ItemsParams = {
+            id: uuidv4(),
+            params: { group: "effects", value: itemName, record: {} as Record<OptEffectKey, OptParams> }
+        };
+        const record = newParams.params.record as Record<OptEffectKey, OptParams>;
+        names.forEach((key, _) => {
+            record[key] = { EndVal: initial, Val: initial, Props: { bounds: defaultEffectOpts[itemName][key].range, actValue: initial } }
+        })
+
+        setParamsData(prev => {
+            const newParamsData = [...prev];
+            newParamsData.splice(idx, 0, newParams);
+            return newParamsData;
+        });
+    }
+
     const moveFilterInList = (idxFrom:number, idxTo:number) => {
         setParamsData(prev => {
             console.log("MOVING", idxFrom, idxTo);
@@ -149,5 +168,5 @@ export function useFiltersLogic() {
         });
     }
 
-    return { paramsData, swapFiltersFromList, addFilterToList, deleteFilterFromList, moveFilterInList };
+    return { paramsData, swapFiltersFromList, addFilterToList, deleteFilterFromList, moveFilterInList, addEffectToList };
 }

@@ -4,6 +4,7 @@
 #include <pipeline/Layer.hpp>
 #include <effects/EffectTypes.hpp>
 #include <memory>
+#include <algorithm>
 
 namespace effects {
     class Effect: public pipeline::Layer {
