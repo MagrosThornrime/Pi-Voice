@@ -1,7 +1,7 @@
 import { Box, Text, Collapsible, Grid } from "@chakra-ui/react";
 import { useEffect, useState, Fragment } from "react";
 import { LuChevronRight } from "react-icons/lu"
-import { Opt, OptKey, OptEffectKey, Filter, filters, defaultOpts } from "../app/utils/tables"
+import { Opt, OptKey, OptEffectKey, defaultOpts, defaultEffectOpts, EffectType } from "../app/utils/tables"
 import { LogSlider } from "./SliderLinLog";
 import { OrderSwitch } from "./OrderSwitch";
 import { SliderNormal } from "./SliderNormal";
@@ -70,8 +70,9 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
 
 
 
-
-  const sliders = paramsData.map((obj, _) => (
+  const sliders = paramsData.map((obj, _) => {
+    const group = obj.params.group;
+    return (
     <Fragment key={obj.id}>
       <Box
         p={5}
@@ -82,10 +83,11 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
         <Text mb={2} fontWeight="medium" textAlign="center">
           {obj.params.value}
         </Text>
+        {
+        (Object.entries((group === "filters") ? defaultOpts : defaultEffectOpts[obj.params.value as EffectType]) as [OptKey | OptEffectKey, Opt][])
+        .map(([optKey, opt], _) => {
 
-        {(Object.entries(defaultOpts) as [OptKey, Opt][]).map(([optKey, opt], _) => {
           const stateKey = `${obj.id}.${optKey}`;
-
           return (
             <Fragment key={stateKey}>
               {
@@ -113,8 +115,9 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
           );
         })}
       </Box>
-    </Fragment>
-  ));
+    </Fragment>)
+
+  });
 
   return (
     <Box>

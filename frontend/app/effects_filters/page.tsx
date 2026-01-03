@@ -4,7 +4,7 @@ import { useEffect, useState,  DragEvent } from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { MdDelete } from "react-icons/md";
 import { useController, useForm } from "react-hook-form"
-import { filters, effects, defaultOpts, OptKey, FilterType } from "../utils/tables"
+import { filters, effects, defaultOpts, OptKey, FilterType, EffectType, defaultEffectOpts, OptEffectKey} from "../utils/tables"
 import { LuChevronRight } from "react-icons/lu"
 import { SlidersItems } from "@/components/SlidersItems";
 import { z } from "zod"
@@ -12,7 +12,7 @@ import { usePreset } from "@/components/ui/presetsProvider";
 import { CheckboxesWithHeading } from "@/components/Checkboxes";
 import { useFilters, useFiltersParams, useFiltersLogic } from "../utils/context_utils";
 import { v4 as uuidv4 } from "uuid";
-import { clearFilters, addFilter, deleteFilter, swapFilters, moveFilter } from "../utils/integration_utils";
+import { clearFilters, addFilter, deleteFilter, swapFilters, moveFilter, addEffect } from "../utils/integration_utils";
 
 const FIELDS = 4
 
@@ -65,7 +65,7 @@ function DraggableList({ attr }: DraggableListProps) {
 
     const { data, setData } = useFilters();
     const { paramsData, setParamsData } = useFiltersParams();
-    const { deleteFilterFromList, addFilterToList, swapFiltersFromList, moveFilterInList } = useFiltersLogic();
+    const { deleteFilterFromList, addFilterToList, swapFiltersFromList, moveFilterInList, addEffectToList } = useFiltersLogic();
 
     const [listData, setListData] = useState<listType[]>(getListFromData(data));
     const [blocks, setBlocks] = useState<blockType[]>([]);
@@ -146,13 +146,25 @@ function DraggableList({ attr }: DraggableListProps) {
             newBlocks[index] = {val: draggedItem.val, id: newID, group:draggedItem.group}; // update
 
             const index2 = getPosFromFiltered(newBlocks, newID) // actual position after adding
-            addFilterToList(draggedItem.val as FilterType, Object.keys(defaultOpts) as OptKey[], index2);
+
+            if (newBlocks[index].group == "filters"){
+                addFilterToList(draggedItem.val as FilterType, Object.keys(defaultOpts) as OptKey[], index2);
+            }
+            else{
+                const item1 = draggedItem.val as EffectType
+                addEffectToList(item1, Object.keys(defaultEffectOpts[item1]) as OptEffectKey[], index2)
+            }
 
             (async () => {
                 if (blocks[index].val !== "") {
                     await deleteFilter(index1);
                 }
-                await addFilter(draggedItem.val, index2);
+                if (newBlocks[index].group == "filters"){
+                    await addFilter(draggedItem.val, index2);
+                }
+                else{
+                    await addEffect(draggedItem.val, index2); // not implemented yet
+                }
             })();
 
             setDragIndex(null);

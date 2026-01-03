@@ -44,9 +44,10 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
                     const linVal = calcValueFromLinScale(sliderVal, opt.range)
                     setSliderValue(itemID, optKey, "EndVal", sliderVal);
 
-                    console.log("FILTER PARAMS", itemID, defaultOpts[optKey as OptKey].index, Math.round(linVal))
-
-                    await setFilterParam(paramsData.findIndex((f) => f.id === itemID), defaultOpts[optKey as OptKey].index, linVal );
+                    if (group == "filters"){
+                        console.log("FILTER PARAMS", itemID, defaultOpts[optKey as OptKey].index, Math.round(linVal))
+                        await setFilterParam(paramsData.findIndex((f) => f.id === itemID), defaultOpts[optKey as OptKey].index, linVal );
+                    }
 
                 }}
             >
