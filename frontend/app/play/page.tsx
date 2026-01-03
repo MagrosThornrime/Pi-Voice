@@ -2,15 +2,11 @@
 
 import { useState } from "react";
 import { Preset,PresetFile } from "@/components/ui/presetsProvider";
-import { FilterType, EffectType } from "../utils/tables";
 
 import {
   Box,
   Heading,
   Text,
-  Grid,
-  Slider,
-  Stack,
   Button,
   List,
   ListItem,

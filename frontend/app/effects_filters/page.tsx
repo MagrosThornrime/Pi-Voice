@@ -3,16 +3,16 @@ import { Box, Button, Text, Collapsible, Stack } from "@chakra-ui/react";
 import { useEffect, useState,  DragEvent, useRef } from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { MdDelete } from "react-icons/md";
+import { LuChevronRight } from "react-icons/lu"
 import { useController, useForm } from "react-hook-form"
 import { filters, effects, defaultOpts, OptKey, FilterType, EffectType, defaultEffectOpts, OptEffectKey} from "../utils/tables"
-import { LuChevronRight } from "react-icons/lu"
 import { SlidersItems } from "@/components/SlidersItems";
-import { z } from "zod"
 import { usePreset } from "@/components/ui/presetsProvider";
 import { CheckboxesWithHeading } from "@/components/Checkboxes";
 import { useFilters, useFiltersParams, useFiltersLogic } from "../utils/context_utils";
-import { v4 as uuidv4 } from "uuid";
 import { clearFilters, addFilter, deleteItem, swapItems, moveItem, addEffect } from "../utils/integration_utils";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod"
 
 const FIELDS = 4
 

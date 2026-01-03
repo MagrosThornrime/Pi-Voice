@@ -1,6 +1,6 @@
 import { Box, Text, Flex, Slider } from "@chakra-ui/react";
 import { useState, Fragment } from "react";
-import { Opt, OptKey, defaultOpts, OptEffectKey, FilterType, defaultEffectOpts } from "@/app/utils/tables";
+import { Opt, OptKey, defaultOpts, OptEffectKey, defaultEffectOpts } from "@/app/utils/tables";
 import { calcValueFromLogScale, calcValueFromLinScale } from "@/app/utils/maths_utils";
 import { setEffectParam, setFilterParam } from "@/app/utils/integration_utils";
 import { ButtonScale } from "./ButtonScale";
