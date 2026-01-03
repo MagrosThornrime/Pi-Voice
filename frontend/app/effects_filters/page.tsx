@@ -415,10 +415,6 @@ function Page() {
                 <Box h="10" />
                 <SlidersItems attr="filters" />
                 <Box h="10" />
-                <DraggableList attr="effects" />
-                <Box h="10" />
-                <SlidersItems attr="effects"/>
-                <Box h="10" />
 
             </Box>
         </Box>
