@@ -1,8 +1,5 @@
 export function calcLogValueFromScale(x:number, lims:number[]){
     // changes position on slider to log10 value of number, which bound are in lims
-    if (x == 0){
-        return 0;
-    }
     let res = Math.log10( lims[0] ) + x/100 * ( Math.log10(lims[1]) - Math.log10(lims[0]) )
     return res;
 }
