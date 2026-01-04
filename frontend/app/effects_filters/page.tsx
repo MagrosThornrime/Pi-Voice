@@ -314,24 +314,25 @@ function DraggableList({ attr }: DraggableListProps) {
                                                     onDragOver={handleDragOver}
 
                                                     onDrop={() => handleDrop(index)} >
+                                                    { item.group !== "empty" &&
+                                                        <Button size="lg"
+                                                            p={1}
+                                                            minW={0}
+                                                            bg="transparent"
+                                                            position="absolute"
+                                                            left="8px"
+                                                            _hover={{ bg: "red.600" }}
+                                                            _active={{ bg: "red.700" }}
 
-                                                    <Button size="lg"
-                                                        p={1}
-                                                        minW={0}
-                                                        bg="transparent"
-                                                        position="absolute"
-                                                        left="8px"
-                                                        _hover={{ bg: "red.600" }}
-                                                        _active={{ bg: "red.700" }}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation;
+                                                                handleDelete(index);
+                                                            }}
+                                                        >
+                                                            <MdDelete/>
 
-                                                        onClick={(e) => {
-                                                            e.stopPropagation;
-                                                            handleDelete(index);
-                                                        }}
-                                                    >
-                                                        <MdDelete/>
-
-                                                    </Button>
+                                                        </Button>
+                                                    }
 
                                                     <Text alignSelf={"center"} fontSize = "2xl" > {item.val} </Text>
 
