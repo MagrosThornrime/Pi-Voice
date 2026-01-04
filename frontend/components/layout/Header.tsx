@@ -30,7 +30,7 @@ interface SimpleLink {
 
 const Links: readonly SimpleLink[] = [
   {
-    name: "Play",
+    name: "Settings",
     href: "/play",
     external: false,
   },
