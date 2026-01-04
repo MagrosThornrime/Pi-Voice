@@ -9,3 +9,4 @@
 #include <effects/RobotifyEffect.hpp>
 #include <effects/ChorusEffect.hpp>
 #include <effects/PhaserEffect.hpp>
+#include <effects/SaturateEffect.hpp>

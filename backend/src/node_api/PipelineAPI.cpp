@@ -388,6 +388,15 @@ void setEffectParam(const Napi::CallbackInfo& info) {
             SET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::mix);
         }
         break;
+    case effects::EffectType::saturate:
+        if (param >= effects::SaturateParams::_count) {
+            Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+        }
+
+        switch (param) {
+            SET_EFFECT_PARAM(effects::SaturateParams, effects::SaturateParams::drive);
+        }
+        break;
 	}
 
 
@@ -484,6 +493,15 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
                 GET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::rateHz);
                 GET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::feedback);
                 GET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::mix);
+            }
+            break;
+        case effects::EffectType::saturate:
+            if (param >= effects::SaturateParams::_count) {
+                Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+            }
+
+            switch (param) {
+                GET_EFFECT_PARAM(effects::SaturateParams, effects::SaturateParams::drive);
             }
             break;
 	}

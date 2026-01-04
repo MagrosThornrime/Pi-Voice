@@ -11,6 +11,7 @@ struct EffectType {
         reverb,
         robotify,
         phaser,
+        saturate,
     };
 };
 
