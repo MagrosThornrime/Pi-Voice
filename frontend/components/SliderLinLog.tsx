@@ -59,7 +59,7 @@ export function LogSlider({ setSliderValue, opt, optKey, itemID, paramsData}: Lo
 
            <Stack direction="row" w="100%" align="center">
 
-                <Text fontWeight="medium"  color="white"> {optKey} </Text>
+                <Text fontWeight="medium" fontSize = "lg" color="white"> {optKey} </Text>
                 <Box flex="1" display="flex" justifyContent="center">
                     <ButtonScale setStatus={setStatus} status={status}
                         optKey={optKey} setSliderValue={setSliderValue} 

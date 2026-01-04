@@ -8,20 +8,24 @@ export function SliderTooltip({Props} : MyProps) {
     return (
         <Flex w="100%" mb={2} alignItems="center">
             <Box flex="1">
-                <Text textAlign="left">
+                <Text textAlign="left" fontWeight="bold">
                     {Props.bounds[0]}
                 </Text>
             </Box>
 
             <Box flex="1">
                 <Text textAlign="center" fontWeight="bold">
-                    Val: {Math.round(Props.actValue)}
+                    Val: 
+                    {
+                        (Props.bounds[1] - Props.bounds[0] < 0.01) ? Math.round(Props.actValue * 10000) / 10000 :
+                            (Props.bounds[1] - Props.bounds[0] < 2) ? Math.round(Props.actValue * 100) / 100 :
+                                ((Props.bounds[1] - Props.bounds[0] < 10) ? Math.round(Props.actValue * 10) / 10 : Math.round(Props.actValue))
+                    }
                 </Text>
             </Box>
 
-            {/* Right: Takes up 1/3 space, text aligned right */}
             <Box flex="1">
-                <Text textAlign="right">
+                <Text textAlign="right"fontWeight="bold">
                     {Props.bounds[1]}
                 </Text>
             </Box>

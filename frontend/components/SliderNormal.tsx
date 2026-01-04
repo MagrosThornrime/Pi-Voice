@@ -34,7 +34,7 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
 
     return (
         <Fragment key={`${itemID}${optKey}`}>
-            <Text mb={2} fontWeight="medium" color="white" textAlign="left"> {optKey} </Text>
+            <Text mb={2} fontWeight="medium" fontSize = "lg" color="white" textAlign="left"> {optKey} </Text>
             <Slider.Root
                 value={[Value]}
 
