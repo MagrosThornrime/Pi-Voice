@@ -5,6 +5,7 @@
 #include <effects/RobotifyEffect.hpp>
 #include <effects/PhaserEffect.hpp>
 #include <effects/SaturateEffect.hpp>
+#include <effects/BitcrushEffect.hpp>
 
 namespace effects {
 
@@ -17,6 +18,7 @@ std::shared_ptr<Effect> Effect::create(EffectType::Value effect, u32 channels, f
         case EffectType::robotify: result = std::make_shared<RobotifyEffect>(channels, sampleRate); break;
         case EffectType::phaser: result = std::make_shared<PhaserEffect>(channels, sampleRate); break;
         case EffectType::saturate: result = std::make_shared<SaturateEffect>(channels, sampleRate); break;
+        case EffectType::bitcrush: result = std::make_shared<BitcrushEffect>(channels, sampleRate); break;
     }
     if (result) {
         result->refresh();

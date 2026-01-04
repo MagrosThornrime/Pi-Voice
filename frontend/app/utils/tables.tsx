@@ -22,7 +22,8 @@ export type EffectType =
     | "reverb"
     | "robotify"
     | "phaser"
-    | "saturate";
+    | "saturate"
+    | "bitcrush";
 
 export type Filter = {
     label: string;
@@ -37,6 +38,7 @@ export type EffectOptionsMap = {
     robotify: "modFrequency";
     phaser: "minHz" | "rangeHz" | "rateHz" | "feedback" | "mix";
     saturate: "drive";
+    bitcrush: "bits";
 };
 
 export type Effect<T extends EffectType = EffectType> = {
@@ -56,7 +58,8 @@ export type OptEffectKey =
     | "minHz"
     | "rangeHz"
     | "rateHz"
-    | "drive";
+    | "drive"
+    | "bits";
 
 export const defaultOpts: Record<OptKey, Opt> = {
     order:   { continuous: false, logScale: false, range: [0, 1], step: 1, index: 3 },
@@ -111,6 +114,9 @@ export const defaultEffectOpts: Record<EffectType, Record<string, Opt>> = {
     saturate: {
         drive: getLogParams([0.5, 10], 0),
     },
+    bitcrush: {
+        bits: getLinParams([2, 16], 0, 1),
+    },
 };
 
 export const filters: Filter[] = [
@@ -131,6 +137,7 @@ export const effects: Effect[] = [
     { label: "Robotify", value: "robotify" },
     { label: "Phaser",   value: "phaser" },
     { label: "Saturate", value: "saturate" },
+    { label: "Bitcrush", value: "bitcrush" },
 ];
 
 export const effectIDs: Record<EffectType, number> = {
@@ -140,4 +147,5 @@ export const effectIDs: Record<EffectType, number> = {
     robotify: 3,
     phaser:   4,
     saturate: 5,
+    bitcrush: 6,
 };

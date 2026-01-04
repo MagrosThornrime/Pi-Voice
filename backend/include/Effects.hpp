@@ -10,3 +10,4 @@
 #include <effects/ChorusEffect.hpp>
 #include <effects/PhaserEffect.hpp>
 #include <effects/SaturateEffect.hpp>
+#include <effects/BitcrushEffect.hpp>

@@ -12,6 +12,7 @@ struct EffectType {
         robotify,
         phaser,
         saturate,
+        bitcrush,
     };
 };
 

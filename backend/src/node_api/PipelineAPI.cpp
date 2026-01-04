@@ -397,6 +397,15 @@ void setEffectParam(const Napi::CallbackInfo& info) {
             SET_EFFECT_PARAM(effects::SaturateParams, effects::SaturateParams::drive);
         }
         break;
+    case effects::EffectType::bitcrush:
+        if (param >= effects::BitcrushParams::_count) {
+            Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+        }
+
+        switch (param) {
+            SET_EFFECT_PARAM(effects::BitcrushParams, effects::BitcrushParams::bits);
+        }
+        break;
 	}
 
 
@@ -502,6 +511,15 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 
             switch (param) {
                 GET_EFFECT_PARAM(effects::SaturateParams, effects::SaturateParams::drive);
+            }
+            break;
+        case effects::EffectType::bitcrush:
+            if (param >= effects::BitcrushParams::_count) {
+                Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+            }
+
+            switch (param) {
+                GET_EFFECT_PARAM(effects::BitcrushParams, effects::BitcrushParams::bits);
             }
             break;
 	}
