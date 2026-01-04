@@ -61,25 +61,25 @@ function getLogParams( range: number[], idx: number, step?: number): Opt {
 
 export const defaultEffectOpts: Record<EffectType, Record<string, Opt>> = {
     chorus: {
-        baseDelayFactor: getLinParams([0, 2], 0),
-        modFrequency: getLinParams([0.5, 5], 1),
-        modDepth: getLinParams([0, 2], 2),
-        bufferFrames: getLogParams([50, 20000], 3),
+        baseDelayFactor: getLinParams([0, 0.1], 0),
+        modFrequency: getLinParams([0.5, 2], 1),
+        modDepth: getLinParams([0, 0.005], 2),
+        bufferFrames: getLogParams([500, 20000], 3),
         feedback: getLinParams([0, 1], 4),
         wetAmount: getLinParams([0, 1], 5),
     },
     delay: {
-        bufferFrames: getLogParams([50, 20000], 0),
+        bufferFrames: getLogParams([500, 20000], 0),
         feedback: getLinParams([0, 1], 1),
         wetAmount: getLinParams([0, 1], 2),
     },
     reverb: {
-        bufferFrames: getLogParams([50, 20000], 0),
+        bufferFrames: getLogParams([500, 20000], 0),
         feedback: getLinParams([0, 1], 1),
         wetAmount: getLinParams([0, 1], 2),
     },
     robotify: {
-        modFrequency: getLinParams([0.5, 5], 0),
+        modFrequency: getLinParams([1, 50], 0),
     }
 }
 

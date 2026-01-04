@@ -308,9 +308,6 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 
 	auto idx = idxVal.ToNumber().Uint32Value();
 	auto param = paramVal.ToNumber().Uint32Value();
-	if (param >= filters::FilterParams::_count) {
-		Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
-	}
 	auto value = valueVal.ToNumber().DoubleValue();
 
 	auto&& [lock, p] = lockPipeline();
@@ -335,6 +332,9 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 	switch (effect->getEffectType()) {
 
 	case effects::EffectType::chorus:
+		if (param >= effects::ChorusParams::_count) {
+			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		}
 		switch (param) {
 			SET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::baseDelayFactor);
 			SET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::modFrequency);
@@ -346,6 +346,9 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 		break;
 
 	case effects::EffectType::reverb:
+		if (param >= effects::ReverbParams::_count) {
+			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		}
 		switch (param) {
 			SET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::bufferFrames);
 			SET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::feedback);
@@ -354,6 +357,9 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 		break;
 
 	case effects::EffectType::delay:
+		if (param >= effects::DelayParams::_count) {
+			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		}
 		switch (param) {
 			SET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::bufferFrames);
 			SET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::feedback);
@@ -362,6 +368,9 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 		break;
 
 	case effects::EffectType::robotify:
+		if (param >= effects::RobotifyParams::_count) {
+			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		}
 		switch (param) {
 			SET_EFFECT_PARAM(effects::RobotifyParams, effects::RobotifyParams::modFrequency);
 		}
@@ -369,7 +378,7 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 	}
 
 
-	fmt::println("Changed param {} for filter {} to value {}", param, idx, value);
+	fmt::println("Changed param {} for effect {} to value {}", param, idx, value);
 }
 
 Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
@@ -391,9 +400,6 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 
 	auto idx = idxVal.ToNumber().Uint32Value();
 	auto param = paramVal.ToNumber().Uint32Value();
-	if (param >= filters::FilterParams::_count) {
-		Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
-	}
 
 	auto&& [lock, p] = lockPipeline();
 
@@ -411,6 +417,9 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 	switch (effect->getEffectType()) {
 
 	case effects::EffectType::chorus:
+		if (param >= effects::ChorusParams::_count) {
+			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		}
 		switch (param) {
 			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::baseDelayFactor);
 			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::modFrequency);
@@ -422,6 +431,9 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 		break;
 
 	case effects::EffectType::reverb:
+		if (param >= effects::ReverbParams::_count) {
+			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		}
 		switch (param) {
 			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::bufferFrames);
 			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::feedback);
@@ -430,6 +442,9 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 		break;
 
 	case effects::EffectType::delay:
+		if (param >= effects::DelayParams::_count) {
+			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		}
 		switch (param) {
 			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::bufferFrames);
 			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::feedback);
@@ -438,6 +453,9 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 		break;
 
 	case effects::EffectType::robotify:
+		if (param >= effects::RobotifyParams::_count) {
+			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		}
 		switch (param) {
 			GET_EFFECT_PARAM(effects::RobotifyParams, effects::RobotifyParams::modFrequency);
 		}
