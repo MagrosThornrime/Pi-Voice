@@ -8,7 +8,9 @@ import {
   Button,
   Grid,
   GridItem,
+  Text
 } from "@chakra-ui/react";
+import { MdDelete } from "react-icons/md";
 
 let last : number = 0;
 function generate_name(){
@@ -116,6 +118,10 @@ export default function Page() {
                         sounds.map((item, index) => (
                              <GridItem colSpan={1} key={item}>
                                 <Box
+                                    minHeight="60px" minWidth="13%" shadow="md" p={2}
+                                    display="flex" alignItems="center" justifyContent="center"
+                                    position="relative"
+                                    bg={colorMap[item]}
                                     draggable
                                     onDragStart={() => handleDragStart(index)}
                                     onDragOver={handleDragOver}
@@ -123,12 +129,22 @@ export default function Page() {
                                     cursor="grab"
                                     opacity={dragIndex === index ? 0.4 : 1}
                                 >
-                                    <Button bg={colorMap[item]} onClick={() => {
-                                        setSounds(prev => prev.filter(s => s !== item));
-                                        window.synthAPI.sequencerRemoveSample(index);
-                                    }}>
-                                        Remove {item}
+                                    <Button size="lg"
+                                        p={1}
+                                        minW={0}
+                                        bg="transparent"
+                                        position="absolute"
+                                        left="8px"
+                                        _hover={{ bg: "red.600" }}
+                                        _active={{ bg: "red.700" }}
+                                        onClick={() => {
+                                            setSounds(prev => prev.filter(s => s !== item));
+                                            window.synthAPI.sequencerRemoveSample(index);
+                                        }
+                                    }>
+                                        <MdDelete/>
                                     </Button>
+                                    <Text>{item}</Text>
                                 </Box>
                             </GridItem>
                         ))

@@ -1,4 +1,4 @@
-import { Switch, Text } from "@chakra-ui/react"
+import { Switch, Text, Box } from "@chakra-ui/react"
 import { HiCheck, HiX } from "react-icons/hi" // in order to memorize previously used icon
 import { FaAngleUp, FaAnglesUp } from "react-icons/fa6";
 
@@ -9,7 +9,8 @@ type OrderSwitchProps = {
 export function OrderSwitch(props:OrderSwitchProps){
   return (
     <>
-        <Text>{props.label}</Text>
+        <Text fontWeight="medium" fontSize = "lg" >{props.label}</Text>
+        <Box h = "2"/>
 
         <Switch.Root size="lg">
             <Switch.HiddenInput />

@@ -128,7 +128,8 @@ export function useFiltersLogic() {
         };
         const record = newParams.params.record as Record<OptKey, OptParams>;
         names.forEach((key, _) => {
-            record[key] = { EndVal: initial, Val: initial, Props: { bounds: defaultOpts[key].range, actValue: initial } }
+            const actBounds = defaultOpts[key].range;
+            record[key] = { EndVal: 0, Val: 0, Props: { bounds: actBounds, actValue: actBounds[0] } }
         })
 
         setParamsData(prev => {
@@ -140,7 +141,7 @@ export function useFiltersLogic() {
     }
 
 
-    const addEffectToList = (itemName: EffectType, names: OptEffectKey[], idx: number, initial:number = 0) => {
+    const addEffectToList = (itemName: EffectType, names: OptEffectKey[], idx: number) => {
         console.log("ADDING", itemName, idx);
         const newParams: ItemsParams = {
             id: uuidv4(),
@@ -148,7 +149,8 @@ export function useFiltersLogic() {
         };
         const record = newParams.params.record as Record<OptEffectKey, OptParams>;
         names.forEach((key, _) => {
-            record[key] = { EndVal: initial, Val: initial, Props: { bounds: defaultEffectOpts[itemName][key].range, actValue: initial } }
+            const actBounds = defaultEffectOpts[itemName][key].range;
+            record[key] = { EndVal: 0, Val: 0, Props: { bounds: actBounds, actValue: actBounds[0] } }
         })
 
         setParamsData(prev => {

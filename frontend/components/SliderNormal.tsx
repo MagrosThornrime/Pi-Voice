@@ -6,7 +6,7 @@ import { setFilterParam, setEffectParam} from "@/app/utils/integration_utils";
 import { ItemsParams } from "@/app/utils/context_utils";
 import { getOptParams } from "./SliderLinLog";
 import { OptParams } from "@/app/utils/context_utils";
-
+import { SliderTooltip } from "./SliderTooltip";
 
 type NormalSliderProps<P extends keyof OptParams = keyof OptParams> = {
     setSliderValue: (
@@ -34,7 +34,7 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
 
     return (
         <Fragment key={`${itemID}${optKey}`}>
-            <Text mb={2} fontWeight="medium" color="white" textAlign="left"> {optKey} </Text>
+            <Text mb={2} fontWeight="medium" fontSize = "lg" color="white" textAlign="left"> {optKey} </Text>
             <Slider.Root
                 value={[Value]}
 
@@ -83,20 +83,7 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
                 </Slider.Control>
             </Slider.Root>
 
-            <Flex justify="center" align="center" w="100%">
-
-                <Text>{opt.range[0]}</Text>
-
-                <Box flex="1" textAlign="center" minW="0">
-                    <Text>
-                        Val:{" "}
-                        { Math.round(Props.actValue * 100)/100 }
-                    </Text>
-                </Box>
-
-                <Text>{opt.range[1]}</Text>
-
-            </Flex>
+            <SliderTooltip Props = {Props} />
 
             <Box h="5" />
         </Fragment>

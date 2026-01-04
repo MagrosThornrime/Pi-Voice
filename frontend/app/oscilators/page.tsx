@@ -141,7 +141,7 @@ function FunctionChart(props: FunctionChartProps){
     })
 
     return (
-      <Chart.Root width="100%" height={300} chart={chart}>
+      <Chart.Root width="100%" height={400} chart={chart}>
 
         <LineChart data={chart.data}>
 
@@ -299,9 +299,10 @@ export default function Page() {
         {
           oscillators.map((o, i) => (
             <Box key={i}>
-              <MemoFunctionChart inputType = {"data"} givenData = {{points:getPoints(i)}} />
+              <MemoFunctionChart inputType = {"data"} givenData = {{points: getPoints(i)}} />
+              <Box h ="10"/>
 
-              <Select.Root collection={oscillatorTypes} variant={"subtle"}
+              <Select.Root size={"lg"} collection={oscillatorTypes} variant={"subtle"}
                 onValueChange={(e) => {
                   changeOscillators(i, e.value[0]);
                   try{
@@ -310,11 +311,13 @@ export default function Page() {
                 }}>
 
                 <Select.HiddenSelect />
-                <Select.Label color={"black"}>{`Oscilator${i + 1}`}</Select.Label>
-
+                <Select.Label fontSize={"2xl"} color={"black"}>
+                  {`Oscillator${i + 1}`}
+                </Select.Label>
+                <Box h ="5"/>
                 <Select.Control>
                   <Select.Trigger>
-                    <Select.ValueText color={"black"} placeholder="Select oscillator" />
+                    <Select.ValueText fontSize={"2xl"} color={"black"} placeholder="Select oscillator" />
                   </Select.Trigger>
                   <Select.IndicatorGroup>
                     <Select.Indicator />
@@ -324,7 +327,7 @@ export default function Page() {
                   <Select.Positioner>
                     <Select.Content>
                       {oscillatorTypes.items.map((oscilator) => (
-                        <Select.Item color="black" item={oscilator} key={oscilator.value}>
+                        <Select.Item fontSize={"2xl"} color="black" item={oscilator} key={oscilator.value}>
                           {oscilator.label}
                           <Select.ItemIndicator />
                         </Select.Item>

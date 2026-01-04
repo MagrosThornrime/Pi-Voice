@@ -1,8 +1,5 @@
 export function calcLogValueFromScale(x:number, lims:number[]){
     // changes position on slider to log10 value of number, which bound are in lims
-    if (x == 0){
-        return 0;
-    }
     let res = Math.log10( lims[0] ) + x/100 * ( Math.log10(lims[1]) - Math.log10(lims[0]) )
     return res;
 }
@@ -32,13 +29,16 @@ export function getBounds(x:number, lims: number[]):number[] {
     let upper_bound = Math.pow(10, Math.ceil(Math.log10(x)))
 
     if (lower_bound === upper_bound){
-        if (lower_bound == lims[1]){
+        if (lower_bound === lims[1]){
             return [lower_bound/10, lower_bound]
         }
         return [lower_bound, lower_bound*10]
     }
     if (upper_bound > lims[1]){
-        return [lower_bound, lims[1]]
+        upper_bound = lims[1]
+    }
+    if (lower_bound < lims[0]){
+        lower_bound = lims[0];
     }
 
     return [lower_bound, upper_bound]

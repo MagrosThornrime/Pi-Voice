@@ -78,11 +78,13 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
         p={5}
         bg={(obj.params.group === "filters") ? "grey" : "green.600"}
         rounded="2xl"
+        minH = {700}
         shadow="md"
       >
-        <Text mb={2} fontWeight="medium" textAlign="center">
+        <Text mb={2} fontWeight="medium" fontSize={"2xl"} textAlign="center" >
           {obj.params.value}
         </Text>
+        <Box h = "5"/>
         {
         (Object.entries((group === "filters") ? defaultOpts : defaultEffectOpts[obj.params.value as EffectType]) as [OptKey | OptEffectKey, Opt][])
         .map(([optKey, opt], _) => {
@@ -132,7 +134,7 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
           </Collapsible.Indicator>
 
           <Box maxW="100%">
-            <Text textStyle="2xl" mb={2} color="teal.600" fontWeight="semibold" textAlign="center"> Toggle {attr} </Text>
+            <Text textStyle="3xl" mb={2} color="teal.600" fontWeight="semibold" textAlign="center"> Toggle Sliders </Text>
           </Box>
 
         </Collapsible.Trigger>

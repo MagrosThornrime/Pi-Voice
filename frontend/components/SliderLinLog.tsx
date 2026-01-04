@@ -1,10 +1,11 @@
-import { Box, Text, Flex, Slider } from "@chakra-ui/react";
+import { Box, Text, Flex, Slider, Center, Stack } from "@chakra-ui/react";
 import { useState, Fragment } from "react";
 import { Opt, OptKey, defaultOpts, OptEffectKey, defaultEffectOpts } from "@/app/utils/tables";
 import { calcValueFromLogScale, calcValueFromLinScale } from "@/app/utils/maths_utils";
 import { setEffectParam, setFilterParam } from "@/app/utils/integration_utils";
 import { ButtonScale } from "./ButtonScale";
 import { FiltersParams, ItemsParams, EffectsParams, OptParams} from "@/app/utils/context_utils";
+import { SliderTooltip } from "./SliderTooltip";
 
 
 type LogSliderProps<P extends keyof OptParams = keyof OptParams> = {
@@ -56,13 +57,9 @@ export function LogSlider({ setSliderValue, opt, optKey, itemID, paramsData}: Lo
     return (
         <Fragment key={`${itemID}${optKey}`}>
 
-            <Flex
-                align="center"
-                justify="center"
-                w="100%"
-            >
+           <Stack direction="row" w="100%" align="center">
 
-                <Text fontWeight="medium" color="white"> {optKey} </Text>
+                <Text fontWeight="medium" fontSize = "lg" color="white"> {optKey} </Text>
                 <Box flex="1" display="flex" justifyContent="center">
                     <ButtonScale setStatus={setStatus} status={status}
                         optKey={optKey} setSliderValue={setSliderValue} 
@@ -70,7 +67,13 @@ export function LogSlider({ setSliderValue, opt, optKey, itemID, paramsData}: Lo
                         opt={opt} itemID = {itemID} />
                 </Box>
 
-            </Flex>
+                <Box minW="fit-content" visibility="hidden">
+                    {optKey}
+                </Box>
+
+            </Stack>
+
+            <Box h = "2"/>
 
             <Slider.Root
                 value={[Value]}
@@ -133,20 +136,7 @@ export function LogSlider({ setSliderValue, opt, optKey, itemID, paramsData}: Lo
                 </Slider.Control>
             </Slider.Root>
 
-
-            <Flex justify="space-between" align="center" mb={2} w="100%">
-
-                <Text>
-                    {Props.bounds[0]}
-                </Text>
-                <Box flex="1" textAlign="center" minW="0">
-                    <Text> Val:
-                        {Math.round(Props.actValue)}
-                    </Text>
-                </Box>
-
-                <Text> {Props.bounds[1]} </Text>
-            </Flex>
+            <SliderTooltip Props = {Props} />
 
             <Box h="5" />
 

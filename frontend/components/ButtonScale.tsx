@@ -63,7 +63,7 @@ export function ButtonScale({ setStatus, status, setSliderValue, optKey, opt, it
     };
 
     return (
-        <Button bg={status === "linear" ? "green.400" : "red.400"}
+        <Button bg={status === "linear" ? "yellow.600" : "blue.600"}
             onClick={handleClick}>
             {status}
         </Button>
