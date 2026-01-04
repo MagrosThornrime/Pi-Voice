@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Text, Collapsible, Stack } from "@chakra-ui/react";
+import { Box, Button, Text, Collapsible, Stack, Center} from "@chakra-ui/react";
 import { useEffect, useState,  DragEvent, useRef } from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { MdDelete } from "react-icons/md";
@@ -14,7 +14,7 @@ import { clearFilters, addFilter, deleteItem, swapItems, moveItem, addEffect } f
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod"
 
-const FIELDS = 4
+const FIELDS = 6
 
 const FiltersFormSchema = z.object({
     filters: z.array(z.string()).max(3, {
@@ -45,7 +45,7 @@ type listType = {
 }
 
 const groupColor:Record<string, string> = {
-    "filters" : "green.500",
+    "filters" : "orange.600",
     "effects" : "purple.600",
     "empty" : "blue.500"
 }
@@ -240,9 +240,9 @@ function DraggableList({ attr }: DraggableListProps) {
 
 
     return (
-        <Collapsible.Root justifyItems={"left"}>
+        <Collapsible.Root>
 
-            <Collapsible.Trigger paddingY="3" display="flex" gap="2" alignItems="center" justifyItems={"center"}>
+            <Collapsible.Trigger paddingY="3" display="flex" gap="2" alignItems="center">
 
                 <Collapsible.Indicator
                     transition="transform 0.2s"
@@ -251,7 +251,7 @@ function DraggableList({ attr }: DraggableListProps) {
                 </Collapsible.Indicator>
 
                 <Box maxW="100%">
-                    <Text textStyle="2xl" mb={2} color="teal.600" fontWeight="semibold" textAlign="center"> Toggle {attr} order selection </Text>
+                    <Text textStyle="3xl" mb={2} color="teal.600" fontWeight="semibold" > Toggle {attr} order selection </Text>
                 </Box>
 
             </Collapsible.Trigger>
@@ -270,13 +270,21 @@ function DraggableList({ attr }: DraggableListProps) {
                         >
                             {
                                 listData.map((item, index) => {
+                                    const itemPresent:boolean = blocks.findIndex( (i) => i.val === item.val) != -1;
                                     return (
-                                        <Box key={index} as="li" color="white" bg={ (item.group === "filters") ? "gray.500" : "green.600"} rounded="2xl" maxW="30%" shadow="md" p={2}
+                                        <Box key={index} as="li" color="white" 
+                                            bg={ (item.group === "filters") ? 
+                                                (itemPresent ? "orange.600" : "orange.400")
+                                                 : (itemPresent ? "purple.600" : "purple.400") } 
+                                            rounded="2xl" minHeight="60px" minWidth="13%" shadow="md" p={2}
                                             draggable
                                             onDragStart={() => dragStartList(index)}
                                             cursor="grab"
-                                            className={index === dragIndex ? "dragging" : ""} >
-                                            {item.val}
+                                            className={index === dragIndex ? "dragging" : ""}
+                                            display="flex" alignItems="center" justifyContent="center"
+                                        >
+                                        <Text alignSelf={"center"} fontSize = "2xl" > {item.val} </Text>
+
                                         </Box>
                                     )
                                 })
@@ -292,7 +300,9 @@ function DraggableList({ attr }: DraggableListProps) {
                                         blocks.map((item, index) => {
                                             return (
                                                 <Box key={index} as="li" color="white" bg={groupColor[item.group]}
-                                                    rounded="2xl" minHeight="40px" minWidth="7%" shadow="md" p={2}
+                                                    rounded="2xl" minHeight="60px" minWidth="13%" shadow="md" p={2}
+                                                    display="flex" alignItems="center" justifyContent="center"
+                                                    position="relative"
 
                                                     draggable
 
@@ -305,10 +315,12 @@ function DraggableList({ attr }: DraggableListProps) {
 
                                                     onDrop={() => handleDrop(index)} >
 
-                                                    <Button size="xs"
+                                                    <Button size="lg"
                                                         p={1}
                                                         minW={0}
                                                         bg="transparent"
+                                                        position="absolute"
+                                                        left="8px"
                                                         _hover={{ bg: "red.600" }}
                                                         _active={{ bg: "red.700" }}
 
@@ -317,12 +329,11 @@ function DraggableList({ attr }: DraggableListProps) {
                                                             handleDelete(index);
                                                         }}
                                                     >
-
-                                                        <MdDelete />
+                                                        <MdDelete/>
 
                                                     </Button>
 
-                                                    {item.val}
+                                                    <Text alignSelf={"center"} fontSize = "2xl" > {item.val} </Text>
 
                                                 </Box>
                                             )
@@ -364,7 +375,7 @@ function Page() {
     const invalid_eff = !!errors.effects
 
     return (
-        <Box minH="100vh" bg="gray.50" p={10} justifyItems={"left"} alignItems="center">
+        <Box minH="100vh" bg="gray.50" p={10} alignItems="center">
             <form
                 onSubmit={handleSubmit(async (formData) => {
                     setData(formData);
@@ -374,8 +385,8 @@ function Page() {
                     console.log("SUBMITTED", formData);
                 })}
             >
-                <Stack direction={"row"} gap={40}>
-                    <CheckboxesWithHeading field={filtersField.field}
+                <Stack direction={"row"} gap = {60} >
+                    <CheckboxesWithHeading  field={filtersField.field}
                         formItems={filters}
                         invalid={invalid}
                         error={Array.isArray(errors.filters)
@@ -386,7 +397,7 @@ function Page() {
                         headerText="Select filters" >
                     </CheckboxesWithHeading>
 
-                    <CheckboxesWithHeading field={effectsField.field}
+                    <CheckboxesWithHeading  field={effectsField.field}
                         formItems={effects}
                         invalid={invalid_eff}
                         error={Array.isArray(errors.effects)
@@ -399,11 +410,11 @@ function Page() {
                     </CheckboxesWithHeading>
                 </Stack>
 
-                <Box display="flex" justifyContent="center" minW="60%">
+                <Center display="flex" minW="60%">
                     <Button size="2xl" type="submit">
                         Submit
                     </Button>
-                </Box>
+                </Center>
 
             </form>
 

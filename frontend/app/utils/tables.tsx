@@ -32,7 +32,7 @@ export type Effect<T extends EffectType = EffectType> = {
 
 export type OptKey = "order" | "cutoff" | "gainDB" | "quality";
 
-export type OptEffectKey = "baseDelayFactor" | "modFrequency" | "modDepth" | "bufferFrames" | "feedback" | "wetAmount" | "count";
+export type OptEffectKey = "baseDelayFactor" | "modFrequency" | "modDepth" | "bufferFrames" | "feedback" | "wetAmount";
 
 export const defaultOpts: Record<OptKey, Opt> = {
     order: { continuous: false, logScale: false, range: [0, 1], step: 1, index: 3 },

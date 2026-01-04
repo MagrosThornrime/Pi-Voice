@@ -132,7 +132,7 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
           </Collapsible.Indicator>
 
           <Box maxW="100%">
-            <Text textStyle="2xl" mb={2} color="teal.600" fontWeight="semibold" textAlign="center"> Toggle {attr} </Text>
+            <Text textStyle="3xl" mb={2} color="teal.600" fontWeight="semibold" textAlign="center"> Toggle Sliders </Text>
           </Box>
 
         </Collapsible.Trigger>
