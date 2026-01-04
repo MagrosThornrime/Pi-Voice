@@ -47,7 +47,7 @@ type listType = {
 const groupColor:Record<string, string> = {
     "filters" : "orange.600",
     "effects" : "purple.600",
-    "empty" : "blue.500"
+    "empty" : "blue.300"
 }
 
 function getPosFromFiltered(list1: blockType[], idx: string) {
@@ -272,7 +272,7 @@ function DraggableList({ attr }: DraggableListProps) {
                                 listData.map((item, index) => {
                                     const itemPresent:boolean = blocks.findIndex( (i) => i.val === item.val) != -1;
                                     return (
-                                        <Box key={index} as="li" color="white" 
+                                        <Box key={item.val} as="li" color="white" 
                                             bg={ (item.group === "filters") ? 
                                                 (itemPresent ? "orange.600" : "orange.400")
                                                  : (itemPresent ? "purple.600" : "purple.400") } 
@@ -299,7 +299,7 @@ function DraggableList({ attr }: DraggableListProps) {
                                     {
                                         blocks.map((item, index) => {
                                             return (
-                                                <Box key={index} as="li" color="white" bg={groupColor[item.group]}
+                                                <Box key={item.id} as="li" color="white" bg={groupColor[item.group]}
                                                     rounded="2xl" minHeight="60px" minWidth="13%" shadow="md" p={2}
                                                     display="flex" alignItems="center" justifyContent="center"
                                                     position="relative"
