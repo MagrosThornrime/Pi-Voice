@@ -1,18 +1,23 @@
 #include <effects/ReverbEffect.hpp>
 #include <fmt/core.h>
+#include <range/v3/all.hpp>
 
 namespace effects {
 void ReverbEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames){
     for(u32 i = 0; i < frames * _channels; i++){
         f32 output = 0.0f;
+    	f32 in = inputBuffer[i];
+    	for (auto& stage : _allPassStages) {
+    		in = stage.processSample(in);
+    	}
         for(u32 j = 0; j < _buffers.size(); j++){
             u32 delayIndex = _indices[j];
             f32 delayedSample = _buffers[j][delayIndex];
             output += delayedSample;
-            _buffers[j][delayIndex] = inputBuffer[i] + delayedSample * _feedback;
+            _buffers[j][delayIndex] = in + delayedSample * _feedback;
             _indices[j] = (delayIndex + 1) % _buffers[j].size();
         }
-        outputBuffer[i] = inputBuffer[i] * (1 - _mix) + output / _buffers.size() * _mix;
+        outputBuffer[i] = in * (1 - _mix) + output / _buffers.size() * _mix;
     }
 }
 
@@ -43,6 +48,9 @@ std::any ReverbEffect::getParam(const u32 param){
 }
 
 ReverbEffect::ReverbEffect(const u32 channels, const f32 sampleRate) : Effect(channels, sampleRate) {
+	for (auto&& [coeff, stage] : ranges::views::zip(_allPassCoeffs, _allPassStages)) {
+		stage.setCoefficient(coeff);
+	}
     refresh();
 }
 
