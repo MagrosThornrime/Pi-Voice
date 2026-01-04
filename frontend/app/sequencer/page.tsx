@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -35,6 +35,8 @@ export default function Page() {
     const [buttonText, setButtonText] = useState<string>("Record to sequencer");
     const [buttonText2, setButtonText2] = useState<string>("Play");
 
+    const isFirstRender = useRef(0);
+
     useEffect(() => {
         const saved = sessionStorage.getItem("sounds");
         if (saved){
@@ -45,7 +47,11 @@ export default function Page() {
     }, []);
 
     useEffect(() => {
-        sessionStorage.setItem("sounds", JSON.stringify(sounds));
+        if (isFirstRender.current<2){
+            isFirstRender.current = isFirstRender.current+1;
+        }else{
+            sessionStorage.setItem("sounds", JSON.stringify(sounds));
+        }
         setColorMap(prev => {
             const copy: Record<string, string> = { ...prev };
             sounds.forEach(s => {
@@ -58,7 +64,9 @@ export default function Page() {
     }, [sounds]);
 
     useEffect(() => {
-        sessionStorage.setItem("colorMap", JSON.stringify(colorMap));
+        if (isFirstRender.current>1){
+            sessionStorage.setItem("colorMap", JSON.stringify(colorMap));
+        }
     }, [colorMap]);
 
     const handleDragStart = (index: number) => {
