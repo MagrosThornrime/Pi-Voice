@@ -35,7 +35,7 @@ void ChorusEffect::processSound(std::vector<f32>& inputBuffer,
             f32 delayed = _buffer[i0] * (1.0f - frac) + _buffer[i1] * frac;
 
             f32 in = inputBuffer[idx];
-            outputBuffer[idx] = in * (1.0f - _wetAmount) + delayed * _wetAmount;
+            outputBuffer[idx] = in * (1.0f - _mix) + delayed * _mix;
 
             _buffer[_index] = in * (1.0f - _feedback) + delayed * _feedback;
 
@@ -54,7 +54,7 @@ pipeline::Layer& ChorusEffect::setParam(const u32 param, std::any value){
         SET_PARAM(modDepth);
         SET_PARAM(bufferFrames);
         SET_PARAM(feedback);
-        SET_PARAM(wetAmount);
+        SET_PARAM(mix);
     }
     refresh();
     return *this;
@@ -71,7 +71,7 @@ std::any ChorusEffect::getParam(const u32 param){
         GET_PARAM(modDepth);
         GET_PARAM(bufferFrames);
         GET_PARAM(feedback);
-        GET_PARAM(wetAmount);
+        GET_PARAM(mix);
     }
 
     return result;

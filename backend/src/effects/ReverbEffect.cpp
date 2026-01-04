@@ -12,7 +12,7 @@ void ReverbEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>&
             _buffers[j][delayIndex] = inputBuffer[i] + delayedSample * _feedback;
             _indices[j] = (delayIndex + 1) % _buffers[j].size();
         }
-        outputBuffer[i] = inputBuffer[i] * (1 - _wetAmount) + output / _buffers.size() * _wetAmount;
+        outputBuffer[i] = inputBuffer[i] * (1 - _mix) + output / _buffers.size() * _mix;
     }
 }
 
@@ -22,7 +22,7 @@ pipeline::Layer& ReverbEffect::setParam(const u32 param, std::any value){
     switch (param) {
 		SET_PARAM(bufferFrames);
         SET_PARAM(feedback);
-        SET_PARAM(wetAmount);
+        SET_PARAM(mix);
     }
     refresh();
     return *this;
@@ -36,7 +36,7 @@ std::any ReverbEffect::getParam(const u32 param){
     switch (param) {
 		GET_PARAM(bufferFrames);
         GET_PARAM(feedback);
-        GET_PARAM(wetAmount);
+        GET_PARAM(mix);
     }
 
     return result;

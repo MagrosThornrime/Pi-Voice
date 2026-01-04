@@ -8,7 +8,7 @@ namespace effects {
         enum Value: u32 {
 			bufferFrames,
             feedback,
-            wetAmount,
+            mix,
             _count,
         };
 
@@ -45,7 +45,7 @@ namespace effects {
 		u32 _bufferFrames = 10000;
 
         f32 _feedback = 0.1f;
-        f32 _wetAmount = 0.5f;
+        f32 _mix = 0.5f;
 
     public:
         pipeline::Layer& setParam(const u32 param, std::any value) override;

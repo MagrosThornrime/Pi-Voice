@@ -341,7 +341,7 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 			SET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::modDepth);
 			SET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::bufferFrames);
 			SET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::feedback);
-			SET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::wetAmount);
+			SET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::mix);
 		}
 		break;
 
@@ -352,7 +352,7 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 		switch (param) {
 			SET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::bufferFrames);
 			SET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::feedback);
-			SET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::wetAmount);
+			SET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::mix);
 		}
 		break;
 
@@ -363,7 +363,7 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 		switch (param) {
 			SET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::bufferFrames);
 			SET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::feedback);
-			SET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::wetAmount);
+			SET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::mix);
 		}
 		break;
 
@@ -438,7 +438,7 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 			    GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::modDepth);
 			    GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::bufferFrames);
 			    GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::feedback);
-			    GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::wetAmount);
+			    GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::mix);
 		    }
 		    break;
 
@@ -449,7 +449,7 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 		    switch (param) {
 			    GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::bufferFrames);
 			    GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::feedback);
-			    GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::wetAmount);
+			    GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::mix);
 		    }
 		    break;
 
@@ -460,7 +460,7 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 		    switch (param) {
 			    GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::bufferFrames);
 			    GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::feedback);
-			    GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::wetAmount);
+			    GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::mix);
 		    }
 		    break;
 

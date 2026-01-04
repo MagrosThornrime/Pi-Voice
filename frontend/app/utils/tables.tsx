@@ -18,9 +18,9 @@ export type Filter = {
 };
 
 export type EffectOptionsMap = {
-    chorus: "baseDelayFactor" | "modFrequency" | "modDepth" | "bufferFrames" | "feedback" | "wetAmount",
-    delay: "bufferFrames" | "feedback" | "wetAmount",
-    reverb: "bufferFrames" | "feedback" | "wetAmount",
+    chorus: "baseDelayFactor" | "modFrequency" | "modDepth" | "bufferFrames" | "feedback" | "mix",
+    delay: "bufferFrames" | "feedback" | "mix",
+    reverb: "bufferFrames" | "feedback" | "mix",
     robotify: "modFrequency",
     phaser: "minHz" | "rangeHz" | "rateHz" | "feedback" | "mix",
 };
@@ -33,7 +33,7 @@ export type Effect<T extends EffectType = EffectType> = {
 
 export type OptKey = "order" | "cutoff" | "gainDB" | "quality";
 
-export type OptEffectKey = "baseDelayFactor" | "modFrequency" | "modDepth" | "bufferFrames" | "feedback" | "wetAmount";
+export type OptEffectKey = "baseDelayFactor" | "modFrequency" | "modDepth" | "bufferFrames" | "feedback" | "mix";
 
 export const defaultOpts: Record<OptKey, Opt> = {
     order: { continuous: false, logScale: false, range: [0, 1], step: 1, index: 3 },
@@ -67,17 +67,17 @@ export const defaultEffectOpts: Record<EffectType, Record<string, Opt>> = {
         modDepth: getLinParams([0, 0.005], 2),
         bufferFrames: getLogParams([500, 20000], 3),
         feedback: getLinParams([0, 1], 4),
-        wetAmount: getLinParams([0, 1], 5),
+        mix: getLinParams([0, 1], 5),
     },
     delay: {
         bufferFrames: getLogParams([500, 20000], 0),
         feedback: getLinParams([0, 1], 1),
-        wetAmount: getLinParams([0, 1], 2),
+        mix: getLinParams([0, 1], 2),
     },
     reverb: {
         bufferFrames: getLogParams([500, 20000], 0),
         feedback: getLinParams([0, 1], 1),
-        wetAmount: getLinParams([0, 1], 2),
+        mix: getLinParams([0, 1], 2),
     },
     robotify: {
         modFrequency: getLinParams([1, 50], 0),
