@@ -3,6 +3,7 @@
 #include <effects/ReverbEffect.hpp>
 #include <effects/DelayEffect.hpp>
 #include <effects/RobotifyEffect.hpp>
+#include <effects/PhaserEffect.hpp>
 
 namespace effects {
 
@@ -13,6 +14,7 @@ std::shared_ptr<Effect> Effect::create(EffectType::Value effect, u32 channels, f
     case EffectType::delay: result = std::make_shared<DelayEffect>(channels, sampleRate); break;
     case EffectType::reverb: result = std::make_shared<ReverbEffect>(channels, sampleRate); break;
     case EffectType::robotify: result = std::make_shared<RobotifyEffect>(channels, sampleRate); break;
+    case EffectType::phaser: result = std::make_shared<PhaserEffect>(channels, sampleRate); break;
     }
     if (result) {
         result->refresh();

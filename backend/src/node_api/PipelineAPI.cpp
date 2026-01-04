@@ -375,6 +375,19 @@ void setEffectParam(const Napi::CallbackInfo& info) {
 			SET_EFFECT_PARAM(effects::RobotifyParams, effects::RobotifyParams::modFrequency);
 		}
 		break;
+    case effects::EffectType::phaser:
+        if (param >= effects::PhaserParams::_count) {
+            Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+        }
+
+        switch (param) {
+            SET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::minHz);
+            SET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::rangeHz);
+            SET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::rateHz);
+            SET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::feedback);
+            SET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::mix);
+        }
+        break;
 	}
 
 
@@ -415,51 +428,64 @@ Napi::Value getEffectParam(const Napi::CallbackInfo& info) {
 		return Napi::Value::From(env, std::any_cast<params::type<name>>(layer.getParam(param))); \
 
 	switch (effect->getEffectType()) {
+	    case effects::EffectType::chorus:
+		    if (param >= effects::ChorusParams::_count) {
+			    Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		    }
+		    switch (param) {
+			    GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::baseDelayFactor);
+			    GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::modFrequency);
+			    GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::modDepth);
+			    GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::bufferFrames);
+			    GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::feedback);
+			    GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::wetAmount);
+		    }
+		    break;
 
-	case effects::EffectType::chorus:
-		if (param >= effects::ChorusParams::_count) {
-			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
-		}
-		switch (param) {
-			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::baseDelayFactor);
-			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::modFrequency);
-			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::modDepth);
-			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::bufferFrames);
-			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::feedback);
-			GET_EFFECT_PARAM(effects::ChorusParams, effects::ChorusParams::wetAmount);
-		}
-		break;
+	    case effects::EffectType::reverb:
+		    if (param >= effects::ReverbParams::_count) {
+			    Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		    }
+		    switch (param) {
+			    GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::bufferFrames);
+			    GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::feedback);
+			    GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::wetAmount);
+		    }
+		    break;
 
-	case effects::EffectType::reverb:
-		if (param >= effects::ReverbParams::_count) {
-			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
-		}
-		switch (param) {
-			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::bufferFrames);
-			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::feedback);
-			GET_EFFECT_PARAM(effects::ReverbParams, effects::ReverbParams::wetAmount);
-		}
-		break;
+	    case effects::EffectType::delay:
+		    if (param >= effects::DelayParams::_count) {
+			    Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		    }
+		    switch (param) {
+			    GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::bufferFrames);
+			    GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::feedback);
+			    GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::wetAmount);
+		    }
+		    break;
 
-	case effects::EffectType::delay:
-		if (param >= effects::DelayParams::_count) {
-			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
-		}
-		switch (param) {
-			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::bufferFrames);
-			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::feedback);
-			GET_EFFECT_PARAM(effects::DelayParams, effects::DelayParams::wetAmount);
-		}
-		break;
+	    case effects::EffectType::robotify:
+		    if (param >= effects::RobotifyParams::_count) {
+			    Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+		    }
+		    switch (param) {
+			    GET_EFFECT_PARAM(effects::RobotifyParams, effects::RobotifyParams::modFrequency);
+		    }
+		    break;
 
-	case effects::EffectType::robotify:
-		if (param >= effects::RobotifyParams::_count) {
-			Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
-		}
-		switch (param) {
-			GET_EFFECT_PARAM(effects::RobotifyParams, effects::RobotifyParams::modFrequency);
-		}
-		break;
+        case effects::EffectType::phaser:
+            if (param >= effects::PhaserParams::_count) {
+                Napi::Error::New(env, fmt::format("param id = {} is invalid", param)).ThrowAsJavaScriptException();
+            }
+
+            switch (param) {
+                GET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::minHz);
+                GET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::rangeHz);
+                GET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::rateHz);
+                GET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::feedback);
+                GET_EFFECT_PARAM(effects::PhaserParams, effects::PhaserParams::mix);
+            }
+            break;
 	}
 
 	return Napi::Number::New(env, std::nan(""));

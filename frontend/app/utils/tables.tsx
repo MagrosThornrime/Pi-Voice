@@ -8,7 +8,7 @@ export type Opt = {
 
 export type FilterType = "allpass" | "bandpass" | "highpass" | "lowpass" | "highshelf" | "lowshelf" | "notch" | "peakingeq";
 
-export type EffectType = "chorus" | "delay" | "reverb" | "robotify";
+export type EffectType = "chorus" | "delay" | "reverb" | "robotify" | "phaser";
 //"noiseReduction" | "equalizer" | "fades" | "echo" | "glitches" 
 
 export type Filter = {
@@ -22,6 +22,7 @@ export type EffectOptionsMap = {
     delay: "bufferFrames" | "feedback" | "wetAmount",
     reverb: "bufferFrames" | "feedback" | "wetAmount",
     robotify: "modFrequency",
+    phaser: "minHz" | "rangeHz" | "rateHz" | "feedback" | "mix",
 };
 
 export type Effect<T extends EffectType = EffectType> = {
@@ -80,7 +81,14 @@ export const defaultEffectOpts: Record<EffectType, Record<string, Opt>> = {
     },
     robotify: {
         modFrequency: getLinParams([1, 50], 0),
-    }
+    },
+    phaser: {
+        minHz:    getLogParams([50, 1000], 0),
+        rangeHz:  getLogParams([100, 3000], 1),
+        rateHz:   getLinParams([0.05, 5], 2),
+        feedback: getLinParams([0, 1], 3),
+        mix:      getLinParams([0, 1], 4),
+    },
 }
 
 
@@ -129,10 +137,11 @@ export const filters: Filter[] = [
 
 
 export const effects: Effect[] = [
-    { label: "chorus", value: "chorus" },
-    { label: "delay", value: "delay" },
-    { label: "reverb", value: "reverb" },
-    { label: "robotify", value: "robotify" }
+    { label: "Chorus", value: "chorus" },
+    { label: "Delay", value: "delay" },
+    { label: "Reverb", value: "reverb" },
+    { label: "Robotify", value: "robotify" },
+    { label: "Phaser", value: "phaser" },
 ]
     // { label: "equalizer", value: "equalizer" },
     // { label: "fades", value: "fades" },
@@ -144,5 +153,6 @@ export const effectIDs:Record<EffectType, number> = {
     chorus: 0,
     delay: 1,
     reverb: 2,
-    robotify: 3
+    robotify: 3,
+    phaser: 4,
 }
