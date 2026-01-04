@@ -141,7 +141,7 @@ function FunctionChart(props: FunctionChartProps){
     })
 
     return (
-      <Chart.Root width="100%" height={600} chart={chart}>
+      <Chart.Root width="100%" height={400} chart={chart}>
 
         <LineChart data={chart.data}>
 
