@@ -138,10 +138,11 @@ type FunctionChartProps = FunctionModeProps | DataModeProps;
 function FunctionChart(props: FunctionChartProps) {
   const chart = useChart({
     data: props.inputType === "function" ? get_example_data(props.givenFunc.n, props.givenFunc.domain, props.givenFunc.func) : props.givenData.points,
-    series: [{ name: "y", color: "teal.solid" }]
+    series: [{ name: "y", color: "teal.500" }]
   })
 
   return (
+    <Box bg = "white">
     <Chart.Root width="100%" height={400} chart={chart}>
 
       <LineChart data={chart.data}>
@@ -155,9 +156,10 @@ function FunctionChart(props: FunctionChartProps) {
         />
 
         <YAxis dataKey="y"
-          label={{ value: "Y", position: "left" }}
+          label={{ value: "Y", position: "left"}}
           stroke={chart.color("border")}
           tickFormatter={(value) => `${Math.round(value * 100) / 100}`}
+          tick={{ fill: "white" }}
         />
 
         <Tooltip
@@ -169,9 +171,9 @@ function FunctionChart(props: FunctionChartProps) {
               const y = Math.round(payload[0].value * 100) / 100;
 
               return (
-                <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
-                  <Text fontSize="sm" color="gray.600">x: {x}</Text>
-                  <Text fontSize="sm" color="gray.600">y: {y}</Text>
+                <Box p={3} rounded="md" shadow="md" borderWidth={1}>
+                  <Text color = "white" fontSize="sm" >x: {x} </Text>
+                  <Text color = "white" fontSize="sm" >y: {y} </Text>
                 </Box>
               );
             }
@@ -194,6 +196,7 @@ function FunctionChart(props: FunctionChartProps) {
       </LineChart>
 
     </Chart.Root>
+    </Box>
   )
 }
 
@@ -288,7 +291,7 @@ export default function Page() {
   }
 
   return (
-    <Box minH="100vh" bg="blue.50" p={10}>
+    <Box minH="100vh"  p={10}>
       <Grid templateColumns={{
         base: "1fr",
         md: "repeat(2, 1fr)",
@@ -305,7 +308,7 @@ export default function Page() {
               <MemoFunctionChart inputType={"data"} givenData={{ points: getPoints(i) }} />
               <Box h="10" />
 
-              <Box  mt={4} p={6}  bg="teal.300"rounded="2xl" w="100%">
+              <Box mt={4} p={6}  bg="teal.400"rounded="2xl" w="100%">
 
                 <Select.Root colorPalette = "white" size={"lg"} collection={oscillatorTypes} variant={"subtle"}
                   positioning={{ sameWidth: true, placement: "bottom", flip: false }}

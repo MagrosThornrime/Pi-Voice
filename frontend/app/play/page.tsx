@@ -105,6 +105,7 @@ export default function PlayPage() {
                         <Alert.Indicator />
                         <Alert.Content>
                             <Alert.Title fontSize = "xl" fontWeight = "semibold" textAlign={"center"} >Instruction</Alert.Title>
+                            <Box h = "2"/>
                             <Alert.Description textAlign={"center"}>
 
                                 <Highlight query= {["Refresh MIDI Ports", "Clear Ports"]}
@@ -121,7 +122,7 @@ export default function PlayPage() {
                     </Alert.Root>
                 </Flex>
 
-                <Box h="5" />
+                <Box h="10" />
 
                 <Flex align="center" justify="center">
 
