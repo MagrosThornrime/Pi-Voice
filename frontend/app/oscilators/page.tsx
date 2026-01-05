@@ -1,7 +1,7 @@
 "use client";
 import { Chart, useChart } from "@chakra-ui/charts";
 import { Box, createListCollection, Grid, Portal, Select, Text, ListCollection, Checkbox, Separator } from "@chakra-ui/react";
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo, Fragment } from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { usePreset } from "@/components/ui/presetsProvider";
 import { getComputedOscillator } from "../utils/integration_utils";
@@ -308,7 +308,7 @@ export default function Page() {
               <MemoFunctionChart inputType={"data"} givenData={{ points: getPoints(i) }} />
               <Box h="10" />
 
-              <Box mt={4} p={6}  bg="teal.400"rounded="2xl" w="100%">
+              <Box mt={4} p={6}  bg="teal.500"rounded="2xl" w="100%">
 
                 <Select.Root colorPalette = "white" size={"lg"} collection={oscillatorTypes} variant={"subtle"}
                   positioning={{ sameWidth: true, placement: "bottom", flip: false }}
@@ -320,14 +320,14 @@ export default function Page() {
                   }}>
 
                   <Select.HiddenSelect />
-                  <Select.Label fontSize={"2xl"} color={"black"}>
+                  <Select.Label fontSize={"xl"} fontWeight={"semibold"} color={"white"}>
                     {`Oscillator${i + 1}`}
                   </Select.Label>
                   <Box h="5" />
 
                   <Select.Control>
                     <Select.Trigger>
-                      <Select.ValueText fontSize={"2xl"} color={"black"} placeholder={oscillators[i]} />
+                      <Select.ValueText fontSize={"xl"} color={"blue.800"} placeholder={oscillators[i]} />
                     </Select.Trigger>
 
                     <Select.IndicatorGroup>
@@ -337,23 +337,25 @@ export default function Page() {
 
                   <Portal>
                     <Select.Positioner>
-                      <Select.Content colorPalette={"green"}>
+                      <Select.Content colorPalette={"teal"}>
 
-                        {oscillatorTypes.items.map((oscilator) => (
-                          <>
-                            <Select.Item fontSize={"2xl"} item={oscilator} key={oscilator.value}
-                             _hover={{ bg: "teal.100" }}
-                            // _selected={{ bg: "blue.200" }}
-                            >
-                              <Text color = "black"> {oscilator.label} </Text>
-                              <Checkbox.Root color = "green.500" checked={oscilator.value === oscillators[i]} pointerEvents="none" mr={2} >
-                                <Checkbox.HiddenInput />
-                                <Checkbox.Control border="none"/>
-                              </Checkbox.Root>
-                            </Select.Item>
-                            <Separator flex="1" />
-                          </>
-                        ))}
+                        {
+                          oscillatorTypes.items.map((oscilator) => (
+                          <Fragment key={`${oscilator.value}${i}`}>
+                              <Select.Item fontSize={"xl"} item={oscilator} key={oscilator.value}
+                              _hover={{ bg: "teal.100" }}
+                              // _selected={{ bg: "blue.200" }}
+                              >
+                                <Text color = "teal.700"> {oscilator.label} </Text>
+                                <Checkbox.Root size={"lg"} checked={oscilator.value === oscillators[i]} pointerEvents="none" mr={2} >
+                                  <Checkbox.HiddenInput />
+                                  <Checkbox.Control  border="none"/>
+                                </Checkbox.Root>
+                              </Select.Item>
+                              <Separator flex="1" />
+                          </Fragment>
+                          ))
+                        }
 
                       </Select.Content>
                     </Select.Positioner>
