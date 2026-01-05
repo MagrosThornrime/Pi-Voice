@@ -113,6 +113,13 @@ int Pipeline::paCallbackFun(const void* /*inputBuffer*/, void* outputBuffer, uns
 
 void Pipeline::_mixWithSequencer(std::vector<f32>& buffer) {
 	if (_sequencer->isActive()) {
+		auto iter = _sequencer->iter();
+		for (auto&& v : buffer) {
+			v += *iter;
+			++iter;
+		}
+	}
+	for (auto&& v : buffer) {
 		v /= 2;
 	}
 }
