@@ -5,19 +5,27 @@
 namespace effects {
 void ReverbEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames){
     for(u32 i = 0; i < frames * _channels; i++){
-        f32 output = 0.0f;
-    	f32 in = inputBuffer[i];
-    	for (auto& stage : _allPassStages) {
-    		in = stage.processSample(in);
-    	}
-        for(u32 j = 0; j < _buffers.size(); j++){
-            u32 delayIndex = _indices[j];
-            f32 delayedSample = _buffers[j][delayIndex];
-            output += delayedSample;
-            _buffers[j][delayIndex] = in + delayedSample * _feedback;
-            _indices[j] = (delayIndex + 1) % _buffers[j].size();
-        }
-        outputBuffer[i] = in * (1 - _mix) + output / _buffers.size() * _mix;
+		f32 input = inputBuffer[i];
+        f32 combSum = 0.0f;
+
+		for (u32 j = 0; j < _buffers.size(); j++) {
+    		u32 delayIndex = _indices[j];
+    		f32 delayed = _buffers[j][delayIndex];
+
+    		combSum += delayed;
+    		_buffers[j][delayIndex] = input * (1 - _feedback) + delayed * _feedback;
+    		_indices[j] = (delayIndex + 1) % _buffers[j].size();
+		}
+
+		combSum /= _buffers.size();
+
+		f32 out = combSum;
+		for (auto& stage : _allPassStages) {
+    		out = stage.processSample(out);
+		}
+
+		outputBuffer[i] = input * (1 - _mix) + out * _mix;
+
     }
 }
 
