@@ -12,11 +12,6 @@ import {
 } from "@chakra-ui/react";
 import { MdDelete } from "react-icons/md";
 
-let last : number = 0;
-function generate_name(){
-    last+=1;
-    return("Dzwiek"+String(last/2))
-}
 function getRandomColor() {
   var letters = '0123456789ABCDEF';
   var color = '#';
@@ -32,6 +27,12 @@ export default function Page() {
     const [sounds, setSounds] = useState<string[]>([]);
     const [colorMap, setColorMap] = useState<Record<string, string>>({});
     const [dragIndex, setDragIndex] = useState<number | null>(null);
+
+    function generate_name(){
+        let last = 1;
+        while (sounds.includes("Dzwiek" + last)) last++;
+        return "Dzwiek" + last;
+    }
 
     const isFirstRender = useRef(0);
 
