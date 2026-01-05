@@ -78,7 +78,6 @@ export default function PlayPage() {
     const [selectedPort, setSelectedPort] = useState<number | null>(null);
 
     const listPorts = async () => {
-        setStatus("Fetching MIDI ports...");
         const ports = await window.synthAPI.ports();
         setMidiPorts(ports);
         setStatus(ports.length ? `Found ${ports.length} MIDI port(s)` : "No MIDI ports found");
@@ -86,7 +85,6 @@ export default function PlayPage() {
 
     const openPort = async (port: number) => {
         setSelectedPort(port);
-        setStatus(`Opening port ${port}...`);
         await window.synthAPI.openPort(port);
         setStatus(`Port ${port} opened`);
     };
