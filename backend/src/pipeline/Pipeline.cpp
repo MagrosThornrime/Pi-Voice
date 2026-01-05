@@ -92,7 +92,6 @@ u32 Pipeline::length() const {
 
 int Pipeline::paCallbackFun(const void* /*inputBuffer*/, void* outputBuffer, unsigned long numFrames,
 	const PaStreamCallbackTimeInfo* /*timeInfo*/, PaStreamCallbackFlags /*statusFlags*/) {
-	auto lock = std::lock_guard(_layersMutex);
 
 	float* out = static_cast<float*>(outputBuffer);
 	const u32 samplesNeeded = static_cast<u32>(numFrames) * _channels;
@@ -112,11 +111,9 @@ int Pipeline::paCallbackFun(const void* /*inputBuffer*/, void* outputBuffer, uns
 	return paContinue;
 }
 
-void Pipeline::_mixWithSequencer(std::vector<f32>& buffer){
-	auto iter = _sequencer->iter();
-	for(u32 i=0; i < buffer.size(); ++i, ++iter) {
-		buffer[i] /= 2;
-		buffer[i] += *iter / 2;
+void Pipeline::_mixWithSequencer(std::vector<f32>& buffer) {
+	if (_sequencer->isActive()) {
+		v /= 2;
 	}
 }
 
@@ -133,12 +130,8 @@ void Pipeline::_generateSound(std::stop_token stopToken, u32 framesPerCall) {
 			}
 		}
 
-		if(_sequencer->isActive()) {
-			_mixWithSequencer(tempBuffer);
-		}
-		else{
-			_sequencer->writeToRecorder(tempBuffer);
-		}
+		_sequencer->writeToRecorder(tempBuffer);
+		_mixWithSequencer(tempBuffer);
 
 		for (u32 i = 0; i < samplesPerCall; ++i) {
 			while (!_outputQueue.push(tempBuffer[i])) {
