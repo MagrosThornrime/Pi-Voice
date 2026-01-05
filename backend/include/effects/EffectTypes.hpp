@@ -10,6 +10,9 @@ struct EffectType {
         delay,
         reverb,
         robotify,
+        phaser,
+        saturate,
+        bitcrush,
     };
 };
 

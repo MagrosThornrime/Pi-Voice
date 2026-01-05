@@ -1,5 +1,6 @@
 #pragma once
 #include <effects/Effect.hpp>
+#include <effects/AllPassStage.hpp>
 #include <array>
 
 namespace effects {
@@ -8,7 +9,7 @@ namespace effects {
         enum Value: u32 {
 			bufferFrames,
             feedback,
-            wetAmount,
+            mix,
             _count,
         };
 
@@ -45,7 +46,10 @@ namespace effects {
 		u32 _bufferFrames = 10000;
 
         f32 _feedback = 0.1f;
-        f32 _wetAmount = 0.5f;
+        f32 _mix = 0.5f;
+
+        const std::array<f32, 4> _allPassCoeffs = { 0.03f, 0.07f, 0.11f, 0.17f };
+        std::array<AllPassStage, 4> _allPassStages;
 
     public:
         pipeline::Layer& setParam(const u32 param, std::any value) override;

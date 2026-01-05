@@ -1,14 +1,14 @@
 #pragma once
 #include <effects/Effect.hpp>
+#include <effects/AllPassStage.hpp>
 
 namespace effects {
 
-    struct ChorusParams {
+    struct PhaserParams {
         enum Value: u32 {
-            baseDelayFactor,
-            modFrequency,
-            modDepth,
-            bufferFrames,
+            minHz,
+            rangeHz,
+            rateHz,
             feedback,
             mix,
             _count,
@@ -23,28 +23,20 @@ namespace effects {
         using type = _Type<P>::type;
     };
 
-#define PARAM_TYPE(param, T) template<> struct ChorusParams::_Type<param> { using type = T; }
+    class PhaserEffect : public Effect {
 
-    PARAM_TYPE(ChorusParams::bufferFrames, u32);
-
-#undef PARAM_TYPE
-
-    class ChorusEffect : public Effect {
-
-        std::vector<f32> _buffer;
-        u32 _index = 0;
-        f32 _baseDelayFactor = 0.03f;
-
-        f32 _phase = 0.0f;
-
-        f32 _modFrequency = 1.5f;
-        f32 _modDepth = 0.005f;
-
-		f32 _phaseIncrement;
-
-        u32 _bufferFrames = 10000;
+        f32 _minHz = 440.0f;
+        f32 _rangeHz = 1160.0f;
+        f32 _rateHz = 0.5f;
         f32 _feedback = 0.1f;
         f32 _mix = 0.5f;
+
+        f32 _minCoeff, _maxCoeff;
+        f32 _lfoIncrement;
+        f32 _lfoPhase = 0.0f;
+        std::vector<f32> _feedbackBuffer;
+
+        std::array<AllPassStage, 6> _allPassStages;
 
     public:
         pipeline::Layer& setParam(const u32 param, std::any value) override;
@@ -52,7 +44,7 @@ namespace effects {
 
         void processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames) override;
 
-        ChorusEffect(const u32 channels, const f32 sampleRate);
+        PhaserEffect(const u32 channels, const f32 sampleRate);
 
         EffectType::Value getEffectType() override;
 

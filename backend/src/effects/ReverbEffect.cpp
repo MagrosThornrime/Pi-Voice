@@ -1,18 +1,31 @@
 #include <effects/ReverbEffect.hpp>
 #include <fmt/core.h>
+#include <range/v3/all.hpp>
 
 namespace effects {
 void ReverbEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames){
     for(u32 i = 0; i < frames * _channels; i++){
-        f32 output = 0.0f;
-        for(u32 j = 0; j < _buffers.size(); j++){
-            u32 delayIndex = _indices[j];
-            f32 delayedSample = _buffers[j][delayIndex];
-            output += delayedSample;
-            _buffers[j][delayIndex] = inputBuffer[i] + delayedSample * _feedback;
-            _indices[j] = (delayIndex + 1) % _buffers[j].size();
-        }
-        outputBuffer[i] = inputBuffer[i] * (1 - _wetAmount) + output / _buffers.size() * _wetAmount;
+		f32 input = inputBuffer[i];
+        f32 combSum = 0.0f;
+
+		for (u32 j = 0; j < _buffers.size(); j++) {
+    		u32 delayIndex = _indices[j];
+    		f32 delayed = _buffers[j][delayIndex];
+
+    		combSum += delayed;
+    		_buffers[j][delayIndex] = input * (1 - _feedback) + delayed * _feedback;
+    		_indices[j] = (delayIndex + 1) % _buffers[j].size();
+		}
+
+		combSum /= _buffers.size();
+
+		f32 out = combSum;
+		for (auto& stage : _allPassStages) {
+    		out = stage.processSample(out);
+		}
+
+		outputBuffer[i] = input * (1 - _mix) + out * _mix;
+
     }
 }
 
@@ -22,7 +35,7 @@ pipeline::Layer& ReverbEffect::setParam(const u32 param, std::any value){
     switch (param) {
 		SET_PARAM(bufferFrames);
         SET_PARAM(feedback);
-        SET_PARAM(wetAmount);
+        SET_PARAM(mix);
     }
     refresh();
     return *this;
@@ -36,13 +49,16 @@ std::any ReverbEffect::getParam(const u32 param){
     switch (param) {
 		GET_PARAM(bufferFrames);
         GET_PARAM(feedback);
-        GET_PARAM(wetAmount);
+        GET_PARAM(mix);
     }
 
     return result;
 }
 
 ReverbEffect::ReverbEffect(const u32 channels, const f32 sampleRate) : Effect(channels, sampleRate) {
+	for (auto&& [coeff, stage] : ranges::views::zip(_allPassCoeffs, _allPassStages)) {
+		stage.setCoefficient(coeff);
+	}
     refresh();
 }
 

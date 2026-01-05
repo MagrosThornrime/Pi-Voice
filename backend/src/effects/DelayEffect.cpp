@@ -4,7 +4,7 @@ namespace effects {
 void DelayEffect::processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames){
     for(u32 i = 0; i < frames * _channels; i++){
         f32 delayedSample = _buffer[_index];
-        outputBuffer[i] = inputBuffer[i] * (1 - _wetAmount) + delayedSample * _wetAmount;
+        outputBuffer[i] = inputBuffer[i] * (1 - _mix) + delayedSample * _mix;
         _buffer[_index] = inputBuffer[i] * (1 - _feedback) + delayedSample * _feedback;
         _index = (_index + 1) % _buffer.size();
     }
@@ -16,7 +16,7 @@ pipeline::Layer& DelayEffect::setParam(const u32 param, std::any value){
 	switch (param) {
 		SET_PARAM(bufferFrames);
 		SET_PARAM(feedback);
-		SET_PARAM(wetAmount);
+		SET_PARAM(mix);
 	}
 	refresh();
 	return *this;
@@ -30,7 +30,7 @@ std::any DelayEffect::getParam(const u32 param){
 	switch (param) {
 		GET_PARAM(bufferFrames);
 		GET_PARAM(feedback);
-		GET_PARAM(wetAmount);
+		GET_PARAM(mix);
 	}
 
 	return result;
