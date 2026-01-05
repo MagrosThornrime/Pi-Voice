@@ -1,6 +1,7 @@
 #pragma once
 #include <effects/Effect.hpp>
 #include <effects/AllPassStage.hpp>
+#include <array>
 
 namespace effects {
 

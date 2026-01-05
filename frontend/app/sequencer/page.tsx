@@ -12,11 +12,6 @@ import {
 } from "@chakra-ui/react";
 import { MdDelete } from "react-icons/md";
 
-let last : number = 0;
-function generate_name(){
-    last+=1;
-    return("Dzwiek"+String(last/2))
-}
 function getRandomColor() {
   var letters = '0123456789ABCDEF';
   var color = '#';
@@ -27,13 +22,17 @@ function getRandomColor() {
 }
 
 export default function Page() {
-    const [isPlaying, setIsPlaying] = useState<boolean>(false);
-    const [isRecording, setIsRecording] = useState<boolean>(false);
+    const [isPlaying, setIsPlaying] = useState<boolean>(sessionStorage.getItem("seq_playing")=="Stop");
+    const [isRecording, setIsRecording] = useState<boolean>(sessionStorage.getItem("seq_recording")=="Stop recording");
     const [sounds, setSounds] = useState<string[]>([]);
     const [colorMap, setColorMap] = useState<Record<string, string>>({});
     const [dragIndex, setDragIndex] = useState<number | null>(null);
-    const [buttonText, setButtonText] = useState<string>("Record to sequencer");
-    const [buttonText2, setButtonText2] = useState<string>("Play");
+
+    function generate_name(){
+        let last = 1;
+        while (sounds.includes("Dzwiek" + last)) last++;
+        return "Dzwiek" + last;
+    }
 
     const isFirstRender = useRef(0);
 
@@ -96,25 +95,25 @@ export default function Page() {
             <Stack>
                 <Button
                     disabled={isPlaying}
-                    bg={buttonText === "Record to sequencer" ? "green.400" : "red.400"}
+                    bg={sessionStorage.getItem("seq_recording")=="Stop recording" ? "red.400" : "green.400"}
                     onClick={async () => {
                         try {
-                            if (buttonText === "Record to sequencer") {
-                                setIsRecording(true);
-                                await window.synthAPI.sequencerStartRecording(44100,2,40);
-                                setButtonText("Stop recording");
-                            } else {
+                            if (sessionStorage.getItem("seq_recording")=="Stop recording"){
                                 setIsRecording(false);
+                                sessionStorage.setItem("seq_recording","Record to sequencer");
                                 await window.synthAPI.sequencerStopRecording();
-                                setButtonText("Record to sequencer");
                                 setSounds(prev => [...prev, generate_name()]);
+                            }else{
+                                setIsRecording(true);
+                                sessionStorage.setItem("seq_recording","Stop recording");
+                                await window.synthAPI.sequencerStartRecording(44100,2,40);
                             }
                         } catch (err) {
                             console.error(err);
                         }
                     }}
                 >
-                    {buttonText}
+                    {sessionStorage.getItem("seq_recording") ?? "Record to sequencer"}
                 </Button>
                 <Box h="10"/>
                 <Grid
@@ -161,24 +160,25 @@ export default function Page() {
                 <Box h="10"/>
                 <Button
                     disabled={isRecording||sounds.length==0}
-                    bg={buttonText2 === "Play" ? "green.400" : "red.400"}
+                    bg={sessionStorage.getItem("seq_playing") === "Stop" ? "red.400" : "green.400"}
                     onClick={async () => {
                         try {
-                            if (buttonText2 === "Play") {
-                                setIsPlaying(true);
-                                await window.synthAPI.sequencerActivate();
-                                setButtonText2("Stop");
-                            } else {
+                            if (sessionStorage.getItem("seq_playing") === "Stop") {
                                 setIsPlaying(false);
-                                await window.synthAPI.sequencerDeactivate();
-                                setButtonText2("Play");
+                                sessionStorage.setItem("seq_playing","Play");
+                                await window.synthAPI.sequencerDeactivate();                                
+                            } else {
+                                setIsPlaying(true);
+                                sessionStorage.setItem("seq_playing","Stop");
+                                await window.synthAPI.sequencerActivate();
                             }
+                            console.log(sessionStorage.getItem("seq_playing"));
                         } catch (err) {
                             console.error(err);
                         }
                     }}
                 >
-                    {buttonText2}
+                    {sessionStorage.getItem("seq_playing") ?? "Play"}
                 </Button>
             </Stack>
         </Box>
