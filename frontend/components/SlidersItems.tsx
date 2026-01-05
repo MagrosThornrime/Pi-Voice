@@ -78,7 +78,7 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
         p={5}
         bg={(obj.params.group === "filters") ? "grey" : "green.600"}
         rounded="2xl"
-        minH = {700}
+        minH = {800}
         shadow="md"
       >
         <Text mb={2} fontWeight="medium" fontSize={"2xl"} textAlign="center" >

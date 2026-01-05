@@ -1,4 +1,5 @@
 import { filters, effectIDs, EffectType, FilterType } from "./tables";
+import { Point } from "../oscilators/page";
 
 export async function clearFilters(filtersNumber: number) {
     for (let i = filtersNumber - 1; i >= 0; i--) {
@@ -46,4 +47,29 @@ export async function swapItems(idx1: number, idx2: number) {
 export async function moveItem(idx1: number, idx2:number){
     console.log("MOVE idxs:", idx1, idx2)
     await window.synthAPI.pipelineMove(idx1, idx2);
+}
+
+
+const cache = new Map<string, Promise<Point[]>>()
+
+export function getComputedOscillator(oscName: string): Promise<Point[]> {
+    if (!cache.has(oscName)) {
+        cache.set(oscName,
+            (async () => {
+                let data: number[];
+                try {
+                    if (oscName == "meow") {
+                        data = await window.synthAPI.getOscillatorPlot(oscName, 500, 100);
+                    } else {
+                        data = await window.synthAPI.getOscillatorPlot(oscName, 500, 1);
+                    }
+                } catch { data = [] }
+                const dataPoints = data.map((y, x): Point => {
+                    return { x, y };
+                })
+                return dataPoints;
+            })()
+        )
+    }
+    return cache.get(oscName)!;
 }

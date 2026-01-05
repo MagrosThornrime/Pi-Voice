@@ -26,7 +26,7 @@ export function CheckboxesWithHeading({
 ) {
     return (
         <Box>
-            <Heading size="3xl" textAlign="left" mb={10} color="teal.600">
+            <Heading size="3xl" textAlign="center" mb={10} color="white">
                 {headerText}
             </Heading>
 
@@ -49,8 +49,8 @@ export function CheckboxesWithHeading({
                                 formItems.map((item) => (
                                     <Checkbox.Root size="lg" key={item.value} value={item.value}>
                                         <Checkbox.HiddenInput />
-                                        <Checkbox.Control boxSize="40px" transform="scale(1)" />
-                                        <Checkbox.Label fontSize="xl" fontWeight="medium" >{item.label}</Checkbox.Label>
+                                        <Checkbox.Control boxSize="40px" borderWidth="4px"  transform="scale(1)" />
+                                        <Checkbox.Label fontSize="xl" fontWeight="semibold" color = "white" >{item.label}</Checkbox.Label>
                                     </Checkbox.Root>
                                 ))
                             }

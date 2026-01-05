@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { Preset,PresetFile } from "@/components/ui/presetsProvider";
+import { Fragment, useState } from "react";
+import { Preset, PresetFile } from "@/components/ui/presetsProvider";
 
 import {
-  Box,
-  Heading,
-  Text,
-  Button,
-  List,
-  ListItem,
+    Box,
+    Heading,
+    Text,
+    Button,
+    List,
+    ListItem, Flex, Stack,
+    Alert, CloseButton, Highlight
 } from "@chakra-ui/react";
 
 declare global {
@@ -65,8 +66,8 @@ declare global {
         };
         presetsAPI: {
             read: () => Promise<PresetFile>;
-            write: (data:PresetFile) => Promise<void>;
-            saveOne: (name:string, preset:Preset) => Promise<void>;
+            write: (data: PresetFile) => Promise<void>;
+            saveOne: (name: string, preset: Preset) => Promise<void>;
         };
     }
 }
@@ -93,69 +94,128 @@ export default function PlayPage() {
 
     return (
         <Box minH="100vh" bg="gray.200" p={10}>
+            <Fragment>
 
-            <Heading size="2xl" textAlign="center" mb={10} color="teal.600">
-            🎛️ Simple Synth Controller
-            </Heading>
+                <Heading size="3xl" textAlign="center" mb={10} color="teal.700">
+                    🎛️ Simple Synth Controller
+                </Heading>
 
-            <Text color="black"> Status: {status} </Text>
-            <Box h="5" />
-            <Box>
-                <Button onClick = {listPorts}> List MIDI Ports </Button>
-                <List.Root>
-                {
-                        midiPorts.map((port, i) => (
-                        <ListItem
-                            key={port || i}
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="space-between"
-                            p={3}
-                            borderWidth="1px"
-                            borderRadius="md"
-                            _hover={{ bg: "gray.50" }}
-                            >
-                            <Box>
-                                <Text fontWeight="medium">{port}</Text>
-                                {
-                                    port && (
-                                    <Text fontSize="sm" color="gray.500">
-                                        {port}
-                                    </Text>
+                <Flex align="center" justify="center">
+                    <Alert.Root bg = "blue.300" w = "50%">
+                        <Alert.Indicator />
+                        <Alert.Content>
+                            <Alert.Title fontSize = "xl" fontWeight = "semibold" textAlign={"center"} >Instruction</Alert.Title>
+                            <Box h = "2"/>
+                            <Alert.Description textAlign={"center"}>
+
+                                <Highlight query= {["Refresh MIDI Ports", "Clear Ports"]}
+                                    styles={{ bg: "yellow.400", fontWeight: "semibold" }}>
+
+                                    In order to get list of all available MIDI ports,
+                                    click Refresh MIDI Ports first, you can also hide them using Clear Ports
+
+                                </Highlight>
+
+                            </Alert.Description>
+                        </Alert.Content>
+                        <CloseButton pos="relative" top="-2" insetEnd="-2" />
+                    </Alert.Root>
+                </Flex>
+
+                <Box h="10" />
+
+                <Flex align="center" justify="center">
+
+                    <Box rounded="2xl" bg={(status === "idle") ? "gray.500" : "green.600"} textAlign="center" minH={50} w="50%"
+                        display="flex"alignItems="center" justifyContent="center">
+
+                        <Stack direction = "row">
+                        {/* <Text fontSize="lg" color="white"> Status: </Text> */}
+                        <Text fontSize="lg" fontWeight = "semibold" color="white">Status: {status}</Text>
+                        </Stack>
+                    </Box>
+                </Flex>
+
+                <Box h="5" />
+
+                <Box>
+                    <Box display="flex" justifyContent="center">
+                        <Stack direction="row" gap={5}>
+                            <Button size={"2xl"} onClick={listPorts}> Refresh MIDI Ports </Button>
+                            <Button bg="red.500" size={"2xl"} onClick={(e) => {
+                                setMidiPorts([]);
+                                setStatus("idle");
+                            }
+                            }>
+                                Clear Ports
+                            </Button>
+                        </Stack>
+                    </Box>
+                    <Box h="5" />
+                    <Flex align="center" justify="center">
+                        <List.Root w = "40%">
+                            {
+                                midiPorts.map((port, i) => {
+                                    console.log("PORT:", port, midiPorts.length);
+                                    return (
+                                        <ListItem
+                                            key={port || i}
+                                            display="flex"
+                                            alignItems="center"
+                                            p={3}
+                                            borderWidth="1px"
+                                            borderRadius="md"
+                                            bg={"purple.400"}
+                                            _hover={{ bg: "blue.600" }}
+                                        >
+                                            <Box flex="1">
+                                                {
+                                                    port && (
+
+                                                        <Text fontSize="lg" textAlign={"center"} fontWeight={"semibold"} color="white">
+                                                            {port}
+                                                        </Text>
+
+                                                    )
+                                                }
+                                            </Box>
+
+                                            <Button colorScheme="blue" onClick={() => openPort(i)}>
+                                                Open Port {i}
+                                            </Button>
+                                        </ListItem>
                                     )
                                 }
-                            </Box>
-
-                            <Button colorScheme="blue" onClick={() => openPort(i)}>
-                                Open Port {i}
-                            </Button>
-                        </ListItem>
-                        )
-                    )
-                }
-                </List.Root>
-                <Button
-                    bg={buttonText === "Start" ? "green.400" : "red.400"}
-                    onClick={async () => {
-                        try {
-                            if (buttonText === "Start") {
-                                setButtonText("Stop");
-                                setStatus("Recording...");
-                                await window.synthAPI.startRecording();
-                            } else {
-                                setButtonText("Start");
-                                setStatus("Recording stopped.");
-                                await window.synthAPI.stopRecording();
+                                )
                             }
-                        } catch (err) {
-                            console.error(err);
-                            setStatus("Error controlling recording.");
-                        }
-                    }}
-                >
-                    {buttonText} Recording
-                </Button>
-            </Box>
+                        </List.Root>
+                    </Flex>
+                    <Box h="5" />
+                    <Box display="flex" justifyContent="center">
+                        <Button size={"2xl"}
+                            bg={buttonText === "Start" ? "green.600" : "red.600"}
+                            onClick={async () => {
+                                try {
+                                    if (buttonText === "Start") {
+                                        setButtonText("Stop");
+                                        setStatus("Recording...");
+                                        await window.synthAPI.startRecording();
+                                    } else {
+                                        setButtonText("Start");
+                                        setStatus("Recording stopped.");
+                                        await window.synthAPI.stopRecording();
+                                    }
+                                } catch (err) {
+                                    console.error(err);
+                                    setStatus("Error controlling recording.");
+                                }
+                            }}
+                        >
+                            {buttonText} Recording
+                        </Button>
+                    </Box>
+                </Box>
+            </Fragment>
         </Box>
     );
 }

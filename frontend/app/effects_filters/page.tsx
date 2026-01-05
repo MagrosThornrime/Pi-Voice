@@ -169,7 +169,7 @@ function DraggableList({ attr }: DraggableListProps) {
                     await addFilter(draggedItem.val as FilterType, index2);
                 }
                 else{
-                    await addEffect(draggedItem.val as EffectType, index2); // not implemented yet
+                    await addEffect(draggedItem.val as EffectType, index2);
                 }
             })();
 
@@ -211,6 +211,7 @@ function DraggableList({ attr }: DraggableListProps) {
                     }
                 }
             }
+            //final swap in our blocks array
             newBlocks[dragBlockInd] = newBlocks[index];
             newBlocks[index] = temp;
 
@@ -251,7 +252,7 @@ function DraggableList({ attr }: DraggableListProps) {
                 </Collapsible.Indicator>
 
                 <Box maxW="100%">
-                    <Text textStyle="3xl" mb={2} color="teal.600" fontWeight="semibold" > Toggle {attr} order selection </Text>
+                    <Text textStyle="3xl" mb={2} color="teal.600" fontWeight="semibold" > Toggle layers selection </Text>
                 </Box>
 
             </Collapsible.Trigger>
@@ -274,8 +275,8 @@ function DraggableList({ attr }: DraggableListProps) {
                                     return (
                                         <Box key={item.val} as="li" color="white" 
                                             bg={ (item.group === "filters") ? 
-                                                (itemPresent ? "orange.600" : "orange.400")
-                                                 : (itemPresent ? "purple.600" : "purple.400") } 
+                                                (itemPresent ? "orange.600" : "orange.300")
+                                                 : (itemPresent ? "purple.600" : "purple.300") } 
                                             rounded="2xl" minHeight="60px" minWidth="13%" shadow="md" p={2}
                                             draggable
                                             onDragStart={() => dragStartList(index)}
@@ -283,7 +284,9 @@ function DraggableList({ attr }: DraggableListProps) {
                                             className={index === dragIndex ? "dragging" : ""}
                                             display="flex" alignItems="center" justifyContent="center"
                                         >
-                                        <Text alignSelf={"center"} fontSize = "2xl" > {item.val} </Text>
+                                        <Text alignSelf={"center"} 
+                                            color = {itemPresent ? "white" : (item.group === "filters") ? "orange.900" : "purple.900"} 
+                                            fontSize = "2xl" > {item.val} </Text>
 
                                         </Box>
                                     )
@@ -321,8 +324,8 @@ function DraggableList({ attr }: DraggableListProps) {
                                                             bg="transparent"
                                                             position="absolute"
                                                             left="8px"
-                                                            _hover={{ bg: "red.600" }}
-                                                            _active={{ bg: "red.700" }}
+                                                            _hover={{ bg: "red.700" }}
+                                                            _active={{ bg: "red.800" }}
 
                                                             onClick={(e) => {
                                                                 e.stopPropagation;
@@ -386,6 +389,7 @@ function Page() {
                     console.log("SUBMITTED", formData);
                 })}
             >
+            <Box mt={4} p={6}  bg="teal.600"rounded="2xl" w="100%">
                 <Stack direction={"row"} gap = {60} >
                     <CheckboxesWithHeading  field={filtersField.field}
                         formItems={filters}
@@ -416,6 +420,7 @@ function Page() {
                         Submit
                     </Button>
                 </Center>
+            </Box>
 
             </form>
 
