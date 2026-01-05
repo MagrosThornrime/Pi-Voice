@@ -73,10 +73,9 @@ declare global {
 }
 
 export default function PlayPage() {
-    const [status, setStatus] = useState<string>("idle");
+    const [status, setStatus] = useState<string>(sessionStorage.getItem("recording") == "Stop" ? "Recording..." : "idle");
     const [midiPorts, setMidiPorts] = useState<string[]>([]);
     const [selectedPort, setSelectedPort] = useState<number | null>(null);
-    const [buttonText, setButtonText] = useState<string>("Start");
 
     const listPorts = async () => {
         setStatus("Fetching MIDI ports...");
@@ -193,17 +192,17 @@ export default function PlayPage() {
                     <Box h="5" />
                     <Box display="flex" justifyContent="center">
                         <Button size={"2xl"}
-                            bg={buttonText === "Start" ? "green.600" : "red.600"}
+                            bg={(sessionStorage.getItem("recording") ?? "Start") === "Start" ? "green.600" : "red.600"}
                             onClick={async () => {
                                 try {
-                                    if (buttonText === "Start") {
-                                        setButtonText("Stop");
-                                        setStatus("Recording...");
-                                        await window.synthAPI.startRecording();
-                                    } else {
-                                        setButtonText("Start");
+                                    if ((sessionStorage.getItem("recording") ?? "Start") == "Stop"){
+                                        sessionStorage.setItem("recording","Start");
                                         setStatus("Recording stopped.");
                                         await window.synthAPI.stopRecording();
+                                    } else{
+                                        sessionStorage.setItem("recording","Stop");
+                                        setStatus("Recording...");
+                                        await window.synthAPI.startRecording();
                                     }
                                 } catch (err) {
                                     console.error(err);
@@ -211,7 +210,7 @@ export default function PlayPage() {
                                 }
                             }}
                         >
-                            {buttonText} Recording
+                            {sessionStorage.getItem("recording") ?? "Start"} Recording
                         </Button>
                     </Box>
                 </Box>
