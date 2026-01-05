@@ -9,7 +9,8 @@ import {
     Text,
     Button,
     List,
-    ListItem, Flex, Stack
+    ListItem, Flex, Stack,
+    Alert, CloseButton, Highlight
 } from "@chakra-ui/react";
 
 declare global {
@@ -98,13 +99,38 @@ export default function PlayPage() {
                 <Heading size="3xl" textAlign="center" mb={10} color="teal.700">
                     🎛️ Simple Synth Controller
                 </Heading>
+
                 <Flex align="center" justify="center">
-                    <Box rounded="2xl" bg={(status === "idle") ? "gray.500" : "blue.600"} textAlign="center" minH={50}w="50%"
+                    <Alert.Root bg = "blue.300" w = "50%">
+                        <Alert.Indicator />
+                        <Alert.Content>
+                            <Alert.Title fontSize = "xl" fontWeight = "semibold" textAlign={"center"} >Instruction</Alert.Title>
+                            <Alert.Description textAlign={"center"}>
+
+                                <Highlight query= {["Refresh MIDI Ports", "Clear Ports"]}
+                                    styles={{ bg: "yellow.400", fontWeight: "semibold" }}>
+
+                                    In order to get list of all available MIDI ports,
+                                    click Refresh MIDI Ports first, you can also hide them using Clear Ports
+
+                                </Highlight>
+
+                            </Alert.Description>
+                        </Alert.Content>
+                        <CloseButton pos="relative" top="-2" insetEnd="-2" />
+                    </Alert.Root>
+                </Flex>
+
+                <Box h="5" />
+
+                <Flex align="center" justify="center">
+
+                    <Box rounded="2xl" bg={(status === "idle") ? "gray.500" : "green.600"} textAlign="center" minH={50} w="50%"
                         display="flex"alignItems="center" justifyContent="center">
 
                         <Stack direction = "row">
                         {/* <Text fontSize="lg" color="white"> Status: </Text> */}
-                        <Text fontSize="lg" fontWeight = "semibold" color="white">{status}</Text>
+                        <Text fontSize="lg" fontWeight = "semibold" color="white">Status: {status}</Text>
                         </Stack>
                     </Box>
                 </Flex>
@@ -113,45 +139,56 @@ export default function PlayPage() {
 
                 <Box>
                     <Box display="flex" justifyContent="center">
-                        <Button size={"2xl"} onClick={listPorts}> List MIDI Ports </Button>
+                        <Stack direction="row" gap={5}>
+                            <Button size={"2xl"} onClick={listPorts}> Refresh MIDI Ports </Button>
+                            <Button bg="red.500" size={"2xl"} onClick={(e) => {
+                                setMidiPorts([]);
+                                setStatus("idle");
+                            }
+                            }>
+                                Clear Ports
+                            </Button>
+                        </Stack>
                     </Box>
                     <Box h="5" />
-                    <List.Root>
-                        {
-                            midiPorts.map((port, i) => {
-                                console.log("PORT:", port, midiPorts.length);
-                                return (
-                                    <ListItem
-                                        key={port || i}
-                                        display="flex"
-                                        alignItems="center"
-                                        p={3}
-                                        borderWidth="1px"
-                                        borderRadius="md"
-                                        bg={"purple.400"}
-                                        _hover={{ bg: "blue.600" }}
-                                    >
-                                        <Box flex="1">
-                                            {
-                                                port && (
+                    <Flex align="center" justify="center">
+                        <List.Root w = "40%">
+                            {
+                                midiPorts.map((port, i) => {
+                                    console.log("PORT:", port, midiPorts.length);
+                                    return (
+                                        <ListItem
+                                            key={port || i}
+                                            display="flex"
+                                            alignItems="center"
+                                            p={3}
+                                            borderWidth="1px"
+                                            borderRadius="md"
+                                            bg={"purple.400"}
+                                            _hover={{ bg: "blue.600" }}
+                                        >
+                                            <Box flex="1">
+                                                {
+                                                    port && (
 
-                                                    <Text fontSize="lg" textAlign={"center"} fontWeight={"semibold"} color="white">
-                                                        {port}
-                                                    </Text>
+                                                        <Text fontSize="lg" textAlign={"center"} fontWeight={"semibold"} color="white">
+                                                            {port}
+                                                        </Text>
 
-                                                )
-                                            }
-                                        </Box>
+                                                    )
+                                                }
+                                            </Box>
 
-                                        <Button colorScheme="blue" onClick={() => openPort(i)}>
-                                            Open Port {i}
-                                        </Button>
-                                    </ListItem>
+                                            <Button colorScheme="blue" onClick={() => openPort(i)}>
+                                                Open Port {i}
+                                            </Button>
+                                        </ListItem>
+                                    )
+                                }
                                 )
                             }
-                            )
-                        }
-                    </List.Root>
+                        </List.Root>
+                    </Flex>
                     <Box h="5" />
                     <Box display="flex" justifyContent="center">
                         <Button size={"2xl"}
