@@ -305,7 +305,7 @@ export default function Page() {
               <MemoFunctionChart inputType={"data"} givenData={{ points: getPoints(i) }} />
               <Box h="10" />
 
-              <Box  mt={4} p={6}  bg="blue.300"rounded="2xl" w="100%">
+              <Box  mt={4} p={6}  bg="teal.300"rounded="2xl" w="100%">
 
                 <Select.Root colorPalette = "white" size={"lg"} collection={oscillatorTypes} variant={"subtle"}
                   positioning={{ sameWidth: true, placement: "bottom", flip: false }}
@@ -339,7 +339,7 @@ export default function Page() {
                         {oscillatorTypes.items.map((oscilator) => (
                           <>
                             <Select.Item fontSize={"2xl"} item={oscilator} key={oscilator.value}
-                             _hover={{ bg: "blue.100" }}
+                             _hover={{ bg: "teal.100" }}
                             // _selected={{ bg: "blue.200" }}
                             >
                               <Text color = "black"> {oscilator.label} </Text>
