@@ -2,6 +2,8 @@
 
 import { ItemsParams } from "@/app/utils/context_utils";
 import { createContext, useContext, useState, useEffect, ReactNode, Dispatch, SetStateAction, useRef } from "react";
+import {getADSRFactor} from "@/app/utils/maths_utils";
+import {adsrRanges} from "@/app/utils/tables";
 
 export interface Preset {
   attack : number;
@@ -86,10 +88,10 @@ export function PresetProvider({ children }: { children: ReactNode }) {
         oscilator3:preset.oscilator3,
         filters:preset.filters,
       });
-      window.synthAPI.setAttack(10 ** (-preset.attack * 10));
-      window.synthAPI.setDecay(10 ** (-preset.decay * 10));
+      window.synthAPI.setAttack(getADSRFactor(preset.attack, adsrRanges.attack.min, adsrRanges.attack.max));
+      window.synthAPI.setDecay(getADSRFactor(preset.decay, adsrRanges.decay.min, adsrRanges.decay.max));
       window.synthAPI.setSustain(preset.sustain);
-      window.synthAPI.setRelease(10 ** (-preset.release * 10));
+      window.synthAPI.setRelease(getADSRFactor(preset.release, adsrRanges.release.min, adsrRanges.release.max));
       window.synthAPI.setAmplitude(preset.volume);
       window.synthAPI.setOscillatorType(preset.oscilator1,0);
       window.synthAPI.setOscillatorType(preset.oscilator1,1);

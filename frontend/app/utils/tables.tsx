@@ -149,3 +149,18 @@ export const effectIDs: Record<EffectType, number> = {
     saturate: 5,
     bitcrush: 6,
 };
+
+export const adsrRanges : Record<string, Record<string, number>> = {
+    attack: {
+        min: 0.001,
+        max: 2.0
+    },
+    decay: {
+        min: 0.005,
+        max: 4.0
+    },
+    release: {
+        min: 0.01,
+        max: 8.0
+    }
+};
