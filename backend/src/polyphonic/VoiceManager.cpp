@@ -37,13 +37,6 @@ void VoiceManager::setOscillatorType(const std::string& type, i32 index) {
 	_oscillatorTypes[index] = type;
 }
 
-void VoiceManager::setAmplitude(f32 amplitude) {
-	if (amplitude < 0.0 || amplitude > 1.0) {
-		throw std::invalid_argument(fmt::format("Invalid amplitude value of: {}", amplitude));
-	}
-	_amplitude = amplitude;
-}
-
 f32 VoiceManager::_getNextSample() {
 	auto lock = std::lock_guard(_oscillatorMutex);
 	f32 sample = 0.0f;
@@ -56,7 +49,7 @@ f32 VoiceManager::_getNextSample() {
 	if(_nonEmpty == 0) {
 		return 0.0f;
 	}
-	return _amplitude * sample / _nonEmpty / _voices.size();
+	return sample / _nonEmpty / _voices.size();
 }
 
 void VoiceManager::update() {

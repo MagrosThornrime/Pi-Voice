@@ -156,4 +156,8 @@ f32 Pipeline::getSampleRate() const {
 	return _sampleRate;
 }
 
+void Pipeline::setAmplitude(const f32 value) {
+
+}
+
 } // namespace pipeline

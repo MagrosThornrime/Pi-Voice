@@ -16,9 +16,6 @@ class VoiceManager {
 	/// @brief Mutex for changing oscillators
 	std::mutex _oscillatorMutex;
 
-	/// @brief Global amplitude
-	f32 _amplitude = 0.1f;
-
 	/// @brief Sound's sampling rate
 	f32 _sampleRate;
 
