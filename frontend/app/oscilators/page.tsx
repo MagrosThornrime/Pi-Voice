@@ -142,21 +142,19 @@ function FunctionChart(props: FunctionChartProps) {
   })
 
   return (
-    <Box bg = "white">
-    <Chart.Root width="100%" height={400} chart={chart}>
+    <Box bg = "white" rounded = "2xl">
+    <Chart.Root width="100%" mx = "auto" height={400} py = {4} pr = {4} chart={chart}>
 
       <LineChart data={chart.data}>
 
         <CartesianGrid vertical={false} />
 
         <XAxis dataKey="x"
-          label={{ value: "X", position: "bottom" }}
           stroke={chart.color("border")}
           tickFormatter={(value) => `${Math.round(value * 100) / 100}`}
         />
 
         <YAxis dataKey="y"
-          label={{ value: "Y", position: "left"}}
           stroke={chart.color("border")}
           tickFormatter={(value) => `${Math.round(value * 100) / 100}`}
           tick={{ fill: "white" }}
