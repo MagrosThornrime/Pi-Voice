@@ -137,17 +137,13 @@ export default function Home() {
   return (
     <Box minH="100vh" bg="gray.50" p={10}>
 
-      <Heading size="3xl" textAlign="center" mb={10} color="teal.600">
-        Audio Platform
-      </Heading>
-
       <Box h="10" />
         <Box w = "60%" bg = "gray" mx="auto" py = {6} rounded = "xl">
         <Box w="90%" bg = "white " mx="auto" rounded="xl" >
-        <Chart.Root bg = "white" mx = "auto" width = "80%" height={400} chart = {chart_adsr}>
+        <Chart.Root bg = "white" mx = "auto" py = {4} width = "80%" height={400} chart = {chart_adsr}>
           <LineChart data={chart_adsr.data}>
 
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical = {false} />
 
             <XAxis dataKey="x"
               stroke={chart_adsr.color("border")}
