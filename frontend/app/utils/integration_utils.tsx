@@ -1,4 +1,4 @@
-import { filters, effectIDs, EffectType, FilterType } from "./tables";
+import { filters, EffectID, EffectType, FilterType } from "./tables";
 import { Point } from "../oscilators/page";
 
 export async function clearFilters(filtersNumber: number) {
@@ -20,7 +20,7 @@ export async function addFilter(item: FilterType, idx: number) {
 }
 
 export async function addEffect(item: EffectType, idx: number){
-    const effectNumber = effectIDs[item];
+    const effectNumber = EffectID[item]; 
     await window.synthAPI.pipelineAddEffect(effectNumber, idx);
 }
 
