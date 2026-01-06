@@ -5,6 +5,7 @@ import { Box, Heading, Text, Grid, Slider, Stack } from "@chakra-ui/react";
 import { Chart, useChart } from "@chakra-ui/charts"
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts"
 import { usePreset } from "@/components/ui/presetsProvider";
+import { SliderTooltip } from "@/components/SliderTooltip";
 
 
 export interface Point {
@@ -142,125 +143,104 @@ export default function Home() {
 
       <Box h="10" />
 
-      <Grid
-        templateColumns={{
-          base: "1fr",
-          md: "repeat(1, 1fr)",
-          lg: "repeat(1, 1fr)",
-        }}
-        
-          gap={8}
-          maxW="1200px"
-          mx="auto"
-          alignItems="center"
-          justifyItems="center"
-      >
-        {
-          charts.map((chart) => (
+        <Box>
+        <Chart.Root  width = "100%" height={400} chart = {chart_adsr}>
+          <LineChart data={chart_adsr.data}>
 
-          <Chart.Root key={chart.id} width = "100%" height={400} chart = {chart}>
-            <LineChart data={chart.data}>
+            <CartesianGrid vertical={false} />
 
-              <CartesianGrid vertical={false} />
+            <XAxis dataKey="x"
+              label={{ value: "X", position: "bottom" }}
+              stroke={chart_adsr.color("border")}
+              tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
+            />
 
-              <XAxis dataKey="x"
-                label={{ value: "X", position: "bottom" }}
-                stroke={chart.color("border")}
-                tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
-              />
+            <YAxis dataKey="y"
+              label={{ value: "Y", position: "left" }}
+              stroke={chart_adsr.color("border")}
+              tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
+            />
 
-              <YAxis dataKey="y"
-                label={{ value: "Y", position: "left" }}
-                stroke={chart.color("border")}
-                tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
-              />
+            <Tooltip
+              animationDuration={100}
+              cursor={false}
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) 
+                {
+                  const x = Math.round(Number(label) * 100) / 100;
+                  const y = Math.round(payload[0].value * 100) / 100;
 
-              <Tooltip
-                animationDuration={100}
-                cursor={false}
-                content={({ active, payload, label }) => {
-                  if (active && payload && payload.length) 
-                  {
-                    const x = Math.round(Number(label) * 100) / 100;
-                    const y = Math.round(payload[0].value * 100) / 100;
-
-                    return (
-                      <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
-                        <Text fontSize="sm" color="gray.600">x: {x}</Text>
-                        <Text fontSize="sm" color="gray.600">y: {y}</Text>
-                      </Box>
-                      );
-                  }
+                  return (
+                    <Box bg="white" p={3} rounded="md" shadow="md" borderWidth={1}>
+                      <Text fontSize="sm" color="gray.600">x: {x}</Text>
+                      <Text fontSize="sm" color="gray.600">y: {y}</Text>
+                    </Box>
+                    );
                 }
-                } 
-              />
+              }
+              } 
+            />
 
-          {
-            chart.series.map((item) => (
-              <Line key={item.name}
-                isAnimationActive={false}
-                dataKey={chart.key(item.name)}
-                stroke={chart.color(item.color)}
-                strokeWidth={2}
-                dot={false} />
-              )
+        {
+          chart_adsr.series.map((item) => (
+            <Line key={item.name}
+              isAnimationActive={false}
+              dataKey={chart_adsr.key(item.name)}
+              stroke={chart_adsr.color(item.color)}
+              strokeWidth={2}
+              dot={false} />
             )
-          }
+          )
+        }
 
-          </LineChart>
-        </Chart.Root>
-        )
-      )
-      }
+        </LineChart>
+      </Chart.Root>
 
-      </Grid>
+      </Box>
 
       <Box h="10" />
+      <Box justifyItems={"center"} bg = "gray.400">
+        <Grid
+          templateColumns={{
+            base: "1fr",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+          }}
+          gap={10} maxW="1000px" mx="auto" >
 
-      <Grid
-        templateColumns={{
-          base: "1fr",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
-        }}
-        gap={10} maxW="800px" mx="auto">
-
-          {
-            adsrControls.map((ctrl) => (
-              <Box key = {ctrl.label} p={5} bg="grey" rounded="2xl" shadow="md">
-                <Text mb={2} fontWeight="medium" textAlign="center">
-                  {ctrl.label}
-                </Text>
-
-                <Slider.Root
-                  value={[ctrl.value]}
-                  onValueChange={(e) => ctrl.setValue(e.value[0])}
-                  onValueChangeEnd={(e) => {
-                    ctrl.setEndValue(e.value[0]);
-                    ctrl.onEnd(e.value[0]);
-                    console.log(presetNr);
-                  }} >
-
-                  <Slider.Control>
-                    <Slider.Track>
-                      <Slider.Range />
-                    </Slider.Track>
-                    <Slider.Thumbs />
-                  </Slider.Control>
-                </Slider.Root>
-
-                <Stack mt="3" gap="1">
-                  <Text>
-                    Wartość: <b>{Math.round(ctrl.value * 100) / 100}</b>
+            {
+              adsrControls.map((ctrl) => (
+                <Box key = {ctrl.label} p={5} bg="teal.500" rounded="2xl" shadow="md">
+                  <Text mb={2} fontWeight="medium" textAlign="center">
+                    {ctrl.label}
                   </Text>
-                </Stack>
 
-              </Box>
-              ) 
-            )
-          }
+                  <Slider.Root
+                    value={[ctrl.value]}
+                    onValueChange={(e) => ctrl.setValue(e.value[0])}
+                    onValueChangeEnd={(e) => {
+                      ctrl.setEndValue(e.value[0]);
+                      ctrl.onEnd(e.value[0]);
+                      console.log(presetNr);
+                    }} >
 
-      </Grid>
+                    <Slider.Control>
+                      <Slider.Track>
+                        <Slider.Range />
+                      </Slider.Track>
+                      <Slider.Thumbs />
+                    </Slider.Control>
+                  </Slider.Root>
+
+                  <SliderTooltip Props={{bounds:[0, 100], actValue: ctrl.value}} />
+
+                </Box>
+                ) 
+              )
+            }
+
+        </Grid>
+      </Box>
 
     </Box>
   );
