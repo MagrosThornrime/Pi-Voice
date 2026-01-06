@@ -57,6 +57,11 @@ function norm(param:number){
   return param/100;
 }
 
+function getFactor(v: number, minTime: number, maxTime: number){
+  const sampleRate = 44100;
+  const time = minTime * (maxTime / minTime) ** (v / 100);
+  return 1 / (time * sampleRate);
+}
 
 export default function Home() {
 
@@ -95,7 +100,7 @@ export default function Home() {
     value: attackValueVis,
     setValue: setAttackValueVis,
     setEndValue: (v: number) => setPresetProperties(prev => ({...prev, attack: v})),
-    onEnd: (v: number) => window.synthAPI.setAttack(10 ** (-v / 10))
+    onEnd: (v: number) => window.synthAPI.setAttack(getFactor(v, 0.001, 2.0))
   },
 
   {
@@ -111,7 +116,7 @@ export default function Home() {
     value: decayValueVis,
     setValue: setDecayValueVis,
     setEndValue: (v: number) => setPresetProperties(prev => ({...prev, decay: v})),
-    onEnd: (v: number) => window.synthAPI.setDecay(10 ** (-v / 10))
+    onEnd: (v: number) => window.synthAPI.setDecay(getFactor(v, 0.005, 4.0))
   },
 
   {
@@ -119,7 +124,8 @@ export default function Home() {
     value: releaseValueVis,
     setValue: setReleaseValueVis,
     setEndValue: (v: number) => setPresetProperties(prev => ({...prev, release: v})),
-    onEnd: (v: number) => window.synthAPI.setRelease(10 ** (-v / 10))
+    onEnd: (v: number) => window.synthAPI.setRelease(getFactor(v, 0.01, 8.0))
+
   }
 ]
 
