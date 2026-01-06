@@ -142,21 +142,19 @@ export default function Home() {
       </Heading>
 
       <Box h="10" />
-
-        <Box>
-        <Chart.Root  width = "100%" height={400} chart = {chart_adsr}>
+        <Box w = "60%" bg = "gray" mx="auto" py = {6} rounded = "xl">
+        <Box w="90%" bg = "white " mx="auto" rounded="xl" >
+        <Chart.Root bg = "white" mx = "auto" width = "80%" height={400} chart = {chart_adsr}>
           <LineChart data={chart_adsr.data}>
 
             <CartesianGrid vertical={false} />
 
             <XAxis dataKey="x"
-              label={{ value: "X", position: "bottom" }}
               stroke={chart_adsr.color("border")}
               tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
             />
 
             <YAxis dataKey="y"
-              label={{ value: "Y", position: "left" }}
               stroke={chart_adsr.color("border")}
               tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
             />
@@ -197,9 +195,10 @@ export default function Home() {
       </Chart.Root>
 
       </Box>
+      </Box>
 
       <Box h="10" />
-      <Box justifyItems={"center"} bg = "gray.400">
+      <Box justifyItems={"center"} bg = "gray.700" w="60%" mx="auto" rounded="3xl" py = {4} px = {4}>
         <Grid
           templateColumns={{
             base: "1fr",
