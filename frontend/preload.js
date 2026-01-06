@@ -6,7 +6,6 @@ contextBridge.exposeInMainWorld("synthAPI", {
     openPort: (port) => ipcRenderer.invoke("synth-openMidi", port),
 
     // Synth parameters
-    setAmplitude: (value) => ipcRenderer.invoke("synth-setAmplitude", value),
     setOscillatorType: (type, index) =>
         ipcRenderer.invoke("synth-setOscillatorType", type, index),
 
@@ -23,6 +22,8 @@ contextBridge.exposeInMainWorld("synthAPI", {
         ipcRenderer.invoke("synth-setRecordingPath", path),
 
     // pipelineAPI
+    pipelineSetAmplitude: (value) => ipcRenderer.invoke("synth-pipelineSetAmplitude", value),
+
     pipelineAddFilter: (filter, idx) =>
         ipcRenderer.invoke("synth-pipelineAddFilter", filter, idx),
     pipelineAddEffect: (effect, idx) =>

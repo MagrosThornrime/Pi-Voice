@@ -87,7 +87,7 @@ export default function Home() {
     value: volumeValueVis,
     setValue: setVolumeValueVis,
     setEndValue: (v: number) => setPresetProperties(prev => ({...prev, volume: v})),
-    onEnd: (v: number) => window.synthAPI.setAmplitude(v/100)
+    onEnd: (v: number) => window.synthAPI.pipelineSetAmplitude(v/100)
   },
 
   {

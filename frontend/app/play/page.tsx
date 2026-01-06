@@ -20,7 +20,6 @@ declare global {
             openPort: (port: number) => Promise<void>;
 
             // setters
-            setAmplitude: (value: number) => Promise<void>;
             setOscillatorType: (type: string, index: number) => Promise<void>;
             setOscillatorAmplitude: (amp: number, index: number) => Promise<void>;
             setAttack: (v: number) => Promise<void>;
@@ -31,6 +30,7 @@ declare global {
             stopRecording: () => Promise<void>;
 
             // pipelineAPI
+            pipelineSetAmplitude: (value: number) => Promise<void>;
             pipelineAddFilter: (filter: number, idx: number) => Promise<void>;
             pipelineAddEffect: (effect: number, idx: number) => Promise<void>;
             pipelineRemove: (idx: number) => Promise<void>;

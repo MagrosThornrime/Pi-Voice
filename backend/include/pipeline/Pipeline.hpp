@@ -55,6 +55,8 @@ private:
 
 	void _mixWithSequencer(std::vector<f32>& buffer);
 
+	void _applyAmplitude(std::vector<f32>& buffer);
+
 	void _generateSound(std::stop_token stopToken, u32 framesPerCall);
 };
 }

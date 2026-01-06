@@ -90,7 +90,7 @@ export function PresetProvider({ children }: { children: ReactNode }) {
       window.synthAPI.setDecay(10 ** (-preset.decay * 10));
       window.synthAPI.setSustain(preset.sustain);
       window.synthAPI.setRelease(10 ** (-preset.release * 10));
-      window.synthAPI.setAmplitude(preset.volume);
+      window.synthAPI.pipelineSetAmplitude(preset.volume);
       window.synthAPI.setOscillatorType(preset.oscilator1,0);
       window.synthAPI.setOscillatorType(preset.oscilator1,1);
       window.synthAPI.setOscillatorType(preset.oscilator1,2);

@@ -68,10 +68,6 @@ public:
 	/// @brief Stops playing the sound
 	void stop();
 
-	/// @brief Sets global amplitude
-	/// @param amplitude volume of the sound (between 0 and 1)
-	void setAmplitude(f32 amplitude);
-
     /// @brief Sets the type of a particular oscillator
     /// @param type type of the oscillator (see Oscillators.hpp)
     /// @param index id of the oscillator (0, 1 or 2)

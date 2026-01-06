@@ -73,11 +73,6 @@ bool Synthesiser::isRunning() {
 	return _running;
 }
 
-void Synthesiser::setAmplitude(f32 amplitude) {
-	auto lock = std::lock_guard(_mutex);
-	_voiceManager->setAmplitude(amplitude);
-}
-
 void Synthesiser::setOscillatorType(const std::string& type, i32 index) {
 	auto lock = std::lock_guard(_mutex);
 	_voiceManager->setOscillatorType(type, index);
