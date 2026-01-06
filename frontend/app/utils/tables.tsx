@@ -140,12 +140,12 @@ export const effects: Effect[] = [
     { label: "Bitcrush", value: "bitcrush" },
 ];
 
-export const effectIDs: Record<EffectType, number> = {
-    chorus:   0,
-    delay:    1,
-    reverb:   2,
-    robotify: 3,
-    phaser:   4,
-    saturate: 5,
-    bitcrush: 6,
+export enum EffectID {
+    chorus = 0,
+    delay = 1,
+    reverb = 2,
+    robotify = 3,
+    phaser = 4,
+    saturate = 5,
+    bitcrush = 6,
 };
