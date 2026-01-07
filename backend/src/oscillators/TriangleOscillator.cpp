@@ -1,15 +1,11 @@
 #include <oscillators/TriangleOscillator.hpp>
 #include <cmath>
 #include <numbers>
+#include <algorithm>
 
 namespace oscillators {
 f32 TriangleOscillator::getNextSample() {
-    //i32 harmonics = 0;
-    //while(_currentFrequency * (f32) (harmonics * 2 - 1) < _sampleRate / 2.0f) {
-    //    harmonics++;
-    //}
-    //harmonics--;
-    const i32 harmonics = 8;
+    const i32 harmonics = 20;
     f32 sample = 0.0f;
     bool subtract = true;
     for(i32 i = 1; i <= harmonics; i++) {
@@ -23,6 +19,7 @@ f32 TriangleOscillator::getNextSample() {
         }
         subtract = not subtract;
     }
-    return sample * 8.0f / std::pow(std::numbers::pi, 2);
+    sample *= 8.0f / std::pow(std::numbers::pi, 2);
+    return std::clamp(sample, 0.0f, 1.0f);
 }
 }
