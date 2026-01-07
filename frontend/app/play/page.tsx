@@ -51,6 +51,7 @@ declare global {
             sequencerStopRecording: () => Promise<void>;
             sequencerRemoveSample: (i: number) => Promise<void>;
             sequencerClear: () => Promise<void>;
+            sequencerSampleLength: (i: number) => Promise<number>;
             sequencerLength: () => Promise<number>;
             sequencerMoveSample: (curr: number, val: number) => Promise<void>;
             sequencerSwapSamples: (i1: number, i2: number) => Promise<void>;
