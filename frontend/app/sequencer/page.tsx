@@ -112,11 +112,10 @@ export default function Page() {
                     disabled={isPlaying}
                     bg={(() => {
                         try {
-                            if (sessionStorage.getItem("seq_recording") === "Stop recording") {
-                                return "red.400";
-                            }
-                        } catch { }
-                        return "green.400";
+                            return (sessionStorage.getItem("seq_recording") === "Stop recording") ? "red.400" : "green.400";
+                        } catch {
+                            return "green.400";
+                        }
                     })()}
 
                     onClick={async () => {
@@ -136,7 +135,15 @@ export default function Page() {
                         }
                     }}
                 >
-                    {sessionStorage.getItem("seq_recording") ?? "Record to sequencer"}
+                    {
+                        (() => {
+                            try {
+                                return sessionStorage.getItem("seq_recording");
+                            } catch {
+                                return "Record to sequencer";
+                            }
+                        })()
+                    }
                 </Button>
                 <Box h="10"/>
                 <Grid
@@ -184,7 +191,14 @@ export default function Page() {
                 <Box h="10"/>
                 <Button
                     disabled={isRecording||sounds.length==0}
-                    bg={sessionStorage.getItem("seq_playing") === "Stop" ? "red.400" : "green.400"}
+                    bg={(() => {
+                        try {
+                            return (sessionStorage.getItem("seq_playing") === "Stop") ?  "red.400" : "green.400";
+                        } catch {
+                        return "green.400";
+                        }
+                    })()}
+
                     onClick={async () => {
                         try {
                             if (sessionStorage.getItem("seq_playing") === "Stop") {
