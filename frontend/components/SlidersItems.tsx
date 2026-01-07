@@ -125,7 +125,7 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
     <Box>
       <Collapsible.Root justifyItems={"left"} alignContent={"left"}>
 
-        <Collapsible.Trigger paddingY="3" display="flex" gap="2">
+        <Collapsible.Trigger paddingY="3" display="flex" gap="2"> 
 
           <Collapsible.Indicator
             transition="transform 0.2s"

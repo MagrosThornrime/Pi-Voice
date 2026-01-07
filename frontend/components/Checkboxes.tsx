@@ -31,7 +31,7 @@ export function CheckboxesWithHeading({
             </Heading>
 
             <Fieldset.Root invalid={invalid}>
-                <Fieldset.Legend color={"teal.600"}> </Fieldset.Legend>
+                <Fieldset.Legend />
                 <CheckboxGroup color={"black"}
                     invalid={invalid}
                     value={field.value}

@@ -73,7 +73,15 @@ declare global {
 }
 
 export default function PlayPage() {
-    const [status, setStatus] = useState<string>(sessionStorage.getItem("recording") == "Stop" ? "Recording..." : "idle");
+    const [status, setStatus] = useState<string>(() => {
+        try {
+            return sessionStorage.getItem("recording") === "Stop"
+                ? "Recording..."
+                : "idle";
+        } catch {
+            return "idle";
+        }
+    });
     const [midiPorts, setMidiPorts] = useState<string[]>([]);
     const [selectedPort, setSelectedPort] = useState<number | null>(null);
 

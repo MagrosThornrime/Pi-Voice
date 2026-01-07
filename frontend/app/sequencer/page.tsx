@@ -22,8 +22,23 @@ function getRandomColor() {
 }
 
 export default function Page() {
-    const [isPlaying, setIsPlaying] = useState<boolean>(sessionStorage.getItem("seq_playing")=="Stop");
-    const [isRecording, setIsRecording] = useState<boolean>(sessionStorage.getItem("seq_recording")=="Stop recording");
+
+    const [isPlaying, setIsPlaying] = useState<boolean>(() => {
+        try {
+            return sessionStorage.getItem("seq_playing") === "Stop";
+        } catch {
+            return false;
+        }
+    });
+
+    const [isRecording, setIsRecording] = useState<boolean>(() => {
+        try{
+            return sessionStorage.getItem("seq_recording") === "Stop recording";
+        } catch{
+            return false;
+        }
+    })
+
     const [sounds, setSounds] = useState<string[]>([]);
     const [colorMap, setColorMap] = useState<Record<string, string>>({});
     const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -95,7 +110,15 @@ export default function Page() {
             <Stack>
                 <Button
                     disabled={isPlaying}
-                    bg={sessionStorage.getItem("seq_recording")=="Stop recording" ? "red.400" : "green.400"}
+                    bg={(() => {
+                        try {
+                            if (sessionStorage.getItem("seq_recording") === "Stop recording") {
+                                return "red.400";
+                            }
+                        } catch { }
+                        return "green.400";
+                    })()}
+
                     onClick={async () => {
                         try {
                             if (sessionStorage.getItem("seq_recording")=="Stop recording"){
@@ -118,7 +141,7 @@ export default function Page() {
                 <Box h="10"/>
                 <Grid
                     w="80%"
-                    templateColumns="repeat(8, 1fr)"
+                    templateColumns={{xl:"repeat(8, 1fr)",base:"repeat(5, 1fr)"}}
                     gap={4}
                 >
                     {
@@ -126,7 +149,8 @@ export default function Page() {
                              <GridItem colSpan={1} key={item}>
                                 <Box
                                     minHeight="60px" minWidth="13%" shadow="md" p={2}
-                                    display="flex" alignItems="center" justifyContent="center"
+                                    display="flex" alignItems="center"
+                                    justifyContent={{xl:"flex-start", base:"flex-start"}}
                                     position="relative"
                                     bg={colorMap[item]}
                                     draggable
@@ -136,7 +160,7 @@ export default function Page() {
                                     cursor="grab"
                                     opacity={dragIndex === index ? 0.4 : 1}
                                 >
-                                    <Button size="lg"
+                                    <Button size={{xl:"lg",base:"sm"}}
                                         p={1}
                                         minW={0}
                                         bg="transparent"
@@ -151,7 +175,7 @@ export default function Page() {
                                     }>
                                         <MdDelete/>
                                     </Button>
-                                    <Text>{item}</Text>
+                                    <Text fontSize={{xl:"xl",base:"sm"}} ml={{xl:8,base:7}} pr={2}>{item}</Text>
                                 </Box>
                             </GridItem>
                         ))
