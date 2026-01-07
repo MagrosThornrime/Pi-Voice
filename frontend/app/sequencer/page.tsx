@@ -8,8 +8,9 @@ import {
   Button,
   Grid,
   GridItem,
-  Text
+  Editable, IconButton
 } from "@chakra-ui/react";
+import { LuPencilLine } from "react-icons/lu"
 import { MdDelete } from "react-icons/md";
 
 function getRandomColor() {
@@ -147,8 +148,8 @@ export default function Page() {
                 </Button>
                 <Box h="10"/>
                 <Grid
-                    w="80%"
-                    templateColumns={{xl:"repeat(8, 1fr)",base:"repeat(5, 1fr)"}}
+                    w="100%"
+                    templateColumns={{xl:"repeat(8, 1fr)",base:"repeat(4, 1fr)"}}
                     gap={4}
                 >
                     {
@@ -182,7 +183,33 @@ export default function Page() {
                                     }>
                                         <MdDelete/>
                                     </Button>
-                                    <Text fontSize={{xl:"xl",base:"sm"}} ml={{xl:8,base:7}} pr={2}>{item}</Text>
+
+                                    <Box position="relative" display="flex" alignItems="center" w="80%" ml="auto">
+                                        <Editable.Root
+                                            defaultValue={item}
+                                            fontSize={{ xl: "xl", base: "sm" }}
+                                            ml={{ xl: 1, base: 2 }}
+                                            flex="1"
+                                        >
+                                            <Editable.Preview pointerEvents="none" />
+                                            <Editable.Input />
+
+                                            <Editable.Control>
+                                                <Editable.EditTrigger asChild>
+                                                    <IconButton p = {3}
+                                                        position="absolute"
+                                                        right={{base: "8px", xl:"1px"}}
+                                                        variant="ghost"
+                                                        size="xs"
+                                                        aria-label="Edit"
+                                                    >
+                                                        <LuPencilLine color="white" />
+                                                    </IconButton>
+                                                </Editable.EditTrigger>
+                                            </Editable.Control>
+                                        </Editable.Root>
+                                    </Box>
+
                                 </Box>
                             </GridItem>
                         ))
@@ -216,7 +243,16 @@ export default function Page() {
                         }
                     }}
                 >
-                    {sessionStorage.getItem("seq_playing") ?? "Play"}
+                    {
+                        (() => {
+                            try {
+                                return sessionStorage.getItem("seq_playing");
+                            } catch {
+                                return "Play";
+                            }
+                        })()
+                    }
+                    
                 </Button>
             </Stack>
         </Box>
