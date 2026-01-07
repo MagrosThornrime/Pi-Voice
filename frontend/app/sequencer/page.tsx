@@ -149,7 +149,8 @@ export default function Page() {
                              <GridItem colSpan={1} key={item}>
                                 <Box
                                     minHeight="60px" minWidth="13%" shadow="md" p={2}
-                                    display="flex" alignItems="center" justifyContent="flex-end"
+                                    display="flex" alignItems="center"
+                                    justifyContent={{xl:"flex-start", base:"flex-start"}}
                                     position="relative"
                                     bg={colorMap[item]}
                                     draggable
@@ -174,7 +175,7 @@ export default function Page() {
                                     }>
                                         <MdDelete/>
                                     </Button>
-                                    <Text fontSize={{xl:"xl",base:"sm"}} pr={2}>{item}</Text>
+                                    <Text fontSize={{xl:"xl",base:"sm"}} ml={{xl:8,base:7}} pr={2}>{item}</Text>
                                 </Box>
                             </GridItem>
                         ))

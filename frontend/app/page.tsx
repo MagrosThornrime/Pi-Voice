@@ -141,10 +141,10 @@ export default function Home() {
 
   const charts = [chart_adsr];
   return (
-    <Box minH="100vh" bg="gray.50" p={10}>
+    <Box minH="100vh" bg="gray.50" p={10} >
 
-      <Box h="10" />
-        <Box w = "60%" bg = "gray" mx="auto" py = {6} rounded = "xl">
+
+        <Box w = {{base: "100%", xl: "60%"}} bg = "gray" mx="auto" py = {{base:8, xl: 11}} rounded = "xl">
         <Box w="90%" bg = "white " mx="auto" rounded="xl" >
         <Chart.Root bg = "white" mx = "auto" py = {4} width = "80%" height={400} chart = {chart_adsr}>
           <LineChart data={chart_adsr.data}>
@@ -200,7 +200,7 @@ export default function Home() {
       </Box>
 
       <Box h="10" />
-      <Box justifyItems={"center"} bg = "gray.700" w="60%" mx="auto" rounded="3xl" py = {4} px = {4}>
+      <Box justifyItems={"center"} bg = "gray.700" w={{base: "100%", xl: "60%"}} mx="auto" rounded="3xl" py = {8} px = {8}>
         <Grid
           templateColumns={{
             base: "1fr",
