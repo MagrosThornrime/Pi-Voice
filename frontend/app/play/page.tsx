@@ -98,10 +98,10 @@ export default function PlayPage() {
     };
 
     return (
-        <Box minH="100vh" bg="gray.200" p={10}>
+        <Box minH="100vh" bg="yellow.300" p={10}>
             <Fragment>
 
-                <Heading size="3xl" textAlign="center" mb={10} color="teal.700">
+                <Heading size="3xl" textAlign="center" mb={10} color="purple.600">
                     🎛️ Simple Synth Controller
                 </Heading>
 
@@ -135,7 +135,6 @@ export default function PlayPage() {
                         display="flex"alignItems="center" justifyContent="center">
 
                         <Stack direction = "row">
-                        {/* <Text fontSize="lg" color="white"> Status: </Text> */}
                         <Text fontSize="lg" fontWeight = "semibold" color="white">Status: {status}</Text>
                         </Stack>
                     </Box>
