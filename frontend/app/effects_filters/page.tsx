@@ -1,11 +1,11 @@
 "use client";
-import { Box, Button, Text, Collapsible, Stack, Center} from "@chakra-ui/react";
-import { useEffect, useState,  DragEvent, useRef } from "react";
+import { Box, Button, Text, Collapsible, Stack, Center, Separator } from "@chakra-ui/react";
+import { useEffect, useState, DragEvent, useRef } from "react";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { MdDelete } from "react-icons/md";
 import { LuChevronRight } from "react-icons/lu"
 import { useController, useForm } from "react-hook-form"
-import { filters, effects, defaultOpts, OptKey, FilterType, EffectType, defaultEffectOpts, OptEffectKey} from "../utils/tables"
+import { filters, effects, defaultOpts, OptKey, FilterType, EffectType, defaultEffectOpts, OptEffectKey } from "../utils/tables"
 import { SlidersItems } from "@/components/SlidersItems";
 import { usePreset } from "@/components/ui/presetsProvider";
 import { CheckboxesWithHeading } from "@/components/Checkboxes";
@@ -44,20 +44,20 @@ type listType = {
     group: "filters" | "effects";
 }
 
-const groupColor:Record<string, string> = {
-    "filters" : "orange.600",
-    "effects" : "purple.600",
-    "empty" : "blue.300"
+const groupColor: Record<string, string> = {
+    "filters": "orange.600",
+    "effects": "purple.600",
+    "empty": "blue.300"
 }
 
 function getPosFromFiltered(list1: blockType[], idx: string) {
-    const res:number = list1.filter(item => item.val !== "").findIndex(i => i.id === idx);
+    const res: number = list1.filter(item => item.val !== "").findIndex(i => i.id === idx);
     return res;
 }
 
-function getListFromData(data:FiltersData):listType[] {
-    const dataFilters = data.filters.map((x, _):listType => {return {val: x, group: "filters"}});
-    const dataEffects = data.effects.map((x, _):listType => {return {val: x, group: "effects"}});
+function getListFromData(data: FiltersData): listType[] {
+    const dataFilters = data.filters.map((x, _): listType => { return { val: x, group: "filters" } });
+    const dataEffects = data.effects.map((x, _): listType => { return { val: x, group: "effects" } });
     return dataFilters.concat(dataEffects);
 }
 
@@ -81,36 +81,36 @@ function DraggableList({ attr }: DraggableListProps) {
     useEffect(
         () => {
             setListData(getListFromData(data) ?? []);
-            if (isFirstRender.current<1 && presetProperties.filters){
+            if (isFirstRender.current < 1 && presetProperties.filters) {
                 let newArr = Array.from({ length: presetProperties.filters.length },
-                     (_, i):blockType => {return { val: presetProperties.filters[i].params.value, id:uuidv4(), group: presetProperties.filters[i].params.group}});
+                    (_, i): blockType => { return { val: presetProperties.filters[i].params.value, id: uuidv4(), group: presetProperties.filters[i].params.group } });
 
-                newArr = newArr.concat(Array.from({ length: FIELDS-newArr.length}, (_, i):blockType => {return { val: "", id:uuidv4(), group: "empty" }}));
+                newArr = newArr.concat(Array.from({ length: FIELDS - newArr.length }, (_, i): blockType => { return { val: "", id: uuidv4(), group: "empty" } }));
                 setBlocks(newArr);
                 setParamsData(presetProperties.filters);
-            }else{
-                const newArr = Array.from({ length: FIELDS }, (_, i):blockType => {return { val: "", id:uuidv4(), group: "empty" }});
+            } else {
+                const newArr = Array.from({ length: FIELDS }, (_, i): blockType => { return { val: "", id: uuidv4(), group: "empty" } });
 
                 setBlocks(newArr);
                 setListData(getListFromData(data));
                 setParamsData([]);
             }
         }, [data]);
-    
+
     useEffect(
         () => {
-            if (isFirstRender.current<2){
-                isFirstRender.current = isFirstRender.current+1;
-            }else{
-                setPresetProperties(prev => ({...prev, filters: paramsData}));
+            if (isFirstRender.current < 2) {
+                isFirstRender.current = isFirstRender.current + 1;
+            } else {
+                setPresetProperties(prev => ({ ...prev, filters: paramsData }));
             }
         }, [paramsData]);
 
     useEffect(() => {
-        if(presetProperties.filters!=paramsData){
+        if (presetProperties.filters != paramsData) {
             let newArr = Array.from({ length: presetProperties.filters.length },
-                 (_, i):blockType => {return { val: presetProperties.filters[i].params.value, id:uuidv4(), group: presetProperties.filters[i].params.group }});
-            newArr = newArr.concat(Array.from({ length: FIELDS-newArr.length}, (_, i):blockType => {return { val: "", id:uuidv4(), group: "empty" }}));
+                (_, i): blockType => { return { val: presetProperties.filters[i].params.value, id: uuidv4(), group: presetProperties.filters[i].params.group } });
+            newArr = newArr.concat(Array.from({ length: FIELDS - newArr.length }, (_, i): blockType => { return { val: "", id: uuidv4(), group: "empty" } }));
 
             setBlocks(newArr);
             setParamsData(presetProperties.filters);
@@ -141,22 +141,22 @@ function DraggableList({ attr }: DraggableListProps) {
 
         if (dragIndex !== null) { // we drop filter from list to the blocks array
             const draggedItem = listData[dragIndex];
-            const newID:string = uuidv4();
-        
-            let index1:number = -1;
-            
+            const newID: string = uuidv4();
+
+            let index1: number = -1;
+
             if (newBlocks[index].val !== "") {
                 index1 = getPosFromFiltered(newBlocks, newBlocks[index].id); // element that is there before change
                 deleteItemFromList(index1);
             }
-            newBlocks[index] = {val: draggedItem.val, id: newID, group:draggedItem.group}; // update
+            newBlocks[index] = { val: draggedItem.val, id: newID, group: draggedItem.group }; // update
 
             const index2 = getPosFromFiltered(newBlocks, newID) // actual position after adding
 
-            if (newBlocks[index].group == "filters"){
+            if (newBlocks[index].group == "filters") {
                 addFilterToList(draggedItem.val as FilterType, Object.keys(defaultOpts) as OptKey[], index2);
             }
-            else{
+            else {
                 const item1 = draggedItem.val as EffectType
                 addEffectToList(item1, Object.keys(defaultEffectOpts[item1]) as OptEffectKey[], index2)
             }
@@ -165,10 +165,10 @@ function DraggableList({ attr }: DraggableListProps) {
                 if (blocks[index].val !== "") {
                     await deleteItem(index1);
                 }
-                if (newBlocks[index].group == "filters"){
+                if (newBlocks[index].group == "filters") {
                     await addFilter(draggedItem.val as FilterType, index2);
                 }
-                else{
+                else {
                     await addEffect(draggedItem.val as EffectType, index2);
                 }
             })();
@@ -181,29 +181,29 @@ function DraggableList({ attr }: DraggableListProps) {
 
             const temp = newBlocks[dragBlockInd];
 
-            const condDrag:boolean = newBlocks[dragBlockInd].val !== "";
+            const condDrag: boolean = newBlocks[dragBlockInd].val !== "";
             const condInd: boolean = newBlocks[index].val !== ""
 
-            if (condDrag || condInd){
+            if (condDrag || condInd) {
                 const index1 = getPosFromFiltered(newBlocks, newBlocks[index].id);
                 const index2 = getPosFromFiltered(newBlocks, newBlocks[dragBlockInd].id);
 
-                if (condDrag && condInd){
+                if (condDrag && condInd) {
                     swapItemsFromList(index1, index2);
                     (async () => { await swapItems(index1, index2) })(); // swap 2 existing filters
                 }
-                else if (condDrag){
+                else if (condDrag) {
                     const index3 = newBlocks.slice(0, index).filter(item => item.val !== "").length;
-                    if (index2 + 1 != index3){ // we insert before index3
+                    if (index2 + 1 != index3) { // we insert before index3
                         moveItemInList(index2, index3);
                         (async () => {
                             await moveItem(index2, index3);
                         })();
                     }
                 }
-                else if (condInd){
+                else if (condInd) {
                     const index3 = newBlocks.slice(0, dragBlockInd).filter(item => item.val !== "").length;
-                    if (index1 + 1 != index3){ // we insert before index3
+                    if (index1 + 1 != index3) { // we insert before index3
                         moveItemInList(index1, index3);
                         (async () => {
                             await moveItem(index1, index3);
@@ -271,22 +271,22 @@ function DraggableList({ attr }: DraggableListProps) {
                         >
                             {
                                 listData.map((item, index) => {
-                                    const itemPresent:boolean = blocks.findIndex( (i) => i.val === item.val) != -1;
+                                    const itemPresent: boolean = blocks.findIndex((i) => i.val === item.val) != -1;
                                     return (
-                                        <Box key={item.val} as="li" color="white" 
-                                            bg={ (item.group === "filters") ? 
+                                        <Box key={item.val} as="li" color="white"
+                                            bg={(item.group === "filters") ?
                                                 (itemPresent ? "orange.600" : "orange.300")
-                                                 : (itemPresent ? "purple.600" : "purple.300") } 
-                                            rounded="2xl" minHeight="60px" minWidth="13%" shadow="md" p={2}
+                                                : (itemPresent ? "purple.600" : "purple.300")}
+                                            rounded="2xl" minHeight="60px" minWidth="15%" shadow="md" p={2}
                                             draggable
                                             onDragStart={() => dragStartList(index)}
                                             cursor="grab"
                                             className={index === dragIndex ? "dragging" : ""}
                                             display="flex" alignItems="center" justifyContent="center"
                                         >
-                                        <Text alignSelf={"center"} 
-                                            color = {itemPresent ? "white" : (item.group === "filters") ? "orange.900" : "purple.900"} 
-                                            fontSize = "2xl" > {item.val} </Text>
+                                            <Text alignSelf={"center"}
+                                                color={itemPresent ? "white" : (item.group === "filters") ? "orange.900" : "purple.900"}
+                                                fontSize={{xl:"xl",base:"sm"}} > {item.val} </Text>
 
                                         </Box>
                                     )
@@ -303,8 +303,8 @@ function DraggableList({ attr }: DraggableListProps) {
                                         blocks.map((item, index) => {
                                             return (
                                                 <Box key={item.id} as="li" color="white" bg={groupColor[item.group]}
-                                                    rounded="2xl" minHeight="60px" minWidth="13%" shadow="md" p={2}
-                                                    display="flex" alignItems="center" justifyContent="center"
+                                                    rounded="2xl" minHeight="60px" minWidth="15%" shadow="md" p={2}
+                                                    display="flex" alignItems="center" justifyContent={{xl:"center",base:"flex-start"}}
                                                     position="relative"
 
                                                     draggable
@@ -317,8 +317,9 @@ function DraggableList({ attr }: DraggableListProps) {
                                                     onDragOver={handleDragOver}
 
                                                     onDrop={() => handleDrop(index)} >
-                                                    { item.group !== "empty" &&
-                                                        <Button size="lg"
+                                                    {item.group !== "empty" &&
+                                                        <Button 
+                                                            size="lg"
                                                             p={1}
                                                             minW={0}
                                                             bg="transparent"
@@ -332,12 +333,12 @@ function DraggableList({ attr }: DraggableListProps) {
                                                                 handleDelete(index);
                                                             }}
                                                         >
-                                                            <MdDelete/>
+                                                            <MdDelete />
 
                                                         </Button>
                                                     }
 
-                                                    <Text alignSelf={"center"} fontSize = "2xl" > {item.val} </Text>
+                                                    <Text alignSelf={"center"} fontSize={{xl:"xl",base:"sm"}} ml={{xl:0,base:8}}> {item.val} </Text>
 
                                                 </Box>
                                             )
@@ -373,7 +374,7 @@ function Page() {
 
     const { data, setData } = useFilters();
 
-    const { paramsData} = useFiltersParams();
+    const { paramsData } = useFiltersParams();
 
     const invalid = !!errors.filters
     const invalid_eff = !!errors.effects
@@ -389,38 +390,40 @@ function Page() {
                     console.log("SUBMITTED", formData);
                 })}
             >
-            <Box mt={4} p={6}  bg="teal.600"rounded="2xl" w="100%">
-                <Stack direction={"row"} gap = {60} >
-                    <CheckboxesWithHeading  field={filtersField.field}
-                        formItems={filters}
-                        invalid={invalid}
-                        error={Array.isArray(errors.filters)
-                            ? errors.filters[0]
-                            : errors.filters
-                        }
-                        ifButton={false}
-                        headerText="Select filters" >
-                    </CheckboxesWithHeading>
+                <Box mt={4} p={6} bg="teal.600" rounded="2xl" w="100%">
+                    <Stack direction={{base:"column",xl:"row"}} gap={{base:0,xl:20}} > {/*previously for horizontal direction gap was 60 */}
+                        <CheckboxesWithHeading field={filtersField.field}
+                            formItems={filters}
+                            invalid={invalid}
+                            error={Array.isArray(errors.filters)
+                                ? errors.filters[0]
+                                : errors.filters
+                            }
+                            ifButton={false}
+                            headerText="Select filters" >
+                        </CheckboxesWithHeading>
 
-                    <CheckboxesWithHeading  field={effectsField.field}
-                        formItems={effects}
-                        invalid={invalid_eff}
-                        error={Array.isArray(errors.effects)
-                            ? errors.effects[0]
-                            : errors.effects
-                        }
-                        ifButton={false}
-                        headerText="Select effects" >
+                        <Separator flex="1" borderWidth="2px" display={{ base: "block", xl: "none" }} />
+                        <Box h = "5"/>
+                        <CheckboxesWithHeading field={effectsField.field}
+                            formItems={effects}
+                            invalid={invalid_eff}
+                            error={Array.isArray(errors.effects)
+                                ? errors.effects[0]
+                                : errors.effects
+                            }
+                            ifButton={false}
+                            headerText="Select effects" >
 
-                    </CheckboxesWithHeading>
-                </Stack>
+                        </CheckboxesWithHeading>
+                    </Stack>
 
-                <Center display="flex" minW="60%">
-                    <Button size="2xl" type="submit">
-                        Submit
-                    </Button>
-                </Center>
-            </Box>
+                    <Center display="flex" minW="60%">
+                        <Button size="2xl" type="submit">
+                            Submit
+                        </Button>
+                    </Center>
+                </Box>
 
             </form>
 
@@ -439,5 +442,5 @@ function Page() {
 
 
 export default function Home() {
-    return ( <Page /> )
+    return (<Page />)
 }
