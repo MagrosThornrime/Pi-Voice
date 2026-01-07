@@ -98,7 +98,7 @@ export default function PlayPage() {
     };
 
     return (
-        <Box minH="100vh" bg="yellow.300" p={10}>
+        <Box minH="100vh" bg="yellow.300" mx = "auto" w = "70%" rounded = "xl" p={10}>
             <Fragment>
 
                 <Heading size="3xl" textAlign="center" mb={10} color="purple.600">
@@ -106,7 +106,7 @@ export default function PlayPage() {
                 </Heading>
 
                 <Flex align="center" justify="center">
-                    <Alert.Root bg = "blue.300" w = "50%">
+                    <Alert.Root bg = "blue.300" w = "90%">
                         <Alert.Indicator />
                         <Alert.Content>
                             <Alert.Title fontSize = "xl" fontWeight = "semibold" textAlign={"center"} >Instruction</Alert.Title>
