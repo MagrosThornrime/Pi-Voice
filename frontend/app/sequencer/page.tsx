@@ -8,8 +8,9 @@ import {
   Button,
   Grid,
   GridItem,
-  Text
+  Editable, IconButton
 } from "@chakra-ui/react";
+import { LuPencilLine } from "react-icons/lu"
 import { MdDelete } from "react-icons/md";
 
 function getRandomColor() {
@@ -22,8 +23,23 @@ function getRandomColor() {
 }
 
 export default function Page() {
-    const [isPlaying, setIsPlaying] = useState<boolean>(sessionStorage.getItem("seq_playing")=="Stop");
-    const [isRecording, setIsRecording] = useState<boolean>(sessionStorage.getItem("seq_recording")=="Stop recording");
+
+    const [isPlaying, setIsPlaying] = useState<boolean>(() => {
+        try {
+            return sessionStorage.getItem("seq_playing") === "Stop";
+        } catch {
+            return false;
+        }
+    });
+
+    const [isRecording, setIsRecording] = useState<boolean>(() => {
+        try{
+            return sessionStorage.getItem("seq_recording") === "Stop recording";
+        } catch{
+            return false;
+        }
+    })
+
     const [sounds, setSounds] = useState<string[]>([]);
     const [colorMap, setColorMap] = useState<Record<string, string>>({});
     const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -95,7 +111,14 @@ export default function Page() {
             <Stack>
                 <Button
                     disabled={isPlaying}
-                    bg={sessionStorage.getItem("seq_recording")=="Stop recording" ? "red.400" : "green.400"}
+                    bg={(() => {
+                        try {
+                            return (sessionStorage.getItem("seq_recording") === "Stop recording") ? "red.400" : "green.400";
+                        } catch {
+                            return "green.400";
+                        }
+                    })()}
+
                     onClick={async () => {
                         try {
                             if (sessionStorage.getItem("seq_recording")=="Stop recording"){
@@ -113,12 +136,20 @@ export default function Page() {
                         }
                     }}
                 >
-                    {sessionStorage.getItem("seq_recording") ?? "Record to sequencer"}
+                    {
+                        (() => {
+                            try {
+                                return sessionStorage.getItem("seq_recording");
+                            } catch {
+                                return "Record to sequencer";
+                            }
+                        })()
+                    }
                 </Button>
                 <Box h="10"/>
                 <Grid
-                    w="80%"
-                    templateColumns="repeat(8, 1fr)"
+                    w="100%"
+                    templateColumns={{xl:"repeat(8, 1fr)",base:"repeat(4, 1fr)"}}
                     gap={4}
                 >
                     {
@@ -126,7 +157,8 @@ export default function Page() {
                              <GridItem colSpan={1} key={item}>
                                 <Box
                                     minHeight="60px" minWidth="13%" shadow="md" p={2}
-                                    display="flex" alignItems="center" justifyContent="center"
+                                    display="flex" alignItems="center"
+                                    justifyContent={{xl:"flex-start", base:"flex-start"}}
                                     position="relative"
                                     bg={colorMap[item]}
                                     draggable
@@ -136,7 +168,7 @@ export default function Page() {
                                     cursor="grab"
                                     opacity={dragIndex === index ? 0.4 : 1}
                                 >
-                                    <Button size="lg"
+                                    <Button size={{xl:"lg",base:"sm"}}
                                         p={1}
                                         minW={0}
                                         bg="transparent"
@@ -151,7 +183,33 @@ export default function Page() {
                                     }>
                                         <MdDelete/>
                                     </Button>
-                                    <Text>{item}</Text>
+
+                                    <Box position="relative" display="flex" alignItems="center" w="80%" ml="auto">
+                                        <Editable.Root
+                                            defaultValue={item}
+                                            fontSize={{ xl: "xl", base: "sm" }}
+                                            ml={{ xl: 1, base: 2 }}
+                                            flex="1"
+                                        >
+                                            <Editable.Preview pointerEvents="none" />
+                                            <Editable.Input />
+
+                                            <Editable.Control>
+                                                <Editable.EditTrigger asChild>
+                                                    <IconButton p = {3}
+                                                        position="absolute"
+                                                        right={{base: "8px", xl:"1px"}}
+                                                        variant="ghost"
+                                                        size="xs"
+                                                        aria-label="Edit"
+                                                    >
+                                                        <LuPencilLine color="white" />
+                                                    </IconButton>
+                                                </Editable.EditTrigger>
+                                            </Editable.Control>
+                                        </Editable.Root>
+                                    </Box>
+
                                 </Box>
                             </GridItem>
                         ))
@@ -160,7 +218,14 @@ export default function Page() {
                 <Box h="10"/>
                 <Button
                     disabled={isRecording||sounds.length==0}
-                    bg={sessionStorage.getItem("seq_playing") === "Stop" ? "red.400" : "green.400"}
+                    bg={(() => {
+                        try {
+                            return (sessionStorage.getItem("seq_playing") === "Stop") ?  "red.400" : "green.400";
+                        } catch {
+                        return "green.400";
+                        }
+                    })()}
+
                     onClick={async () => {
                         try {
                             if (sessionStorage.getItem("seq_playing") === "Stop") {
@@ -178,7 +243,16 @@ export default function Page() {
                         }
                     }}
                 >
-                    {sessionStorage.getItem("seq_playing") ?? "Play"}
+                    {
+                        (() => {
+                            try {
+                                return sessionStorage.getItem("seq_playing");
+                            } catch {
+                                return "Play";
+                            }
+                        })()
+                    }
+                    
                 </Button>
             </Stack>
         </Box>

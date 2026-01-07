@@ -32,9 +32,9 @@ export type Filter = {
 };
 
 export type EffectOptionsMap = {
-    chorus: "baseDelayFactor" | "modFrequency" | "modDepth" | "bufferFrames" | "feedback" | "mix";
-    delay: "bufferFrames" | "feedback" | "mix";
-    reverb: "bufferFrames" | "feedback" | "mix";
+    chorus: "baseDelayFactor" | "modFrequency" | "modDepth" | "bFrames" | "feedback" | "mix";
+    delay: "bFrames" | "feedback" | "mix";
+    reverb: "bFrames" | "feedback" | "mix";
     robotify: "modFrequency";
     phaser: "minHz" | "rangeHz" | "rateHz" | "feedback" | "mix";
     saturate: "drive";
@@ -52,7 +52,7 @@ export type OptEffectKey =
     | "baseDelayFactor"
     | "modFrequency"
     | "modDepth"
-    | "bufferFrames"
+    | "bFrames"
     | "feedback"
     | "mix"
     | "minHz"
@@ -87,17 +87,17 @@ export const defaultEffectOpts: Record<EffectType, Record<string, Opt>> = {
         baseDelayFactor: getLinParams([0, 0.1], 0),
         modFrequency:    getLinParams([0.5, 2], 1),
         modDepth:        getLinParams([0, 0.005], 2),
-        bufferFrames:    getLogParams([500, 20000], 3),
+        bFrames:    getLogParams([500, 20000], 3),
         feedback:        getLinParams([0, 1], 4),
         mix:             getLinParams([0, 1], 5),
     },
     delay: {
-        bufferFrames: getLogParams([500, 20000], 0),
+        bFrames: getLogParams([500, 20000], 0),
         feedback:     getLinParams([0, 1], 1),
         mix:          getLinParams([0, 1], 2),
     },
     reverb: {
-        bufferFrames: getLogParams([500, 20000], 0),
+        bFrames: getLogParams([500, 20000], 0),
         feedback:     getLinParams([0, 1], 1),
         mix:          getLinParams([0, 1], 2),
     },
@@ -140,12 +140,12 @@ export const effects: Effect[] = [
     { label: "Bitcrush", value: "bitcrush" },
 ];
 
-export const effectIDs: Record<EffectType, number> = {
-    chorus:   0,
-    delay:    1,
-    reverb:   2,
-    robotify: 3,
-    phaser:   4,
-    saturate: 5,
-    bitcrush: 6,
+export enum EffectID {
+    chorus = 0,
+    delay = 1,
+    reverb = 2,
+    robotify = 3,
+    phaser = 4,
+    saturate = 5,
+    bitcrush = 6,
 };

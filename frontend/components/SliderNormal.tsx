@@ -29,7 +29,6 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
     const group = obj.params.group;
     const rec = (group == "filters") ? getOptParams(obj.params, optKey as OptKey) : getOptParams(obj.params, optKey as OptEffectKey);
     const Value = rec.Val;
-    const EndValue = rec.EndVal;
     const Props = rec.Props;
 
     return (
