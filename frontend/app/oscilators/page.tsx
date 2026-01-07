@@ -289,7 +289,7 @@ export default function Page() {
   }
 
   return (
-    <Box minH="100vh"  p={10}>
+    <Box minH="100vh"  p={10} bg="gray.300">
       <Grid templateColumns={{
         base: "1fr",
         md: "repeat(2, 1fr)",
