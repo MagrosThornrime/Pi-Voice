@@ -1,4 +1,5 @@
 #include <application/Synthesiser.hpp>
+#include <cmath>
 
 namespace application {
 
@@ -135,11 +136,9 @@ std::vector<std::string> Synthesiser::getSampleNames() {
 	return _sampleManager->getSampleNames();
 }
 
-std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name, i32 length, i32 step) {
-	if (length <= 0) {
-		throw std::invalid_argument("length must be greater than 0");
-	}
-	const i32 note = 69;
+std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name) {
+	i32 note = 69;
+	u32 length = 500;
 	std::unique_ptr<oscillators::Oscillator> oscillator;
 	auto lock = std::lock_guard(_mutex);
 	if (name == "empty") {
@@ -154,14 +153,13 @@ std::vector<f32> Synthesiser::getOscillatorPlot(const std::string& name, i32 len
 		oscillator = std::make_unique<oscillators::TriangleOscillator>((f32)_sampleRate, note);
 	} else {
 		const std::vector<f32>& sample = _sampleManager->getSample(name);
+		note = 69.0f + 12.0f * std::log2(sample.size() / length);
 		oscillator = std::make_unique<oscillators::ModulatedOscillator>((f32)_sampleRate, note, sample);
 	}
 	std::vector<f32> plot;
 	for (i32 i = 0; i < length; i++) {
 		plot.push_back(oscillator->getNextSample());
-		for (i32 j = 0; j < step; j++) {
-			oscillator->advance();
-		}
+		oscillator->advance();
 	}
 	return plot;
 }
