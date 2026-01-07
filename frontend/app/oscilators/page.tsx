@@ -143,7 +143,7 @@ function FunctionChart(props: FunctionChartProps) {
 
   return (
     <Box bg = "white" rounded = "2xl">
-    <Chart.Root width="100%" mx = "auto" height={400} py = {4} pr = {4} chart={chart}>
+    <Chart.Root width="100%" mx = "auto" height={{xl:400,base:290}} py = {4} pr = {4} chart={chart}>
 
       <LineChart data={chart.data}>
 
@@ -304,11 +304,11 @@ export default function Page() {
           oscillators.map((o, i) => (
             <Box key={i}>
               <MemoFunctionChart inputType={"data"} givenData={{ points: getPoints(i) }} />
-              <Box h="10" />
+              <Box h={{xl:"10",base:"3"}}/>
 
               <Box mt={4} p={6}  bg="teal.500"rounded="2xl" w="100%">
 
-                <Select.Root colorPalette = "white" size={"lg"} collection={oscillatorTypes} variant={"subtle"}
+                <Select.Root colorPalette = "white" size={{xl:"lg",base:"sm"}} collection={oscillatorTypes} variant={"subtle"}
                   positioning={{ sameWidth: true, placement: "bottom", flip: false }}
                   onValueChange={(e) => {
                     changeOscillators(i, e.value[0]);
@@ -318,14 +318,14 @@ export default function Page() {
                   }}>
 
                   <Select.HiddenSelect />
-                  <Select.Label fontSize={"xl"} fontWeight={"semibold"} color={"white"}>
+                  <Select.Label fontSize={{xl:"xl",base:"md"}} fontWeight={"semibold"} color={"white"}>
                     {`Oscillator${i + 1}`}
                   </Select.Label>
-                  <Box h="5" />
+                  <Box h="5" display={{ base: "none", xl: "block" }}/>
 
                   <Select.Control>
                     <Select.Trigger>
-                      <Select.ValueText fontSize={"xl"} color={"blue.800"} placeholder={oscillators[i]} />
+                      <Select.ValueText fontSize={{xl:"xl",base:"md"}} color={"blue.800"} placeholder={oscillators[i]} />
                     </Select.Trigger>
 
                     <Select.IndicatorGroup>
