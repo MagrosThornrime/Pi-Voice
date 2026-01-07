@@ -1,3 +1,9 @@
+export function getADSRFactor(t: number, minTime: number, maxTime: number){
+    const sampleRate = 44100;
+    const time = minTime * (maxTime / minTime) ** t;
+    return 1 / (time * sampleRate);
+}
+
 export function calcLogValueFromScale(x:number, lims:number[]){
     // changes position on slider to log10 value of number, which bound are in lims
     let res = Math.log10( lims[0] ) + x/100 * ( Math.log10(lims[1]) - Math.log10(lims[0]) )
@@ -13,7 +19,7 @@ export function calcLogaritmicPosFromLinear(x:number, linLims:number[], logLims:
     const logVal = Math.log10(actVal);
 
     const logPos = (logVal - logMin) / (logMax - logMin);
-    
+
     console.log("logPos:", logPos, "power:", Math.pow(10, calcLogValueFromScale(logPos, logLims)))
     return Math.round(logPos * 100);
 }
