@@ -53,7 +53,7 @@ void SampleManager::_loadSamplePaths() {
 			continue;
 		}
 		_closeFile(file);
-        std:: string currentName = sampleName;
+        std::string currentName = sampleName;
         int sameNamed = 1;
         while(_samplePaths.contains(currentName) || oscillators::reservedOscillators.contains(currentName)) {
             sameNamed++;
