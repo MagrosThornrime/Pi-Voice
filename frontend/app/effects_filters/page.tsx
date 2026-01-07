@@ -81,7 +81,7 @@ function DraggableList({ attr }: DraggableListProps) {
     useEffect(
         () => {
             setListData(getListFromData(data) ?? []);
-            if (isFirstRender.current < 1 && presetProperties.filters) {
+            if (isFirstRender.current < 2 && presetProperties.filters) {
                 let newArr = Array.from({ length: presetProperties.filters.length },
                     (_, i): blockType => { return { val: presetProperties.filters[i].params.value, id: uuidv4(), group: presetProperties.filters[i].params.group } });
 
