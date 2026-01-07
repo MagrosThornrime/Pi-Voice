@@ -161,6 +161,9 @@ ipcMain.handle("synth-sequencerRemoveSample", (e, i) =>
 ipcMain.handle("synth-sequencerClear", () =>
     synth.sequencerClear()
 );
+ipcMain.handle("synth-sequencerSampleLength", (e, i) =>
+    synth.sequencerLength(i)
+);
 ipcMain.handle("synth-sequencerLength", () =>
     synth.sequencerLength()
 );

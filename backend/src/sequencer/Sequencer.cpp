@@ -20,6 +20,14 @@ u32 Sequencer::length() const {
 	return _samples.size();
 }
 
+f32 Sequencer::sampleLength(const u32 i) const {
+	auto lock = std::unique_lock(_mutex);
+	if (i >= _samples.size()) {
+		return 0.f;
+	}
+	return (f32)_samples[i].size() / _channels / _sampleRate;
+}
+
 void Sequencer::activate() {
 	auto lock = std::unique_lock(_mutex);
 	if (not _recorder.running() and not _active) {
@@ -46,6 +54,8 @@ SequencerIterator Sequencer::iter() {
 
 void Sequencer::startRecording(const u32 sampleRate, const u32 channels, const f32 seconds) {
 	auto lock = std::unique_lock(_mutex);
+	_sampleRate = sampleRate;
+	_channels = channels;
 	if (not _active and not _recorder.running()) {
 		_recorder.set(sampleRate, channels, seconds);
 		_recorder.start();
