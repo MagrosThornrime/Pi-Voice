@@ -176,6 +176,7 @@ export default function Page() {
                                         left="8px"
                                         _hover={{ bg: "red.600" }}
                                         _active={{ bg: "red.700" }}
+                                        disabled={isPlaying}
                                         onClick={() => {
                                             setSounds(prev => prev.filter(s => s !== item));
                                             window.synthAPI.sequencerRemoveSample(index);
