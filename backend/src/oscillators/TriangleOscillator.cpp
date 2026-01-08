@@ -22,4 +22,8 @@ f32 TriangleOscillator::getNextSample() {
     sample *= 8.0f / std::pow(std::numbers::pi, 2);
     return std::clamp(sample, 0.0f, 1.0f);
 }
+
+bool TriangleOscillator::isEmpty() {
+    return false;
+}
 }

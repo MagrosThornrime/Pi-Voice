@@ -14,4 +14,8 @@ f32 SquareOscillator::getNextSample() {
     sample *= 4.0f / std::numbers::pi;
     return std::clamp(sample, 0.0f, 1.0f);
 }
+
+bool SquareOscillator::isEmpty() {
+    return false;
+}
 }

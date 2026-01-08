@@ -24,8 +24,6 @@ class VoiceManager {
 	/// @brief Oscillator types of the next sound
 	std::string _oscillatorTypes[3] = {"empty", "empty", "empty"};
 
-	i32 _nonEmpty = 0;
-
 	/// @brief Oscillator amplitudes of the next sound
 	f32 _oscillatorAmplitudes[3] = {1.0f, 1.0f, 1.0f};
 

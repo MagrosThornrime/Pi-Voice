@@ -28,12 +28,6 @@ void VoiceManager::setOscillatorType(const std::string& type, i32 index) {
 		throw std::invalid_argument(fmt::format("Invalid index value of: {}", index));
 	}
 	auto lock = std::lock_guard(_oscillatorMutex);
-    if(_oscillatorTypes[index] == "empty" && type != "empty") {
-        _nonEmpty++;
-    }
-    else if(_oscillatorTypes[index] != "empty" && type == "empty") {
-        _nonEmpty--;
-    }
 	_oscillatorTypes[index] = type;
 }
 
@@ -46,10 +40,7 @@ f32 VoiceManager::_getNextSample() {
 		}
 		sample += voice.getNextSample();
 	}
-	if(_nonEmpty == 0) {
-		return 0.0f;
-	}
-	return sample / _nonEmpty / _voices.size();
+	return sample / _voices.size();
 }
 
 void VoiceManager::update() {

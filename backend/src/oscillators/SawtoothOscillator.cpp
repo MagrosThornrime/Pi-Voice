@@ -13,4 +13,8 @@ f32 SawtoothOscillator::getNextSample() {
     sample *= 2.0f / std::numbers::pi;
     return std::clamp(sample, 0.0f, 1.0f);
 }
+
+bool SawtoothOscillator::isEmpty() {
+    return false;
+}
 }
