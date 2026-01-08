@@ -51,6 +51,7 @@ declare global {
             sequencerStopRecording: () => Promise<void>;
             sequencerRemoveSample: (i: number) => Promise<void>;
             sequencerClear: () => Promise<void>;
+            sequencerSampleLength: (i: number) => Promise<number>;
             sequencerLength: () => Promise<number>;
             sequencerMoveSample: (curr: number, val: number) => Promise<void>;
             sequencerSwapSamples: (i1: number, i2: number) => Promise<void>;
@@ -98,15 +99,15 @@ export default function PlayPage() {
     };
 
     return (
-        <Box minH="100vh" bg="gray.200" p={10}>
+        <Box minH="100vh" bg="yellow.300" mx = "auto" w = "70%" rounded = "xl" p={10}>
             <Fragment>
 
-                <Heading size="3xl" textAlign="center" mb={10} color="teal.700">
+                <Heading size="3xl" textAlign="center" mb={10} color="purple.600">
                     🎛️ Simple Synth Controller
                 </Heading>
 
                 <Flex align="center" justify="center">
-                    <Alert.Root bg = "blue.300" w = "50%">
+                    <Alert.Root bg = "blue.300" w = "90%">
                         <Alert.Indicator />
                         <Alert.Content>
                             <Alert.Title fontSize = "xl" fontWeight = "semibold" textAlign={"center"} >Instruction</Alert.Title>
@@ -135,7 +136,6 @@ export default function PlayPage() {
                         display="flex"alignItems="center" justifyContent="center">
 
                         <Stack direction = "row">
-                        {/* <Text fontSize="lg" color="white"> Status: </Text> */}
                         <Text fontSize="lg" fontWeight = "semibold" color="white">Status: {status}</Text>
                         </Stack>
                     </Box>
@@ -198,7 +198,14 @@ export default function PlayPage() {
                     <Box h="5" />
                     <Box display="flex" justifyContent="center">
                         <Button size={"2xl"}
-                            bg={(sessionStorage.getItem("recording") ?? "Start") === "Start" ? "green.600" : "red.600"}
+                            bg={(() =>{
+                                try{
+                                    return (sessionStorage.getItem("recording") ?? "Start") === "Start" ? "green.600" : "red.600"
+                                }catch{
+                                    return "green.600";
+                                }
+                            })()}
+
                             onClick={async () => {
                                 try {
                                     if ((sessionStorage.getItem("recording") ?? "Start") == "Stop"){
@@ -216,7 +223,15 @@ export default function PlayPage() {
                                 }
                             }}
                         >
-                            {sessionStorage.getItem("recording") ?? "Start"} Recording
+                            {
+                                (() => {
+                                    try {
+                                        return ((sessionStorage.getItem("recording") ?? "Start") + " Recording")
+                                    } catch {
+                                        return "Record to sequencer";
+                                    }
+                                })()
+                            }
                         </Button>
                     </Box>
                 </Box>

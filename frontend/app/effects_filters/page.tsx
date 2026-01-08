@@ -81,7 +81,7 @@ function DraggableList({ attr }: DraggableListProps) {
     useEffect(
         () => {
             setListData(getListFromData(data) ?? []);
-            if (isFirstRender.current < 1 && presetProperties.filters) {
+            if (isFirstRender.current < 2 && presetProperties.filters) {
                 let newArr = Array.from({ length: presetProperties.filters.length },
                     (_, i): blockType => { return { val: presetProperties.filters[i].params.value, id: uuidv4(), group: presetProperties.filters[i].params.group } });
 
@@ -286,7 +286,7 @@ function DraggableList({ attr }: DraggableListProps) {
                                         >
                                             <Text alignSelf={"center"}
                                                 color={itemPresent ? "white" : (item.group === "filters") ? "orange.900" : "purple.900"}
-                                                fontSize={{xl:"xl",base:"sm"}} > {item.val} </Text>
+                                                fontSize={{lg:"sm", xl:"xl"}} > {item.val} </Text>
 
                                         </Box>
                                     )
@@ -304,7 +304,7 @@ function DraggableList({ attr }: DraggableListProps) {
                                             return (
                                                 <Box key={item.id} as="li" color="white" bg={groupColor[item.group]}
                                                     rounded="2xl" minHeight="60px" minWidth="15%" shadow="md" p={2}
-                                                    display="flex" alignItems="center" justifyContent={{xl:"center",base:"flex-start"}}
+                                                    display="flex" alignItems="center" justifyContent={{lg:"flex-start", xl:"center",}}
                                                     position="relative"
 
                                                     draggable
@@ -338,7 +338,7 @@ function DraggableList({ attr }: DraggableListProps) {
                                                         </Button>
                                                     }
 
-                                                    <Text alignSelf={"center"} fontSize={{xl:"xl",base:"sm"}} ml={{xl:0,base:8}}> {item.val} </Text>
+                                                    <Text alignSelf={"center"} fontSize={{lg:"sm", xl:"xl"}} ml={{lg:8, xl:0}}> {item.val} </Text>
 
                                                 </Box>
                                             )
@@ -391,7 +391,7 @@ function Page() {
                 })}
             >
                 <Box mt={4} p={6} bg="teal.600" rounded="2xl" w="100%">
-                    <Stack direction={{base:"column",xl:"row"}} gap={{base:0,xl:20}} > {/*previously for horizontal direction gap was 60 */}
+                    <Stack direction={{lg:"column", xl:"row"}} gap={{lg:0, xl:20}} > {/*previously for horizontal direction gap was 60 */}
                         <CheckboxesWithHeading field={filtersField.field}
                             formItems={filters}
                             invalid={invalid}
@@ -403,7 +403,7 @@ function Page() {
                             headerText="Select filters" >
                         </CheckboxesWithHeading>
 
-                        <Separator flex="1" borderWidth="2px" display={{ base: "block", xl: "none" }} />
+                        <Separator flex="1" borderWidth="2px" display={{ lg: "block", xl: "none" }} />
                         <Box h = "5"/>
                         <CheckboxesWithHeading field={effectsField.field}
                             formItems={effects}

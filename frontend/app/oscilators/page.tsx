@@ -289,10 +289,10 @@ export default function Page() {
       <Grid templateColumns={{
         base: "1fr",
         md: "repeat(2, 1fr)",
-        lg: "repeat(3, 1fr)",
+        lg: "repeat(2, 1fr)",
+        xl: "repeat(3, 1fr)"
       }}
         gap={30}
-        // maxW="1920px"
         mx="auto"
         alignItems="center"
         justifyItems="center" >
@@ -304,7 +304,7 @@ export default function Page() {
 
               <Box mt={4} p={6}  bg="teal.500"rounded="2xl" w="100%">
 
-                <Select.Root colorPalette = "white" size={{xl:"lg",base:"sm"}} collection={oscillatorTypes} variant={"subtle"}
+                <Select.Root colorPalette = "white" size={{lg:"sm", xl:"lg",}} collection={oscillatorTypes} variant={"subtle"}
                   positioning={{ sameWidth: true, placement: "bottom", flip: false }}
                   onValueChange={(e) => {
                     changeOscillators(i, e.value[0]);
@@ -314,14 +314,14 @@ export default function Page() {
                   }}>
 
                   <Select.HiddenSelect />
-                  <Select.Label fontSize={{xl:"xl",base:"md"}} fontWeight={"semibold"} color={"white"}>
+                  <Select.Label fontSize={{lg:"md", xl:"xl"}} fontWeight={"semibold"} color={"white"}>
                     {`Oscillator${i + 1}`}
                   </Select.Label>
-                  <Box h="5" display={{ base: "none", xl: "block" }}/>
+                  <Box h="5" display={{ lg: "none", xl: "block" }}/>
 
                   <Select.Control>
                     <Select.Trigger>
-                      <Select.ValueText fontSize={{xl:"xl",base:"md"}} color={"blue.800"} placeholder={oscillators[i]} />
+                      <Select.ValueText fontSize={{lg:"md", xl:"xl"}} color={"blue.800"} placeholder={oscillators[i]} />
                     </Select.Trigger>
 
                     <Select.IndicatorGroup>

@@ -6,6 +6,8 @@ import { Chart, useChart } from "@chakra-ui/charts"
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts"
 import { usePreset } from "@/components/ui/presetsProvider";
 import { SliderTooltip } from "@/components/SliderTooltip";
+import {adsrRanges} from "@/app/utils/tables";
+import {getADSRFactor} from "@/app/utils/maths_utils";
 
 
 export interface Point {
@@ -58,11 +60,7 @@ function norm(param:number){
   return param/100;
 }
 
-function getFactor(v: number, minTime: number, maxTime: number){
-  const sampleRate = 44100;
-  const time = minTime * (maxTime / minTime) ** (v / 100);
-  return 1 / (time * sampleRate);
-}
+
 
 export default function Home() {
 
@@ -101,7 +99,13 @@ export default function Home() {
     value: attackValueVis,
     setValue: setAttackValueVis,
     setEndValue: (v: number) => setPresetProperties(prev => ({...prev, attack: v})),
-    onEnd: (v: number) => window.synthAPI.setAttack(getFactor(v, 0.001, 2.0))
+    onEnd: (v: number) => window.synthAPI.setAttack(
+        getADSRFactor(
+          v / 100,
+          adsrRanges.attack.min,
+          adsrRanges.attack.max
+        )
+    )
   },
 
   {
@@ -117,7 +121,13 @@ export default function Home() {
     value: decayValueVis,
     setValue: setDecayValueVis,
     setEndValue: (v: number) => setPresetProperties(prev => ({...prev, decay: v})),
-    onEnd: (v: number) => window.synthAPI.setDecay(getFactor(v, 0.005, 4.0))
+    onEnd: (v: number) => window.synthAPI.setDecay(
+        getADSRFactor(
+            v / 100,
+            adsrRanges.decay.min,
+            adsrRanges.decay.max
+        )
+    )
   },
 
   {
@@ -125,8 +135,13 @@ export default function Home() {
     value: releaseValueVis,
     setValue: setReleaseValueVis,
     setEndValue: (v: number) => setPresetProperties(prev => ({...prev, release: v})),
-    onEnd: (v: number) => window.synthAPI.setRelease(getFactor(v, 0.01, 8.0))
-
+    onEnd: (v: number) => window.synthAPI.setRelease(
+        getADSRFactor(
+            v / 100,
+            adsrRanges.release.min,
+            adsrRanges.release.max
+        )
+    )
   }
 ]
 
@@ -153,19 +168,19 @@ export default function Home() {
 
             <XAxis dataKey="x"
               stroke={chart_adsr.color("border")}
-              tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
+              tickFormatter={(value) => `${Math.round(value * 100)/100}`}
             />
 
             <YAxis dataKey="y"
               stroke={chart_adsr.color("border")}
-              tickFormatter={(value) => `${Math.round(value * 100)/100}`} 
+              tickFormatter={(value) => `${Math.round(value * 100)/100}`}
             />
 
             <Tooltip
               animationDuration={100}
               cursor={false}
               content={({ active, payload, label }) => {
-                if (active && payload && payload.length) 
+                if (active && payload && payload.length)
                 {
                   const x = Math.round(Number(label) * 100) / 100;
                   const y = Math.round(payload[0].value * 100) / 100;
@@ -178,7 +193,7 @@ export default function Home() {
                     );
                 }
               }
-              } 
+              }
             />
 
         {
@@ -236,7 +251,7 @@ export default function Home() {
                   <SliderTooltip Props={{bounds:[0, 100], actValue: ctrl.value}} />
 
                 </Box>
-                ) 
+                )
               )
             }
 

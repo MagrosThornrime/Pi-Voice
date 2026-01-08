@@ -2,6 +2,7 @@ const path = require("path");
 const { app, BrowserWindow, ipcMain } = require("electron");
 const { spawn, exec } = require("child_process");
 const fs = require("fs");
+const net = require("net");
 
 const presetFile = path.join(app.getPath("userData"), "presets.json");
 
@@ -57,9 +58,26 @@ try {
   app.quit();
 }
 
+function waitForServer(port, host = "localhost") {
+  return new Promise(resolve => {
+    const tryConnect = () => {
+      const socket = net.connect(port, host, () => {
+        socket.end();
+        resolve();
+      });
+      socket.on("error", () => {
+        setTimeout(tryConnect, 300);
+      });
+    };
+    tryConnect();
+  });
+}
+
 function createWindow() {
   const win = new BrowserWindow({
     fullscreen: true,
+    width : 1024,
+    height: 600,
     fullscreenable: true,
     autoHideMenuBar: true,
     webPreferences: {
@@ -72,20 +90,13 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-  nextProcess = spawn("npm", ["run", "dev"], {
+  nextProcess = spawn("npm", ["run", "start"], {
     cwd: path.join(process.cwd(), "./frontend"),
     shell: true,
     stdio: "inherit",
   });
-
-  try {
-    setTimeout(() => {
-      createWindow();
-    }, 100);
-  } catch (err) {
-    console.error(err);
-    app.quit();
-  }
+  await waitForServer(3000);
+  createWindow();
 });
 
 app.on("quit", () => {
@@ -160,6 +171,9 @@ ipcMain.handle("synth-sequencerRemoveSample", (e, i) =>
 );
 ipcMain.handle("synth-sequencerClear", () =>
     synth.sequencerClear()
+);
+ipcMain.handle("synth-sequencerSampleLength", (e, i) =>
+    synth.sequencerLength(i)
 );
 ipcMain.handle("synth-sequencerLength", () =>
     synth.sequencerLength()
