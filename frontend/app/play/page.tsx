@@ -198,7 +198,14 @@ export default function PlayPage() {
                     <Box h="5" />
                     <Box display="flex" justifyContent="center">
                         <Button size={"2xl"}
-                            bg={(sessionStorage.getItem("recording") ?? "Start") === "Start" ? "green.600" : "red.600"}
+                            bg={(() =>{
+                                try{
+                                    return (sessionStorage.getItem("recording") ?? "Start") === "Start" ? "green.600" : "red.600"
+                                }catch{
+                                    return "green.600";
+                                }
+                            })()}
+
                             onClick={async () => {
                                 try {
                                     if ((sessionStorage.getItem("recording") ?? "Start") == "Stop"){
@@ -216,7 +223,15 @@ export default function PlayPage() {
                                 }
                             }}
                         >
-                            {sessionStorage.getItem("recording") ?? "Start"} Recording
+                            {
+                                (() => {
+                                    try {
+                                        return ((sessionStorage.getItem("recording") ?? "Start") + " Recording")
+                                    } catch {
+                                        return "Record to sequencer";
+                                    }
+                                })()
+                            }
                         </Button>
                     </Box>
                 </Box>

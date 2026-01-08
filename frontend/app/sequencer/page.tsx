@@ -161,11 +161,20 @@ export default function Page() {
                                     justifyContent={{lg:"flex-start", xl:"flex-start"}}
                                     position="relative"
                                     bg={colorMap[item]}
-                                    draggable
-                                    onDragStart={() => handleDragStart(index)}
-                                    onDragOver={handleDragOver}
-                                    onDrop={() => handleDrop(index)}
-                                    cursor="grab"
+                                    draggable={!isPlaying}
+                                    onDragStart={() => {
+                                        if(isPlaying)return;
+                                        handleDragStart(index);
+                                    }}
+                                    onDragOver={(e) => {
+                                        if(isPlaying)return;
+                                        handleDragOver(e);
+                                    }}
+                                    onDrop={() => {
+                                        if(isPlaying)return;
+                                        handleDrop(index);
+                                    }}
+                                    cursor={!isPlaying ? "grab" : "not-allowed"}
                                     opacity={dragIndex === index ? 0.4 : 1}
                                 >
                                     <Button size={{lg:"sm", xl:"lg"}}
