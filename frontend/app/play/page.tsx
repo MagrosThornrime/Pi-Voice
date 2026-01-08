@@ -99,15 +99,15 @@ export default function PlayPage() {
     };
 
     return (
-        <Box minH="100vh" bg="gray.200" p={10}>
+        <Box minH="100vh" bg="yellow.300" mx = "auto" w = "70%" rounded = "xl" p={10}>
             <Fragment>
 
-                <Heading size="3xl" textAlign="center" mb={10} color="teal.700">
+                <Heading size="3xl" textAlign="center" mb={10} color="purple.600">
                     🎛️ Simple Synth Controller
                 </Heading>
 
                 <Flex align="center" justify="center">
-                    <Alert.Root bg = "blue.300" w = "50%">
+                    <Alert.Root bg = "blue.300" w = "90%">
                         <Alert.Indicator />
                         <Alert.Content>
                             <Alert.Title fontSize = "xl" fontWeight = "semibold" textAlign={"center"} >Instruction</Alert.Title>
@@ -136,7 +136,6 @@ export default function PlayPage() {
                         display="flex"alignItems="center" justifyContent="center">
 
                         <Stack direction = "row">
-                        {/* <Text fontSize="lg" color="white"> Status: </Text> */}
                         <Text fontSize="lg" fontWeight = "semibold" color="white">Status: {status}</Text>
                         </Stack>
                     </Box>

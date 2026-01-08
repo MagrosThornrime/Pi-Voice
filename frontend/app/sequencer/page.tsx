@@ -139,7 +139,7 @@ export default function Page() {
                     {
                         (() => {
                             try {
-                                return sessionStorage.getItem("seq_recording");
+                                return sessionStorage.getItem("seq_recording") ?? "Record to sequencer";
                             } catch {
                                 return "Record to sequencer";
                             }
@@ -149,7 +149,7 @@ export default function Page() {
                 <Box h="10"/>
                 <Grid
                     w="100%"
-                    templateColumns={{xl:"repeat(8, 1fr)",base:"repeat(4, 1fr)"}}
+                    templateColumns={{lg:"repeat(4, 1fr)", xl:"repeat(8, 1fr)"}}
                     gap={4}
                 >
                     {
@@ -158,7 +158,7 @@ export default function Page() {
                                 <Box
                                     minHeight="60px" minWidth="13%" shadow="md" p={2}
                                     display="flex" alignItems="center"
-                                    justifyContent={{xl:"flex-start", base:"flex-start"}}
+                                    justifyContent={{lg:"flex-start", xl:"flex-start"}}
                                     position="relative"
                                     bg={colorMap[item]}
                                     draggable={!isPlaying}
@@ -177,7 +177,7 @@ export default function Page() {
                                     cursor={!isPlaying ? "grab" : "not-allowed"}
                                     opacity={dragIndex === index ? 0.4 : 1}
                                 >
-                                    <Button size={{xl:"lg",base:"sm"}}
+                                    <Button size={{lg:"sm", xl:"lg"}}
                                         p={1}
                                         minW={0}
                                         bg="transparent"
@@ -185,6 +185,7 @@ export default function Page() {
                                         left="8px"
                                         _hover={{ bg: "red.600" }}
                                         _active={{ bg: "red.700" }}
+                                        disabled={isPlaying}
                                         onClick={() => {
                                             setSounds(prev => prev.filter(s => s !== item));
                                             window.synthAPI.sequencerRemoveSample(index);
@@ -196,7 +197,7 @@ export default function Page() {
                                     <Box position="relative" display="flex" alignItems="center" w="80%" ml="auto">
                                         <Editable.Root
                                             defaultValue={item}
-                                            fontSize={{ xl: "xl", base: "sm" }}
+                                            fontSize={{lg: "sm", xl: "xl" }}
                                             ml={{ xl: 1, base: 2 }}
                                             flex="1"
                                         >
@@ -207,7 +208,7 @@ export default function Page() {
                                                 <Editable.EditTrigger asChild>
                                                     <IconButton p = {3}
                                                         position="absolute"
-                                                        right={{base: "8px", xl:"1px"}}
+                                                        right={{sm: "8px", lg:"3px", xl:"1px"}}
                                                         variant="ghost"
                                                         size="xs"
                                                         aria-label="Edit"
@@ -230,9 +231,8 @@ export default function Page() {
                     bg={(() => {
                         try {
                             return (sessionStorage.getItem("seq_playing") === "Stop") ?  "red.400" : "green.400";
-                        } catch {
-                        return "green.400";
-                        }
+                        } catch { return "green.400";
+                            }
                     })()}
 
                     onClick={async () => {
@@ -255,7 +255,7 @@ export default function Page() {
                     {
                         (() => {
                             try {
-                                return sessionStorage.getItem("seq_playing");
+                                return sessionStorage.getItem("seq_playing") ?? "Play";
                             } catch {
                                 return "Play";
                             }

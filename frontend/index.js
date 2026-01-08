@@ -76,6 +76,8 @@ function waitForServer(port, host = "localhost") {
 function createWindow() {
   const win = new BrowserWindow({
     fullscreen: true,
+    width : 1024,
+    height: 600,
     fullscreenable: true,
     autoHideMenuBar: true,
     webPreferences: {
