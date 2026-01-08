@@ -88,7 +88,7 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-  nextProcess = spawn("npm", ["run", "dev"], {
+  nextProcess = spawn("npm", ["run", "start"], {
     cwd: path.join(process.cwd(), "./frontend"),
     shell: true,
     stdio: "inherit",
