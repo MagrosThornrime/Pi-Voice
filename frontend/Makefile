@@ -1,13 +1,10 @@
 .PHONY: all
 
-all: build copy_module pack copy_resources
+all: copy_module pack copy_resources
 
 setup: *
 	npm install
 	npx electron-rebuild
-
-build:
-	npm run build
 
 ifeq ($(OS),Windows_NT)
 copy_resources:

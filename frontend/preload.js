@@ -67,8 +67,6 @@ contextBridge.exposeInMainWorld("synthAPI", {
         ipcRenderer.invoke("synth-sequencerRemoveSample", i),
     sequencerClear: () =>
         ipcRenderer.invoke("synth-sequencerClear"),
-    sequencerSampleLength: (i) =>
-        ipcRenderer.invoke("synth-sequencerSampleLength", i),
     sequencerLength: () =>
         ipcRenderer.invoke("synth-sequencerLength"),
     sequencerMoveSample: (curr, target) =>

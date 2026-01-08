@@ -63,8 +63,6 @@ public:
 	void clear();
 	/// @brief Returns sample count
 	u32 length() const;
-	/// @brief Returns sample length in seconds
-	f32 sampleLength(const u32 i) const;
 
 	/// @brief Adds raw sample
 	/// @brief Available for deactivated & non-recording sequencer
@@ -89,8 +87,6 @@ private:
 	std::vector<std::vector<f32>> _samples;
 	u32 _sample{};
 	u32 _pos{};
-	f32 _channels{};
-	f32 _sampleRate{};
 	bool _active = false;
 };
 
