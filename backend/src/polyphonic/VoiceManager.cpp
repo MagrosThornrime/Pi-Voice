@@ -40,7 +40,7 @@ f32 VoiceManager::_getNextSample() {
 		}
 		sample += voice.getNextSample();
 	}
-	return sample;
+	return sample / _voices.size();
 }
 
 void VoiceManager::update() {

@@ -35,7 +35,7 @@ void Synthesiser::start() {
 		outParams,
 		_sampleRate,
 		256,
-		paNoFlag
+		paClipOff
 	);
 	_voiceManager->setOscillatorType("empty", 0);
 
