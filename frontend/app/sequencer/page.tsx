@@ -62,7 +62,7 @@ export default function Page() {
     }, []);
 
     useEffect(() => {
-        if (isFirstRender.current<2){
+        if (isFirstRender.current<1){
             isFirstRender.current = isFirstRender.current+1;
         }else{
             sessionStorage.setItem("sounds", JSON.stringify(sounds));
