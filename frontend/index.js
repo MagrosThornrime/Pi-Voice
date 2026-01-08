@@ -172,9 +172,6 @@ ipcMain.handle("synth-sequencerRemoveSample", (e, i) =>
 ipcMain.handle("synth-sequencerClear", () =>
     synth.sequencerClear()
 );
-ipcMain.handle("synth-sequencerSampleLength", (e, i) =>
-    synth.sequencerLength(i)
-);
 ipcMain.handle("synth-sequencerLength", () =>
     synth.sequencerLength()
 );
@@ -189,8 +186,8 @@ ipcMain.handle("synth-sequencerAddSample", (e, name) =>
 );
 
 // Synth parameters
-ipcMain.handle("synth-setAmplitude", (e, v) =>
-    synth.setAmplitude(v)
+ipcMain.handle("synth-pipelineSetAmplitude", (e, v) =>
+    synth.pipelineSetAmplitude(v)
 );
 ipcMain.handle("synth-setOscillatorType", (e, type, index) =>
     synth.setOscillatorType(type, index)
@@ -230,6 +227,5 @@ ipcMain.handle("synth-getOscillatorNames", () =>
 );
 
 // Waveforms
-ipcMain.handle("synth-getOscillatorPlot", (e, name, len, step) =>
-    synth.getOscillatorPlot(name, len, step)
+ipcMain.handle("synth-getOscillatorPlot", (e, name) => synth.getOscillatorPlot(name)
 );

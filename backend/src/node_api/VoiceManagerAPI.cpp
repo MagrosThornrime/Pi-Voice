@@ -4,30 +4,11 @@
 namespace node_api {
 
 void initVoiceManager(Napi::Env env, Napi::Object exports) {
-	exports.Set("setAmplitude", Napi::Function::New(env, setAmplitude));
 	exports.Set("setOscillatorType", Napi::Function::New(env, setOscillatorType));
 	exports.Set("setAttack", Napi::Function::New(env, setAttack));
 	exports.Set("setDecay", Napi::Function::New(env, setDecay));
 	exports.Set("setSustain", Napi::Function::New(env, setSustain));
 	exports.Set("setRelease", Napi::Function::New(env, setRelease));
-}
-
-void setAmplitude(const Napi::CallbackInfo& info) {
-    auto env = info.Env();
-    if (info.Length() != 1 || !info[0].IsNumber()) {
-        Napi::TypeError::New(env, "Expected 1 numeric argument (amplitude)").ThrowAsJavaScriptException();
-        return;
-    }
-
-	f32 amp = info[0].As<Napi::Number>().FloatValue();
-	try {
-    	auto lock = std::lock_guard(mutex);
-    	synthesiser->setAmplitude(amp);
-	} catch (const std::exception& e) {
-		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
-		return;
-	}
-	fmt::println("Amplitude set to {}", amp);
 }
 
 // Set oscillator type (0,1,2)

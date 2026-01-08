@@ -108,24 +108,6 @@ void sequencerClear(const Napi::CallbackInfo& info) {
 	seq.clear();
 }
 
-Napi::Value sequencerSampleLength(const Napi::CallbackInfo& info) {
-	auto env = info.Env();
-
-	if (info.Length() != 1) {
-		Napi::Error::New(env, fmt::format("expected 1 argument, got {}", info.Length())).ThrowAsJavaScriptException();
-	}
-
-	auto iVal = info[0];
-	if (not iVal.IsNumber()) {
-		Napi::Error::New(env, "i is not a Number").ThrowAsJavaScriptException();
-	}
-
-	auto i = iVal.ToNumber().Uint32Value();
-
-	auto&& [_, seq] = lockSequencer();
-	return Napi::Number::New(env, seq.sampleLength(i));
-}
-
 Napi::Value sequencerLength(const Napi::CallbackInfo& info) {
 	auto env = info.Env();
 	auto&& [_, seq] = lockSequencer();

@@ -58,11 +58,7 @@ export function getComputedOscillator(oscName: string): Promise<Point[]> {
             (async () => {
                 let data: number[];
                 try {
-                    if (oscName == "meow") {
-                        data = await window.synthAPI.getOscillatorPlot(oscName, 500, 100);
-                    } else {
-                        data = await window.synthAPI.getOscillatorPlot(oscName, 500, 1);
-                    }
+                    data = await window.synthAPI.getOscillatorPlot(oscName);
                 } catch { data = [] }
                 const dataPoints = data.map((y, x): Point => {
                     return { x, y };

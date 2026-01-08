@@ -34,5 +34,8 @@ public:
 
     /// @brief Sets music note for the oscillator
     void setNote(i32 voiceNumber) override;
+
+	/// @brief Tells if it's an empty oscillator
+	bool isEmpty() override;
 };
 }

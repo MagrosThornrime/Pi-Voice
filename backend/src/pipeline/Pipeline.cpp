@@ -140,6 +140,8 @@ void Pipeline::_generateSound(std::stop_token stopToken, u32 framesPerCall) {
 		_sequencer->writeToRecorder(tempBuffer);
 		_mixWithSequencer(tempBuffer);
 
+		_applyAmplitude(tempBuffer);
+
 		for (u32 i = 0; i < samplesPerCall; ++i) {
 			while (!_outputQueue.push(tempBuffer[i])) {
 				std::this_thread::yield();
@@ -154,6 +156,20 @@ u32 Pipeline::getChannels() const {
 
 f32 Pipeline::getSampleRate() const {
 	return _sampleRate;
+}
+
+void Pipeline::setAmplitude(const f32 value) {
+	if(value < 0.0f || value > 1.0f){
+		throw std::invalid_argument("Amplitude should be between 0 and 1");
+	}
+	_amplitude.store(value);
+}
+
+void Pipeline::_applyAmplitude(std::vector<f32>& buffer) {
+	f32 gain = _amplitude.load();
+	for (auto& sample : buffer) {
+		sample *= gain;
+	}
 }
 
 } // namespace pipeline

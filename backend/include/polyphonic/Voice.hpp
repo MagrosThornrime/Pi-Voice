@@ -23,6 +23,9 @@ class Voice {
 	/// @brief Loads samples to be used as oscillators
 	std::shared_ptr<fileio::SampleManager> _sampleManager;
 
+	/// @brief Tells how many non empty oscillators are used
+	u32 _nonEmpty = 0;
+
 public:
 
 	/// @brief Tells if the key is pressed

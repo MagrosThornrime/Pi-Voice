@@ -24,4 +24,8 @@ void ModulatedOscillator::setNote(i32 voiceNumber){
     _voiceNumber = voiceNumber;
     _step = std::pow(2.f, (voiceNumber - 69.f) / 12.f);
 }
+
+bool ModulatedOscillator::isEmpty() {
+    return false;
+}
 }
