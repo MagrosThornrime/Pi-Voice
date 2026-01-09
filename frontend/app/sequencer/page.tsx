@@ -267,7 +267,7 @@ export default function Page() {
                     
                 </Button>
             </Stack>
-            <Button onClick = {() => writeData()}/>
+            {/* <Button onClick = {() => writeData()}/> */}
         </Box>
     );
 }
