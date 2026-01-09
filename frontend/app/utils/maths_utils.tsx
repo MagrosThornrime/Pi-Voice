@@ -20,7 +20,6 @@ export function calcLogaritmicPosFromLinear(x:number, linLims:number[], logLims:
 
     const logPos = (logVal - logMin) / (logMax - logMin);
 
-    console.log("logPos:", logPos, "power:", Math.pow(10, calcLogValueFromScale(logPos, logLims)))
     return Math.round(logPos * 100);
 }
 

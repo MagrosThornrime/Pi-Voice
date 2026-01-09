@@ -1,11 +1,25 @@
-import { Box, Text, Flex, Slider, Center, Stack } from "@chakra-ui/react";
+import { Box, Text, Slider,  Stack } from "@chakra-ui/react";
 import { useState, Fragment } from "react";
-import { Opt, OptKey, defaultOpts, OptEffectKey, defaultEffectOpts } from "@/app/utils/tables";
-import { calcValueFromLogScale, calcValueFromLinScale } from "@/app/utils/maths_utils";
+import { Opt, OptKey, defaultOpts, OptEffectKey, defaultEffectOpts, FilterType, EffectType } from "@/app/utils/tables";
 import { setEffectParam, setFilterParam } from "@/app/utils/integration_utils";
 import { ButtonScale } from "./ButtonScale";
 import { FiltersParams, ItemsParams, EffectsParams, OptParams} from "@/app/utils/context_utils";
 import { SliderTooltip } from "./SliderTooltip";
+import type {changeParams} from "@/app/sequencer/actions";
+
+export async function getData(withChange: boolean, sliderType: "lin" | "log", itemType: "filters" | "effects", sliderVal: number,
+    itemName: EffectType | FilterType, paramName:OptEffectKey | OptKey, change:boolean, bounds?: number[]
+): Promise<changeParams | number>{
+
+    if (withChange){
+        const res:changeParams = (await window.slidersAPI.read(sliderType, itemType, sliderVal, itemName, paramName, true, bounds) as changeParams);
+        return res;
+    }
+    else{
+        const res:number = (await window.slidersAPI.read(sliderType, itemType, sliderVal, itemName, paramName, false, bounds)) as number;
+        return res;
+    }
+}
 
 
 type LogSliderProps<P extends keyof OptParams = keyof OptParams> = {
@@ -78,20 +92,22 @@ export function LogSlider({ setSliderValue, opt, optKey, itemID, paramsData}: Lo
             <Slider.Root
                 value={[Value]}
 
-                onValueChange={(details) => {
+                onValueChange={async (details) => {
                     const sliderVal = details.value[0]
                     const rec = (group == "filters") ? getOptParams(obj.params, optKey as OptKey) : getOptParams(obj.params, optKey as OptEffectKey);
                     const actProps = rec.Props;
+                    
+                    const actValue = status === "logarithmic" ?
+                        await getData(false, "log", group,sliderVal,obj.params.value,optKey, false ) as number
+                        :
+                        await getData(false, "lin", group,sliderVal, obj.params.value, optKey, false, actProps.bounds) as number;
 
                     setSliderValue(itemID, optKey, "Val", sliderVal)
                     setSliderValue(itemID, optKey, "Props", {
                         bounds: actProps.bounds,
-                        actValue: status === "logarithmic"
-                            ? calcValueFromLogScale(sliderVal, opt.range)
-                            : calcValueFromLinScale(sliderVal, actProps.bounds)
+                        actValue: actValue
                     })
-                }
-                }
+                } }
 
 
                 onValueChangeEnd={async (details) => {
@@ -100,9 +116,10 @@ export function LogSlider({ setSliderValue, opt, optKey, itemID, paramsData}: Lo
                     const rec = (group == "filters") ? getOptParams(obj.params, optKey as OptKey) : getOptParams(obj.params, optKey as OptEffectKey);
                     const actProps = rec.Props;
 
-                    const newVal = status === "logarithmic"
-                                ? (calcValueFromLogScale(sliderVal, opt.range))
-                                : (calcValueFromLinScale(sliderVal, actProps.bounds))
+                    const newVal = status === "logarithmic" ?
+                        await getData(false, "log", group,sliderVal,obj.params.value,optKey, false ) as number
+                        :
+                        await getData(false, "lin", group,sliderVal, obj.params.value, optKey, false, actProps.bounds) as number;
 
                     setSliderValue(itemID, optKey, "EndVal", sliderVal);
                     setSliderValue( itemID, optKey, "Props", { bounds: actProps.bounds, actValue: newVal } )

@@ -25,6 +25,17 @@ export type EffectType =
     | "saturate"
     | "bitcrush";
 
+export const FILTER_TYPES = [
+    "allpass",
+    "bandpass",
+    "highpass",
+    "lowpass",
+    "highshelf",
+    "lowshelf",
+    "notch",
+    "peakingeq",
+] as const;
+
 export type Filter = {
     label: string;
     value: string;

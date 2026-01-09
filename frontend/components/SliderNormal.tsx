@@ -1,12 +1,12 @@
-import { Box, Text, Flex, Slider } from "@chakra-ui/react";
+import { Box, Text,  Slider } from "@chakra-ui/react";
 import { Fragment } from "react";
 import { Opt, OptEffectKey, OptKey, defaultOpts, defaultEffectOpts } from "@/app/utils/tables";
-import { calcValueFromLinScale } from "@/app/utils/maths_utils";
 import { setFilterParam, setEffectParam} from "@/app/utils/integration_utils";
 import { ItemsParams } from "@/app/utils/context_utils";
 import { getOptParams } from "./SliderLinLog";
 import { OptParams } from "@/app/utils/context_utils";
 import { SliderTooltip } from "./SliderTooltip";
+import { getData } from "./SliderLinLog";
 
 type NormalSliderProps<P extends keyof OptParams = keyof OptParams> = {
     setSliderValue: (
@@ -38,9 +38,10 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
                 value={[Value]}
 
 
-                onValueChange={details => {
+                onValueChange={async (details) => {
                     const sliderVal = details.value[0];
-                    const linVal = calcValueFromLinScale(sliderVal, opt.range);
+
+                    const linVal = await getData(false, "lin", group, sliderVal, obj.params.value, optKey, false) as number;
 
                     setSliderValue(itemID, optKey, "Val", sliderVal);
                     setSliderValue( itemID, optKey, "Props", { bounds: opt.range, actValue: linVal } )
@@ -49,7 +50,8 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
 
                 onValueChangeEnd={async details => {
                     const sliderVal = details.value[0];
-                    const linVal = calcValueFromLinScale(sliderVal, opt.range)
+
+                    const linVal = await getData(false, "lin", group, sliderVal, obj.params.value, optKey, false) as number;
 
                     setSliderValue(itemID, optKey, "EndVal", sliderVal);
                     setSliderValue( itemID, optKey, "Props", { bounds: opt.range, actValue: linVal } )

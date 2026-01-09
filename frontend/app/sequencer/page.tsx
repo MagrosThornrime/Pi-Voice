@@ -7,11 +7,14 @@ import {
   Stack,
   Button,
   Grid,
-  GridItem,
+  GridItem, Text,
   Editable, IconButton
 } from "@chakra-ui/react";
+import { writeData } from "./actions";
+
 import { LuPencilLine } from "react-icons/lu"
 import { MdDelete } from "react-icons/md";
+
 
 function getRandomColor() {
   var letters = '0123456789ABCDEF';
@@ -264,6 +267,7 @@ export default function Page() {
                     
                 </Button>
             </Stack>
+            {/* <Button onClick = {() => writeData()}/> */}
         </Box>
     );
 }
