@@ -96,3 +96,9 @@ contextBridge.exposeInMainWorld("presetsAPI", {
     delete: (name) =>
         ipcRenderer.invoke("presets:delete", name),
 });
+
+contextBridge.exposeInMainWorld("slidersAPI", {
+    read: (sliderType,itemType,sliderVal,itemName,paramName,change,bounds) => ipcRenderer.invoke(
+        "sliders:read",sliderType,itemType,sliderVal,itemName,paramName,change,bounds
+    ),
+});

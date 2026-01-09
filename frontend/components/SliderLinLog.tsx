@@ -6,17 +6,17 @@ import { setEffectParam, setFilterParam } from "@/app/utils/integration_utils";
 import { ButtonScale } from "./ButtonScale";
 import { FiltersParams, ItemsParams, EffectsParams, OptParams} from "@/app/utils/context_utils";
 import { SliderTooltip } from "./SliderTooltip";
-import { GetChangesData, changeParams} from "@/app/sequencer/actions";
+import type {changeParams} from "@/app/sequencer/actions";
 
 export async function getData(withChange: boolean, sliderType: "lin" | "log", itemType: "filters" | "effects", sliderVal: number,
     itemName: EffectType | FilterType, paramName:OptEffectKey | OptKey, change:boolean, bounds?: number[]
 ): Promise<changeParams | number>{
 
     if (withChange){
-        return (await GetChangesData(sliderType, itemType, sliderVal, itemName, paramName, change, bounds)) as changeParams;
+        return (await window.slidersAPI.read(sliderType, itemType, sliderVal, itemName, paramName, change, bounds)) as changeParams;
     }
     else{
-        return (await GetChangesData(sliderType, itemType, sliderVal, itemName, paramName, change, bounds)) as number;
+        return (await window.slidersAPI.read(sliderType, itemType, sliderVal, itemName, paramName, change, bounds)) as number;
     }
 }
 

@@ -40,49 +40,6 @@ export async function writeData() {
   await fs.writeFile(outPath, JSON.stringify(data, null, 2), "utf8");
 }
 
-
-export async function GetChangesData(sliderType: "lin" | "log", itemType: "filters" | "effects", sliderVal: number,
-    itemName: EffectType | FilterType, paramName:OptEffectKey | OptKey, change:boolean, bounds?: number[]
-): Promise<changeParams | number>{
-
-    if(!cached){
-        cached = JSON.parse(await fs.readFile("./app/sequencer/data.json", "utf8"));
-    }
-    return await getChangesDataImpl(sliderType, itemType, sliderVal, itemName, paramName, change, bounds);
-}
-
-
-async function getChangesDataImpl(sliderType: "lin" | "log", itemType: "filters" | "effects", sliderVal: number,
-    itemName: EffectType | FilterType, paramName: OptEffectKey | OptKey, change: boolean, bounds?: number[]
-): Promise<changeParams | number> {
-
-    if (cached){
-        if (!bounds) {
-            if (change) {
-                return cached[sliderType][itemType][`${itemName}.${paramName}`][sliderVal.toString()].change ?? {} as changeParams;
-                // change and no bounds parameter means we have slider with scale change option and it is currently on LOG
-            }
-            else {
-                //console.log(sliderType, itemType);
-                //console.log("CHUJ", cached[sliderType][itemType], cached.log.filters);
-                return cached[sliderType][itemType][`${itemName}.${paramName}`][sliderVal.toString()].val;
-                // we have normal only linear slider
-            }
-        }
-        else {
-            if (change) {
-                return cached[sliderType][itemType][`${itemName}.${paramName}`][`${sliderVal}.${bounds[0]}`].change ?? {} as changeParams;
-            }
-            else {
-                return cached[sliderType][itemType][`${itemName}.${paramName}`][`${sliderVal}.${bounds[0]}`].val;
-            }
-        }
-    }
-    return -1; // will never happen
-}
-        
-
-
 export async function CalcSliders(){
 
     const data: sliderCache = {

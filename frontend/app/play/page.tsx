@@ -12,6 +12,8 @@ import {
     ListItem, Flex, Stack,
     Alert, CloseButton, Highlight
 } from "@chakra-ui/react";
+import { changeParams } from "../sequencer/actions";
+import { EffectType, FilterType, OptEffectKey, OptKey } from "../utils/tables";
 
 declare global {
     interface Window {
@@ -70,6 +72,10 @@ declare global {
             write: (data: PresetFile) => Promise<void>;
             saveOne: (name: string, preset: Preset) => Promise<void>;
         };
+        slidersAPI: {
+            read: (sliderType: "lin" | "log", itemType: "filters" | "effects", sliderVal: number,
+                itemName: EffectType | FilterType, paramName:OptEffectKey | OptKey, change:boolean, bounds?: number[]) => Promise<changeParams | number>;
+        }
     }
 }
 

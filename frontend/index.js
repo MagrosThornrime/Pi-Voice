@@ -47,6 +47,51 @@ ipcMain.handle("presets:delete", (event, name) => {
   return true;
 });
 
+let cached = null;
+
+async function getChangesDataImpl(sliderType, itemType, sliderVal,
+    itemName, paramName, change, bounds
+){
+
+    if (cached){
+        if (!bounds) {
+            if (change) {
+                return cached[sliderType][itemType][`${itemName}.${paramName}`][sliderVal.toString()].change ?? {};
+                // change and no bounds parameter means we have slider with scale change option and it is currently on LOG
+            }
+            else {
+                //console.log(sliderType, itemType);
+                //console.log("CHUJ", cached[sliderType][itemType], cached.log.filters);
+                return cached[sliderType][itemType][`${itemName}.${paramName}`][sliderVal.toString()].val;
+                // we have normal only linear slider
+            }
+        }
+        else {
+            if (change) {
+                return cached[sliderType][itemType][`${itemName}.${paramName}`][`${sliderVal}.${bounds[0]}`].change ?? {};
+            }
+            else {
+                return cached[sliderType][itemType][`${itemName}.${paramName}`][`${sliderVal}.${bounds[0]}`].val;
+            }
+        }
+    }
+    return -1; // will never happen
+}
+
+async function GetChangesData(sliderType, itemType, sliderVal,
+    itemName, paramName, change, bounds
+){
+
+    if(!cached){
+        cached = JSON.parse(await fs.readFileSync("./frontend/app/sequencer/data.json", "utf8"));
+    }
+    return await getChangesDataImpl(sliderType, itemType, sliderVal, itemName, paramName, change, bounds);
+}
+
+ipcMain.handle("sliders:read", (sliderType, itemType, sliderVal,itemName, paramName, change, bounds) => {
+  return GetChangesData(sliderType, itemType, sliderVal,itemName, paramName, change, bounds);
+});
+
 let nextProcess;
 let synth;
 try {

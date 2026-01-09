@@ -4,7 +4,7 @@ import { calcValueFromLogScale, calcValueFromLinScale,calcLinearPosFromLogarithm
 import { ItemsParams, OptParams} from "@/app/utils/context_utils";
 import { getOptParams } from "./SliderLinLog";
 import { getData } from "./SliderLinLog";
-import { changeParams } from "@/app/sequencer/actions";
+import type { changeParams } from "@/app/sequencer/actions";
 
 type ButtonScaleProps<P extends keyof OptParams = keyof OptParams>  = {
     setSliderValue: (
