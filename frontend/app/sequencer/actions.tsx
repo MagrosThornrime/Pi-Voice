@@ -53,7 +53,7 @@ export async function CalcSliders(){
         },
     };
 
-    function roundData(val: number, bounds: number[]) {
+    function roundData(val: number, bounds: number[]):number {
         const dist = bounds[1] - bounds[0];
         return (dist <= 0.005) ? Number.parseFloat(val.toFixed(4)) :
             (dist <= 2) ? Number.parseFloat(val.toFixed(2)) :
@@ -76,8 +76,6 @@ export async function CalcSliders(){
                 tempLin[i_str].val = roundData(calcValueFromLinScale(i, opt.range), opt.range);
 
 
-                //console.log(name, param, i);
-
                 if ("logScale" in opt && opt.logScale){
                     tempLog[i_str] ??= {} as sliderVals;
                     tempLog[i_str].val = roundData(calcValueFromLogScale(i, opt.range), opt.range);
@@ -87,10 +85,7 @@ export async function CalcSliders(){
                     for(let num = firstPow; num <= opt.range[1]; num *= 10 ){ // all possible powers of 10
 
                         const bounds:number[] = [Math.max(num, opt.range[0]), Math.min(num * 10, opt.range[1])] 
-                        if(name === "chorus" && param === "bFrames"){
-                            console.log(num, bounds)
-                        }
-
+                        
                         const stateKey = `${i}.${bounds[0]}`;
                         tempLin[stateKey] ??= {} as sliderVals;
                         tempLin[stateKey].val = calcValueFromLinScale(i, bounds);
@@ -153,8 +148,8 @@ export async function CalcSliders(){
                 }
             }
 
-            data.lin.filters ??= {} as Record<string, Record<string, sliderVals>>;
-            data.log.filters ??= {} as Record<string, Record<string, sliderVals>>;
+            data.lin.filters[`${name}.${param}`]  ??= {} as Record<string, sliderVals>;
+            data.log.filters[`${name}.${param}`] ??= {} as Record<string, sliderVals>;
 
             data.lin.filters[`${name}.${param}`] = tempLin;
             data.log.filters[`${name}.${param}`] = tempLog;

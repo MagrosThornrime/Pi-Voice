@@ -1,6 +1,5 @@
 import {Button } from "@chakra-ui/react";
 import { Opt, OptKey, OptEffectKey } from "@/app/utils/tables";
-import { calcValueFromLogScale, calcValueFromLinScale,calcLinearPosFromLogarithmic, calcLogaritmicPosFromLinear, getBounds} from "@/app/utils/maths_utils";
 import { ItemsParams, OptParams} from "@/app/utils/context_utils";
 import { getOptParams } from "./SliderLinLog";
 import { getData } from "./SliderLinLog";
@@ -34,7 +33,7 @@ export function ButtonScale({ setStatus, status, setSliderValue, optKey, opt, it
         const sliderVal = rec.EndVal;
         const actProps = rec.Props;
         
-        const res:changeParams = status === "linear" ? 
+        const res:changeParams = newStatus === "logarithmic" ? 
             await getData(true, "lin", group, sliderVal, obj.params.value, optKey, true, actProps.bounds) as changeParams
             :
             await getData(true, "log", group, sliderVal, obj.params.value, optKey, true) as changeParams;
@@ -42,6 +41,7 @@ export function ButtonScale({ setStatus, status, setSliderValue, optKey, opt, it
         setStatus(newStatus);
         setSliderValue(itemID, optKey, "Val", res.newPos);
         setSliderValue(itemID, optKey, "EndVal", res.newPos);
+
         setSliderValue(itemID, optKey, "Props", {actValue:actProps.actValue, bounds: res.range});
     };
 

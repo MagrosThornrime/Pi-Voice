@@ -14,11 +14,6 @@ import { writeData } from "./actions";
 
 import { LuPencilLine } from "react-icons/lu"
 import { MdDelete } from "react-icons/md";
-import { defaultEffectOpts, OptEffectKey, Opt, EffectType } from "../utils/tables";
-import fs from "fs/promises";
-import { NextResponse } from "next/server";
-import { OptParams } from "../utils/context_utils";
-
 
 
 function getRandomColor() {

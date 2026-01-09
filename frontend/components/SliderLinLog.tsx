@@ -1,7 +1,6 @@
-import { Box, Text, Flex, Slider, Center, Stack } from "@chakra-ui/react";
+import { Box, Text, Slider,  Stack } from "@chakra-ui/react";
 import { useState, Fragment } from "react";
 import { Opt, OptKey, defaultOpts, OptEffectKey, defaultEffectOpts, FilterType, EffectType } from "@/app/utils/tables";
-import { calcValueFromLogScale, calcValueFromLinScale } from "@/app/utils/maths_utils";
 import { setEffectParam, setFilterParam } from "@/app/utils/integration_utils";
 import { ButtonScale } from "./ButtonScale";
 import { FiltersParams, ItemsParams, EffectsParams, OptParams} from "@/app/utils/context_utils";
@@ -13,10 +12,12 @@ export async function getData(withChange: boolean, sliderType: "lin" | "log", it
 ): Promise<changeParams | number>{
 
     if (withChange){
-        return (await window.slidersAPI.read(sliderType, itemType, sliderVal, itemName, paramName, change, bounds)) as changeParams;
+        const res:changeParams = (await window.slidersAPI.read(sliderType, itemType, sliderVal, itemName, paramName, true, bounds) as changeParams);
+        return res;
     }
     else{
-        return (await window.slidersAPI.read(sliderType, itemType, sliderVal, itemName, paramName, change, bounds)) as number;
+        const res:number = (await window.slidersAPI.read(sliderType, itemType, sliderVal, itemName, paramName, false, bounds)) as number;
+        return res;
     }
 }
 
@@ -97,9 +98,9 @@ export function LogSlider({ setSliderValue, opt, optKey, itemID, paramsData}: Lo
                     const actProps = rec.Props;
                     
                     const actValue = status === "logarithmic" ?
-                        await getData(false,"log", group,sliderVal,obj.params.value,optKey,false ) as number
+                        await getData(false, "log", group,sliderVal,obj.params.value,optKey, false ) as number
                         :
-                        await getData(false,"lin",group,sliderVal, obj.params.value, optKey, false, actProps.bounds) as number;
+                        await getData(false, "lin", group,sliderVal, obj.params.value, optKey, false, actProps.bounds) as number;
 
                     setSliderValue(itemID, optKey, "Val", sliderVal)
                     setSliderValue(itemID, optKey, "Props", {
@@ -116,9 +117,9 @@ export function LogSlider({ setSliderValue, opt, optKey, itemID, paramsData}: Lo
                     const actProps = rec.Props;
 
                     const newVal = status === "logarithmic" ?
-                        await getData(false,"log", group,sliderVal,obj.params.value,optKey,false ) as number
+                        await getData(false, "log", group,sliderVal,obj.params.value,optKey, false ) as number
                         :
-                        await getData(false,"lin",group,sliderVal, obj.params.value, optKey, false, actProps.bounds) as number;
+                        await getData(false, "lin", group,sliderVal, obj.params.value, optKey, false, actProps.bounds) as number;
 
                     setSliderValue(itemID, optKey, "EndVal", sliderVal);
                     setSliderValue( itemID, optKey, "Props", { bounds: actProps.bounds, actValue: newVal } )
