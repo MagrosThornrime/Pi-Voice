@@ -9,12 +9,7 @@ PhaseOscillator::PhaseOscillator(f32 sampleRate, i32 voiceNumber) : Oscillator(s
 
 void PhaseOscillator::advance() {
     _phase += 2.0 * std::numbers::pi * _currentFrequency / _sampleRate;
-    while(_phase > 2.0 * std::numbers::pi) {
-        _phase -= 2.0 * std::numbers::pi;
-    }
-    while(_phase < 0.0) {
-        _phase += 2.0 * std::numbers::pi;
-    }
+	_phase = std::fmod(_phase, 2.0 * std::numbers::pi);
 }
 
 void PhaseOscillator::reset() {
