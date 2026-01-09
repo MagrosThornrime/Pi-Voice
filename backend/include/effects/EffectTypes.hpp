@@ -4,6 +4,7 @@
 
 namespace effects {
 
+/// @brief Defines all effects usable by the synthesiser
 struct EffectType {
     enum Value: u32 {
         chorus,

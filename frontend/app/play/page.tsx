@@ -20,9 +20,7 @@ declare global {
             openPort: (port: number) => Promise<void>;
 
             // setters
-            setAmplitude: (value: number) => Promise<void>;
             setOscillatorType: (type: string, index: number) => Promise<void>;
-            setOscillatorAmplitude: (amp: number, index: number) => Promise<void>;
             setAttack: (v: number) => Promise<void>;
             setDecay: (v: number) => Promise<void>;
             setSustain: (v: number) => Promise<void>;
@@ -41,6 +39,7 @@ declare global {
             pipelineGetFilterParam: (idx: number, param: number) => Promise<number>;
             pipelineGetEffectParam: (idx: number, param: number) => Promise<number>;
             pipelineLength: () => Promise<number>;
+            pipelineSetAmplitude: (value: number) => Promise<void>;
 
             // sequencerAPI
             sequencerIsActive: () => Promise<boolean>;
@@ -62,7 +61,7 @@ declare global {
             getOscillatorNames: () => Promise<string[]>;
 
             // waveform preview
-            getOscillatorPlot: (name: string, length: number, step?: number) => Promise<number[]>;
+            getOscillatorPlot: (name: string) => Promise<number[]>;
 
         };
         presetsAPI: {

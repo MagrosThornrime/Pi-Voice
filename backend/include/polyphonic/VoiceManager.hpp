@@ -16,18 +16,14 @@ class VoiceManager {
 	/// @brief Mutex for changing oscillators
 	std::mutex _oscillatorMutex;
 
-	/// @brief Global amplitude
-	f32 _amplitude = 0.1f;
-
 	/// @brief Sound's sampling rate
 	f32 _sampleRate;
 
+	/// @brief Channels number
 	u32 _channels;
 
 	/// @brief Oscillator types of the next sound
 	std::string _oscillatorTypes[3] = {"empty", "empty", "empty"};
-
-	i32 _nonEmpty = 0;
 
 	/// @brief Oscillator amplitudes of the next sound
 	f32 _oscillatorAmplitudes[3] = {1.0f, 1.0f, 1.0f};
@@ -51,16 +47,15 @@ public:
 	/// @brief Constructor
 	/// @param voicesNumber the number of notes used by keyboard
 	/// @param sampleRate sound's sample rate
+	/// @param channels channels number
 	/// @param sampleManager sample manager
 	VoiceManager(i32 voicesNumber, f32 sampleRate, u32 channels,
 		 std::shared_ptr<fileio::SampleManager> sampleManager);
 
 	/// @brief Callback used for streaming the audio
+	/// @param out output buffer
+	/// @param frames number of frames generated
 	void generateSound(std::vector<f32>& out, u32 frames);
-
-	/// @brief Change the global amplitude
-	/// @param amplitude new global amplitude (between 0 and 1)
-	void setAmplitude(f32 amplitude);
 
 	/// @brief Replaces oscillators of all Voices
 	/// @param type type of the new oscillator
@@ -78,6 +73,7 @@ public:
 	/// @param voiceNumber ID of the key
 	void turnOff(i32 voiceNumber);
 
+	/// @brief Set attack value for ADSR
 	/// @param attack rate of the amplitude's increase after pressing the key (between 0.0 and 1.0)
 	void setAttack(f32 attack);
 

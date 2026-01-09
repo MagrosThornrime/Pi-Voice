@@ -35,6 +35,7 @@ void initFilters(Napi::Env env, Napi::Object exports) {
 	exports.Set("pipelineGetEffectParam", Napi::Function::New(env, getEffectParam));
 	exports.Set("pipelineSetEffectParam", Napi::Function::New(env, setEffectParam));
 	exports.Set("pipelineLength", Napi::Function::New(env, length));
+	exports.Set("pipelineSetAmplitude", Napi::Function::New(env, setAmplitude));
 }
 
 auto lockPipeline() {
@@ -533,6 +534,24 @@ Napi::Value length(const Napi::CallbackInfo& info) {
 	auto&& [lock, p] = lockPipeline();
 
 	return Napi::Value::From(env, p.length());
+}
+
+void setAmplitude(const Napi::CallbackInfo& info) {
+    auto env = info.Env();
+    if (info.Length() != 1 || !info[0].IsNumber()) {
+        Napi::TypeError::New(env, "Expected 1 numeric argument (amplitude)").ThrowAsJavaScriptException();
+        return;
+    }
+
+	f32 amp = info[0].As<Napi::Number>().FloatValue();
+	try {
+		auto&& [lock, p] = lockPipeline();
+		p.setAmplitude(amp);
+	} catch (const std::exception& e) {
+		Napi::RangeError::New(env, e.what()).ThrowAsJavaScriptException();
+		return;
+	}
+	fmt::println("Amplitude set to {}", amp);
 }
 
 }

@@ -11,6 +11,7 @@
 #include <fileio/FileRecorder.hpp>
 #include <mutex>
 #include <sequencer/Sequencer.hpp>
+#include <atomic>
 
 namespace pipeline {
 class Pipeline: public pa::CallbackInterface {
@@ -37,6 +38,8 @@ public:
     u32 getChannels() const;
     f32 getSampleRate() const;
 
+	void setAmplitude(const f32 value);
+
 private:
 	std::vector<std::shared_ptr<Layer>> _layers;
     std::shared_ptr<polyphonic::VoiceManager> _voiceManager;
@@ -48,8 +51,11 @@ private:
 	utils::SPSCQueue<f32> _outputQueue;
 	const u32 _channels;
 	const f32 _sampleRate;
+	std::atomic<f32> _amplitude = 1.0f;
 
 	void _mixWithSequencer(std::vector<f32>& buffer);
+
+	void _applyAmplitude(std::vector<f32>& buffer);
 
 	void _generateSound(std::stop_token stopToken, u32 framesPerCall);
 };

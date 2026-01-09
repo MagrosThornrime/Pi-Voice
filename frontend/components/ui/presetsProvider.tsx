@@ -94,7 +94,7 @@ export function PresetProvider({ children }: { children: ReactNode }) {
       window.synthAPI.setDecay(getADSRFactor(preset.decay, adsrRanges.decay.min, adsrRanges.decay.max));
       window.synthAPI.setSustain(preset.sustain);
       window.synthAPI.setRelease(getADSRFactor(preset.release, adsrRanges.release.min, adsrRanges.release.max));
-      window.synthAPI.setAmplitude(preset.volume);
+      window.synthAPI.pipelineSetAmplitude(preset.volume);
       window.synthAPI.setOscillatorType(preset.oscilator1, 0);
       window.synthAPI.setOscillatorType(preset.oscilator2, 1);
       window.synthAPI.setOscillatorType(preset.oscilator3, 2);
