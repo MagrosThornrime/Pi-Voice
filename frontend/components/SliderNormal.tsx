@@ -7,6 +7,7 @@ import { ItemsParams } from "@/app/utils/context_utils";
 import { getOptParams } from "./SliderLinLog";
 import { OptParams } from "@/app/utils/context_utils";
 import { SliderTooltip } from "./SliderTooltip";
+import { getData } from "./SliderLinLog";
 
 type NormalSliderProps<P extends keyof OptParams = keyof OptParams> = {
     setSliderValue: (
@@ -38,9 +39,10 @@ export function SliderNormal({ setSliderValue,  opt, optKey, paramsData, itemID}
                 value={[Value]}
 
 
-                onValueChange={details => {
+                onValueChange={async (details) => {
                     const sliderVal = details.value[0];
-                    const linVal = calcValueFromLinScale(sliderVal, opt.range);
+
+                    const linVal = await getData(true, "lin", group, sliderVal, obj.params.value, optKey, true) as number;
 
                     setSliderValue(itemID, optKey, "Val", sliderVal);
                     setSliderValue( itemID, optKey, "Props", { bounds: opt.range, actValue: linVal } )

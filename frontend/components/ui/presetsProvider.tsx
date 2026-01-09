@@ -1,6 +1,6 @@
 "use client";
 
-import { FiltersParamsContextType, ItemsParams, OptParams } from "@/app/utils/context_utils";
+import { ItemsParams, OptParams } from "@/app/utils/context_utils";
 import { addEffect, addFilter, clearFilters, setEffectParam, setFilterParam } from "@/app/utils/integration_utils";
 import { EffectType, FilterType, OptEffectKey, OptKey } from "@/app/utils/tables";
 import { createContext, useContext, useState, useEffect, ReactNode, Dispatch, SetStateAction, useRef } from "react";
