@@ -6,7 +6,6 @@ contextBridge.exposeInMainWorld("synthAPI", {
     openPort: (port) => ipcRenderer.invoke("synth-openMidi", port),
 
     // Synth parameters
-    setAmplitude: (value) => ipcRenderer.invoke("synth-setAmplitude", value),
     setOscillatorType: (type, index) =>
         ipcRenderer.invoke("synth-setOscillatorType", type, index),
 
@@ -23,6 +22,8 @@ contextBridge.exposeInMainWorld("synthAPI", {
         ipcRenderer.invoke("synth-setRecordingPath", path),
 
     // pipelineAPI
+    pipelineSetAmplitude: (value) => ipcRenderer.invoke("synth-pipelineSetAmplitude", value),
+
     pipelineAddFilter: (filter, idx) =>
         ipcRenderer.invoke("synth-pipelineAddFilter", filter, idx),
     pipelineAddEffect: (effect, idx) =>
@@ -44,7 +45,7 @@ contextBridge.exposeInMainWorld("synthAPI", {
         ipcRenderer.invoke("synth-pipelineSetEffectParam", idx, param, value),
     pipelineGetEffectParam: (idx, param) =>
         ipcRenderer.invoke("synth-pipelineGetEffectParam", idx, param),
-    
+
     pipelineLength: () =>
         ipcRenderer.invoke("synth-pipelineLength"),
 
@@ -84,8 +85,7 @@ contextBridge.exposeInMainWorld("synthAPI", {
         ipcRenderer.invoke("synth-getOscillatorNames"),
 
     // Waveform preview
-    getOscillatorPlot: (name, length, step) =>
-        ipcRenderer.invoke("synth-getOscillatorPlot", name, length, step),
+    getOscillatorPlot: (name) => ipcRenderer.invoke("synth-getOscillatorPlot", name),
 });
 
 contextBridge.exposeInMainWorld("presetsAPI", {

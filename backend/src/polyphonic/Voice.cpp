@@ -3,6 +3,15 @@
 
 namespace polyphonic {
 void Voice::setOscillatorType(const std::string& oscillatorType, i32 index) {
+
+    bool currentEmpty = _oscillators[index] == nullptr || _oscillators[index]->isEmpty();
+    if(currentEmpty && oscillatorType != "empty") {
+        _nonEmpty++;
+    }
+    else if(!currentEmpty && oscillatorType == "empty") {
+        _nonEmpty--;
+    }
+
     if (oscillatorType == "empty") {
         _oscillators[index] = std::make_shared<oscillators::Oscillator>(_sampleRate, _voiceNumber);
     }
@@ -26,8 +35,11 @@ void Voice::setOscillatorType(const std::string& oscillatorType, i32 index) {
 
 f32 Voice::getNextSample(){
     f32 sample = 0.0f;
-    for (i32 i=0; i<3; i++){
-        sample += _oscillators[i]->getNextSample();
+    if(_nonEmpty > 0) {
+        for (i32 i=0; i<3; i++){
+            sample += _oscillators[i]->getNextSample();
+        }
+        sample /= _nonEmpty;
     }
 	return _adsr.getAmplitude(isPressed) * sample;
 }

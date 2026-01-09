@@ -3,14 +3,15 @@
 
 namespace effects {
 
+    /// @brief Params used by the chorus effect
     struct ChorusParams {
         enum Value: u32 {
-            baseDelayFactor,
-            modFrequency,
-            modDepth,
-            bufferFrames,
-            feedback,
-            mix,
+            baseDelayFactor, // tells how much the sound is delayed without lfo
+            modFrequency, // lfo frequency
+            modDepth, // tells how much the lfo affects the sound's delay
+            bufferFrames, // number of frames that can be stored in the delay buffer
+            feedback, // tells how much of the signal is stored in the buffer
+            mix, // tells how much of the buffer is used in the audio output
             _count,
         };
 
@@ -29,6 +30,8 @@ namespace effects {
 
 #undef PARAM_TYPE
 
+    /// @brief Creates an illusion that the signal is played from multiple sources,
+    /// each with slightly different phase shift
     class ChorusEffect : public Effect {
 
         std::vector<f32> _buffer;
@@ -47,15 +50,30 @@ namespace effects {
         f32 _mix = 0.5f;
 
     public:
+        /// @brief Set one of params described in ChorusParams struct
+        /// @param param param index
+        /// @param value param value
         pipeline::Layer& setParam(const u32 param, std::any value) override;
+
+        /// @brief Get one of params described in ChorusParams struct
+        /// @param param index
         std::any getParam(const u32 param) override;
 
+        /// @brief Apply the effect to the signal
+        /// @param inputBuffer input signal
+        /// @param outputBuffer output signal
+        /// @param frames number of frames affected
         void processSound(std::vector<f32>& inputBuffer, std::vector<f32>& outputBuffer, u32 frames) override;
 
+        /// @brief Constructor
+        /// @param channels number of channels
+        /// @param sampleRate sounds's sample rate
         ChorusEffect(const u32 channels, const f32 sampleRate);
 
+        /// @brief Gets the type of the effect
         EffectType::Value getEffectType() override;
 
+        /// @brief Updates internal state depending on params
         void refresh() override;
     };
 

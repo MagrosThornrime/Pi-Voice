@@ -14,4 +14,12 @@ f32 Oscillator::getNextSample() {
 void Oscillator::setNote(i32 voiceNumber){
 	_voiceNumber = voiceNumber;
 }
+
+void Oscillator::advance() {}
+
+void Oscillator::reset() {}
+
+bool Oscillator::isEmpty(){
+	return true;
+}
 }

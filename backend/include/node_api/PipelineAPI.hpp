@@ -15,5 +15,5 @@ Napi::Value getFilterParam(const Napi::CallbackInfo& info);
 void setEffectParam(const Napi::CallbackInfo& info);
 Napi::Value getEffectParam(const Napi::CallbackInfo& info);
 Napi::Value length(const Napi::CallbackInfo& info);
-
+void setAmplitude(const Napi::CallbackInfo& info);
 }

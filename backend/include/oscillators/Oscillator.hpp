@@ -15,19 +15,22 @@ protected:
 public:
 
 	/// @brief Resets oscillator
-	virtual void reset() {};
+	virtual void reset();
 
     /// @brief Constructor
     explicit Oscillator(f32 sampleRate, i32 voiceNumber);
 
     /// @brief Updates the oscillator's state for the next frame
-    virtual void advance() {};
+    virtual void advance();
 
     /// @brief Calculates next sample's value
     virtual f32 getNextSample();
 
     /// @brief Sets music note for the oscillator
 	virtual void setNote(i32 voiceNumber);
+
+	/// @brief Tells if it's an empty oscillator
+	virtual bool isEmpty();
 
 };
 }
