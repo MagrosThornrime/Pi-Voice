@@ -10,3 +10,4 @@ frontend/lib/
 capture_in.wav
 /frontend/package-lock.json
 output/
+frontend/app/sequencer/data.json
