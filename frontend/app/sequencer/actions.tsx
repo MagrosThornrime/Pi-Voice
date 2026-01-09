@@ -31,8 +31,6 @@ export type sliderCache = {
     }
 }
 
-let cached: sliderCache | null = null;
-
 
 export async function writeData() {
   const outPath = "./app/sequencer/data.json";
