@@ -94,8 +94,6 @@ ipcMain.handle("sliders:read", (event, sliderType, itemType, sliderVal, itemName
     return GetChangesData(sliderType, itemType, sliderVal, itemName, paramName, change, bounds);
 });
 
-writeData();
-
 let nextProcess;
 let synth;
 try {
