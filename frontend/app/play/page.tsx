@@ -104,7 +104,7 @@ export default function PlayPage() {
     };
 
     return (
-        <Box minH="100vh" bg="yellow.300" mx = "auto" w = "70%" rounded = "xl" p={10}>
+        <Box minH="100vh" bg="gray.200" mx = "auto" w = "70%" rounded = "xl" p={10}>
             <Fragment>
 
                 <Heading size="3xl" textAlign="center" mb={10} color="purple.600">
