@@ -59,3 +59,88 @@ export function calcValueFromLinScale(x:number, lims:number[]){
     return lims[0] + x/100 * (lims[1] - lims[0]);
 }
 
+
+export type Point = {
+  x: number;
+  y: number;
+}
+
+
+export function get_example_data(
+  n: number,
+  domain: number[],
+  func: (x: number) => number
+): Point[] {
+  return Array.from({ length: n }, (_, i): Point => {
+    const x = domain[0] + (i * (domain[1] - domain[0])) / n;
+    return {
+      x,
+      y: func(x),
+    };
+  });
+}
+
+
+export function square_wave(x: number, interv: number) {
+  let position = x % interv;
+  let eps = 0.01;
+
+  if (position < eps) {
+    return 0;
+  }
+
+  if (Math.abs(position - interv / 2) < eps) {
+    if (position > interv / 2) {
+      return 1;
+    }
+    return 0;
+  }
+
+  if (position < interv / 2) {
+    return 1;
+  }
+
+  return 0;
+}
+
+
+export function triangle_wave(x: number, interv: number) {
+  let position = x % interv;
+  console.log("position:", position)
+
+  if (position <= interv / 2) {
+    return position;
+  }
+  return interv / 2 - (position - interv / 2);
+}
+
+
+export function sawtooth_func(x: number, interv: number) {
+  let position = x % interv;
+  let eps = 0.01;
+  if (x < eps) {
+    return 0.0;
+  }
+  if (position < eps) {
+    return 1 / 2 * interv;
+  }
+  if (interv - position < eps) {
+    return 0.0;
+  }
+  return 1 / 2 * position;
+
+}
+
+
+export const oscillatorsFuncMapping: Record<string, (X: number) => number> = {
+  sine: ((x) => Math.sin(3 * x)),
+  square: ((x => square_wave(x, 2.0))),
+  triangle: ((x) => triangle_wave(x, 2.0)),
+  empty: (() => 0.0),
+  sawtooth: ((x) => sawtooth_func(x, 2.0))
+}
+
+
+export function getOscillatorFunction(name: string) {
+  return oscillatorsFuncMapping[name] ?? oscillatorsFuncMapping["empty"]
+}
