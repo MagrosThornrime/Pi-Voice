@@ -136,7 +136,6 @@ function DraggableList() {
         }
 
         else if (dragBlockInd !== null) {
-            const draggedItem = blocks[dragBlockInd];
 
             const temp = newBlocks[dragBlockInd];
 
@@ -170,7 +169,7 @@ function DraggableList() {
                     }
                 }
             }
-            //final swap in our blocks array
+            //final swap in blocks array
             newBlocks[dragBlockInd] = newBlocks[index];
             newBlocks[index] = temp;
 
@@ -186,8 +185,7 @@ function DraggableList() {
 
         const index1 = getPosFromFiltered(newBlocks, newBlocks[index].id); // we search in arr before change
 
-        newBlocks[index].val = "";
-        newBlocks[index].group = "empty";
+        newBlocks[index] = {val:"", group:"empty", id:newBlocks[index].id}
 
         deleteItemFromList(index1);
 
@@ -210,13 +208,13 @@ function DraggableList() {
                     <LuChevronRight size={24} color="black" />
                 </Collapsible.Indicator>
 
-                <Box maxW="100%">
+                <Box>
                     <Text textStyle="3xl" mb={2} color="teal.600" fontWeight="semibold" > Toggle layers selection </Text>
                 </Box>
 
             </Collapsible.Trigger>
 
-            <Collapsible.Content maxW="100%" minW="100%">
+            <Collapsible.Content minW="100%">
 
                 <Box>
                     <>
@@ -277,23 +275,14 @@ function DraggableList() {
 
                                                     onDrop={() => handleDrop(index)} >
                                                     {item.group !== "empty" &&
-                                                        <Button 
-                                                            size="lg"
-                                                            p={1}
-                                                            minW={0}
-                                                            bg="transparent"
-                                                            position="absolute"
-                                                            left="8px"
-                                                            _hover={{ bg: "red.700" }}
-                                                            _active={{ bg: "red.800" }}
-
+                                                        <Button size="lg" p={1} minW={0} bg="transparent" position="absolute"
+                                                            left="8px" _hover={{ bg: "red.700" }} _active={{ bg: "red.800" }}
                                                             onClick={(e) => {
                                                                 e.stopPropagation;
                                                                 handleDelete(index);
                                                             }}
                                                         >
                                                             <MdDelete />
-
                                                         </Button>
                                                     }
 
@@ -350,7 +339,7 @@ function Page() {
                 })}
             >
                 <Box mt={4} p={6} bg="teal.600" rounded="2xl" w="100%">
-                    <Stack direction={{lg:"column", xl:"row"}} gap={{lg:0, xl:20}} > {/*previously for horizontal direction gap was 60 */}
+                    <Stack direction={{lg:"column", xl:"row"}} gap={{lg:0, xl:20}} >
                         <CheckboxesWithHeading field={filtersField.field}
                             formItems={filters}
                             invalid={invalid}
