@@ -175,3 +175,9 @@ export const adsrRanges : Record<string, Record<string, number>> = {
         max: 8.0
     }
 };
+
+export const groupColor: Record<string, string> = {
+    "filters": "orange.600",
+    "effects": "purple.600",
+    "empty": "blue.300"
+}

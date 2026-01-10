@@ -58,3 +58,4 @@ export function calcValueFromLogScale(x:number, lims: number[]){
 export function calcValueFromLinScale(x:number, lims:number[]){
     return lims[0] + x/100 * (lims[1] - lims[0]);
 }
+

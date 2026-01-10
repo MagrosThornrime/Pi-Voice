@@ -14,11 +14,8 @@ export type SliderProps = {
   actValue: number;
 }
 
-type SlidersItemsProps = {
-  attr: "filters" | "effects";
-};
 
-export function SlidersItems({ attr }: SlidersItemsProps) {
+export function SlidersItems() {
   const { paramsData, setParamsData } = useFiltersParams();
 
 

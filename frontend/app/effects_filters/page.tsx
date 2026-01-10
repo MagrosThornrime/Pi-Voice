@@ -12,58 +12,17 @@ import { CheckboxesWithHeading } from "@/components/Checkboxes";
 import { useFilters, useFiltersParams, useFiltersLogic } from "../utils/context_utils";
 import { clearFilters, addFilter, deleteItem, swapItems, moveItem, addEffect } from "../utils/integration_utils";
 import { v4 as uuidv4 } from "uuid";
-import { z } from "zod"
+import { FiltersData, FiltersFormSchema } from "../utils/state_utils";
+import { groupColor } from "../utils/tables";
+import { blockType, listType } from "../utils/state_utils";
+import { getPosFromFiltered, getListFromData  } from "../utils/state_utils";
 
 const FIELDS = 6
 
-const FiltersFormSchema = z.object({
-    filters: z.array(z.string()).max(3, {
-        message: "You cannot select more than 3 filters.",
-    }),
-    effects: z.array(z.string()).max(3, {
-        message: "You cannot select more than 3 effects.",
-    })
-})
 
-export type FiltersData = z.infer<typeof FiltersFormSchema>
+function DraggableList() {
 
-
-type DraggableListProps = {
-    attr: "filters" | "effects";
-}
-
-type blockType = {
-    val: string;
-    id: string;
-    group: "filters" | "effects" | "empty"
-}
-
-
-type listType = {
-    val: string;
-    group: "filters" | "effects";
-}
-
-const groupColor: Record<string, string> = {
-    "filters": "orange.600",
-    "effects": "purple.600",
-    "empty": "blue.300"
-}
-
-function getPosFromFiltered(list1: blockType[], idx: string) {
-    const res: number = list1.filter(item => item.val !== "").findIndex(i => i.id === idx);
-    return res;
-}
-
-function getListFromData(data: FiltersData): listType[] {
-    const dataFilters = data.filters.map((x, _): listType => { return { val: x, group: "filters" } });
-    const dataEffects = data.effects.map((x, _): listType => { return { val: x, group: "effects" } });
-    return dataFilters.concat(dataEffects);
-}
-
-function DraggableList({ attr }: DraggableListProps) {
-
-    const { data, setData } = useFilters();
+    const { data } = useFilters();
     const { paramsData, setParamsData } = useFiltersParams();
     const { deleteItemFromList, addFilterToList, swapItemsFromList, moveItemInList, addEffectToList } = useFiltersLogic();
 
@@ -430,9 +389,9 @@ function Page() {
             <Box h="10" />
 
             <Box minW="80%">
-                <DraggableList attr="filters" />
+                <DraggableList />
                 <Box h="10" />
-                <SlidersItems attr="filters" />
+                <SlidersItems />
                 <Box h="10" />
 
             </Box>

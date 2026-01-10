@@ -58,7 +58,6 @@ let cached = null;
 async function getChangesDataImpl(sliderType, itemType, sliderVal,
     itemName, paramName, change, bounds
 ) {
-    //console.log(paramName, change, bounds);
     if (cached) {
         if (!bounds) {
             if (change) {
@@ -87,9 +86,7 @@ async function GetChangesData(sliderType, itemType, sliderVal,
     if (!cached) {
         cached = JSON.parse(fs.readFileSync("./frontend/app/sequencer/data.json", "utf8"));
     }
-    // console.log(sliderType, itemType, sliderVal);
     const res = await getChangesDataImpl(sliderType, itemType, sliderVal, itemName, paramName, change, bounds);
-    // console.log("res:", res);
     return res;
 }
 

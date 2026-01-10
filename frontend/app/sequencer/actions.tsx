@@ -5,7 +5,8 @@ import { FILTER_TYPES } from "../utils/tables";
 import { calcValueFromLogScale, calcValueFromLinScale,calcLinearPosFromLogarithmic,
     calcLogaritmicPosFromLinear, getBounds } from "@/app/utils/maths_utils";
 
-import { defaultEffectOpts, EffectType, FilterType, Opt, OptEffectKey, OptKey, defaultOpts } from "../utils/tables";
+import { defaultEffectOpts, EffectType, FilterType, Opt, OptKey, defaultOpts } from "../utils/tables";
+
 const TEST_SLIDERS = 100;
 
 export type changeParams = {
@@ -83,7 +84,7 @@ export async function CalcSliders(){
                     for(let num = firstPow; num <= opt.range[1]; num *= 10 ){ // all possible powers of 10
 
                         const bounds:number[] = [Math.max(num, opt.range[0]), Math.min(num * 10, opt.range[1])] 
-                        
+
                         const stateKey = `${i}.${bounds[0]}`;
                         tempLin[stateKey] ??= {} as sliderVals;
                         tempLin[stateKey].val = calcValueFromLinScale(i, bounds);

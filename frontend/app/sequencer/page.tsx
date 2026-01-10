@@ -7,10 +7,9 @@ import {
   Stack,
   Button,
   Grid,
-  GridItem, Text,
+  GridItem,
   Editable, IconButton
 } from "@chakra-ui/react";
-import { writeData } from "./actions";
 
 import { LuPencilLine } from "react-icons/lu"
 import { MdDelete } from "react-icons/md";
@@ -267,7 +266,6 @@ export default function Page() {
                     
                 </Button>
             </Stack>
-            {/* <Button onClick = {() => writeData()}/> */}
         </Box>
     );
 }
