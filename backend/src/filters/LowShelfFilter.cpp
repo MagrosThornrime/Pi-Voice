@@ -8,9 +8,11 @@ void LowShelfFilter::refresh() {
 	constexpr auto pi = std::numbers::pi_v<f32>;
 
 	if (_order == 1) {
-		const auto alpha = std::tan(pi * _cutoff / _sampleRate);
-		const auto A = std::pow(10.f, _gainDB / 20);
+		const auto omega = (2 * pi) * _cutoff / _sampleRate;
+		const auto sinOmega = std::sin(omega);
+		const auto A = std::pow(10.f, _gainDB / 40);
 		const auto sqrtA = std::sqrt(A);
+		const auto& alpha = sinOmega;
 		const auto a0 = 1 + alpha;
 
 		_b = {
