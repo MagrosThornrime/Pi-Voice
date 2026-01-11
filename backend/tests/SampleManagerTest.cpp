@@ -4,40 +4,37 @@
 #include <cmath>
 
 TEST(SampleManager, ListFiles) {
-    fileio::SampleManager sampleManager("../res/samples", 44100);
+    fileio::SampleManager sampleManager("res/samples_testing", 44100);
 
     auto samples = sampleManager.getSampleNames();
     auto samplesSet = std::unordered_set(samples.begin(), samples.end());
 
     auto wantedSamples = std::unordered_set<std::string>{
-		"sine", "square", "sawtooth", "triangle",  // base oscillators
-        "noise",  // noise.wav
-        "meow"    // meow.wav
+    	"industry", "summer", "meow", "sine", "square", "empty", "triangle", "sawtooth"
     };
 
     ASSERT_EQ(samplesSet, wantedSamples);
 }
 
 TEST(SampleManager, AlternativeFiles) {
-    fileio::SampleManager sampleManager("../res/samples", 44100);
+    fileio::SampleManager sampleManager("res/samples_testing", 44100);
 
-	sampleManager.changeSamplesDirectory("../res/samples_testing");
+	sampleManager.changeSamplesDirectory("res/samples");
 
     auto samples = sampleManager.getSampleNames();
     auto samplesSet = std::unordered_set(samples.begin(), samples.end());
 
 	auto wantedSamples = std::unordered_set<std::string>{
-		"sine", "square", "sawtooth", "triangle",  // base oscillators
-        "industry",  // industry.wav
-        "summer",    // summer.wav
-		"meow"		// meow.wav
+		"bonus 1", "meow", "achievement", "sword", "sine",
+		"square", "empty", "bonus 2",
+	    "triangle", "explosion", "character", "sawtooth"
     };
 
     ASSERT_EQ(samplesSet, wantedSamples);
 }
 
 TEST(SampleManager, SampleHalfNonZero) {
-    fileio::SampleManager sampleManager("../res/samples_testing", 44100);
+    fileio::SampleManager sampleManager("res/samples_testing", 44100);
 	auto output = sampleManager.getSample("industry");
 
 	ASSERT_FALSE(output.empty());

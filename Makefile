@@ -10,3 +10,9 @@ backend: backend/*
 
 frontend: frontend/*
 	$(MAKE) -C frontend
+
+tests:
+	@case "$$OS" in \
+	Windows_NT) run_tests.bat ;; \
+	*) ./run_tests.bash ;; \
+	esac
