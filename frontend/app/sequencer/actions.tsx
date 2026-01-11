@@ -56,7 +56,7 @@ export async function CalcSliders(){
         const dist = bounds[1] - bounds[0];
         return (dist <= 0.005) ? Number.parseFloat(val.toFixed(4)) :
             (dist <= 2) ? Number.parseFloat(val.toFixed(2)) :
-                ((dist <= 10) ? Number.parseFloat(val.toFixed(1)) : Math.round(val))
+                ((dist <= 50) ? Number.parseFloat(val.toFixed(1)) : Math.round(val))
     }
 
 
