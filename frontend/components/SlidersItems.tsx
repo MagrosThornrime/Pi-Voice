@@ -1,7 +1,7 @@
 import { Box, Text, Collapsible, Grid } from "@chakra-ui/react";
 import { Fragment } from "react";
 import { LuChevronRight } from "react-icons/lu"
-import { Opt, OptKey, OptEffectKey, defaultOpts, defaultEffectOpts, EffectType } from "../app/utils/tables"
+import { Opt, OptKey, OptEffectKey, defaultOpts, defaultEffectOpts, EffectType, FilterType } from "../app/utils/tables"
 import { LogSlider } from "./SliderLinLog";
 import { OrderSwitch } from "./OrderSwitch";
 import { SliderNormal } from "./SliderNormal";
@@ -105,7 +105,8 @@ export function SlidersItems() {
                   ) :
                     (
                       <>
-                        <OrderSwitch label={optKey} />
+                        <OrderSwitch label={optKey as OptKey} filterName={obj.params.value as FilterType}
+                         paramsData={paramsData} itemID = {obj.id} />
                         <Box h="5" />
                       </>
                     )
