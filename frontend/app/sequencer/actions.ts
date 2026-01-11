@@ -1,5 +1,3 @@
-"use server";
-import fs from "fs/promises";
 import { FILTER_TYPES } from "../utils/tables";
 
 import { calcValueFromLogScale, calcValueFromLinScale,calcLinearPosFromLogarithmic,
@@ -30,13 +28,6 @@ export type sliderCache = {
         filters: Record<string, Record<string, sliderVals>>;
         effects: Record<string, Record<string, sliderVals>>;
     }
-}
-
-
-export async function writeData() {
-  const outPath = "./app/sequencer/data.json";
-  const data = await CalcSliders();
-  await fs.writeFile(outPath, JSON.stringify(data, null, 2), "utf8");
 }
 
 export async function CalcSliders(){

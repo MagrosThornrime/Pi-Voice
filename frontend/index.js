@@ -5,7 +5,10 @@ const fs = require("fs");
 const { cache } = require("react");
 const net = require("net");
 
+import { CalcSliders } from './app/sequencer/actions'
+
 const presetFile = path.join(app.getPath("userData"), "presets.json");
+const sliderFile = path.join(app.getPath("userData"), "sliders.json");
 
 function ensurePresetFile() {
     if (!fs.existsSync(presetFile)) {
@@ -84,7 +87,7 @@ async function GetChangesData(sliderType, itemType, sliderVal,
     itemName, paramName, change, bounds
 ) {
     if (!cached) {
-        cached = JSON.parse(fs.readFileSync("./frontend/app/sequencer/data.json", "utf8"));
+        cached = JSON.parse(fs.readFileSync(sliderFile, "utf8"));
     }
     const res = await getChangesDataImpl(sliderType, itemType, sliderVal, itemName, paramName, change, bounds);
     return res;
@@ -92,6 +95,11 @@ async function GetChangesData(sliderType, itemType, sliderVal,
 
 ipcMain.handle("sliders:read", (event, sliderType, itemType, sliderVal, itemName, paramName, change, bounds) => {
     return GetChangesData(sliderType, itemType, sliderVal, itemName, paramName, change, bounds);
+});
+
+ipcMain.handle("sliders:write", () => {
+    const data = CalcSliders();
+    fs.writeFile(sliderFile, JSON.stringify(data, null, 2), "utf8");
 });
 
 let nextProcess;

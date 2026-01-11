@@ -101,4 +101,6 @@ contextBridge.exposeInMainWorld("slidersAPI", {
     read: (sliderType,itemType,sliderVal,itemName,paramName,change,bounds) => ipcRenderer.invoke(
         "sliders:read",sliderType,itemType,sliderVal,itemName,paramName,change,bounds
     ),
+    write:() => 
+        ipcRenderer.invoke("sliders:write"),
 });
