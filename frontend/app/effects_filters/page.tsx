@@ -328,7 +328,7 @@ function Page() {
     const invalid_eff = !!errors.effects
 
     return (
-        <Box minH="100vh" bg="gray.50" p={10} alignItems="center">
+        <Box minH="100vh" bg="gray.200" p={10} alignItems="center">
             <form
                 onSubmit={handleSubmit(async (formData) => {
                     setData(formData);

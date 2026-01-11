@@ -138,7 +138,7 @@ export function SlidersItems() {
 
         <Collapsible.Content maxW="100%" minW="100%">
 
-          <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)", }} gap={5} maxW="100%" mx="auto"
+          <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(2, 1fr)", xl: "repeat(3, 1fr)" }} gap={5} maxW="100%" mx="auto"
             alignItems="start" >
             {sliders}
           </Grid>

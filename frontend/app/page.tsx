@@ -156,10 +156,10 @@ export default function Home() {
 
   const charts = [chart_adsr];
   return (
-    <Box minH="100vh" bg="gray.50" p={10} >
+    <Box minH="100vh" p={10} >
 
 
-        <Box w = {{base: "100%", xl: "60%"}} bg = "gray" mx="auto" py = {{base:8, xl: 11}} rounded = "xl">
+        <Box w = {{base: "100%", xl: "60%"}} bg = "teal.400" mx="auto" py = {{base:8, xl: 11}} rounded = "xl">
         <Box w="90%" bg = "white " mx="auto" rounded="xl" >
         <Chart.Root bg = "white" mx = "auto" py = {4} width = "80%" height={400} chart = {chart_adsr}>
           <LineChart data={chart_adsr.data}>

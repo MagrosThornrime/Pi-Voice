@@ -1,5 +1,5 @@
 "use client";
-import { FiltersData } from "../effects_filters/page";
+import { FiltersData } from "./state_utils";
 import { useContext, ReactNode, createContext, useState } from "react";
 import { OptKey, FilterType, defaultOpts, defaultEffectOpts, EffectType, EffectOptionsMap, OptEffectKey,} from "./tables";
 import { SliderProps } from "@/components/SlidersItems";
