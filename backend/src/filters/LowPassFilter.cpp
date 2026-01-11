@@ -9,7 +9,9 @@ void LowPassFilter::refresh() {
 	constexpr auto pi = std::numbers::pi_v<f32>;
 
 	if (_order == 1) {
-		const auto alpha = std::tan(pi * _cutoff / _sampleRate);
+		const auto omega = (2 * pi) * _cutoff / _sampleRate;
+		const auto sinOmega = std::sin(omega);
+		const auto alpha = sinOmega;
 		const auto a0 = 1 + alpha;
 
 		_b = {
