@@ -108,7 +108,7 @@ export default function PlayPage() {
             <Fragment>
 
                 <Heading size="3xl" textAlign="center" mb={10} color="purple.600">
-                    🎛️ Simple Synth Controller
+                    Settings
                 </Heading>
 
                 <Flex align="center" justify="center">
