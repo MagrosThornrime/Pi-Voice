@@ -163,7 +163,7 @@ export default function PlayPage() {
                     </Box>
                     <Box h="5" />
                     <Flex align="center" justify="center">
-                        <List.Root w = "40%">
+                        <List.Root w = {500}>
                             {
                                 midiPorts.map((port, i) => {
                                     console.log("PORT:", port, midiPorts.length);
