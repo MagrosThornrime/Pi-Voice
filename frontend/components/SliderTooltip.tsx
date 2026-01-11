@@ -5,7 +5,8 @@ type MyProps = {
     Props: SliderProps;
 }
 export function SliderTooltip({Props} : MyProps) {
-    const dist = Props.bounds[1] - Props.bounds[0];
+    let dist = Props.bounds[1] - Props.bounds[0];
+    
     const val = Props.actValue;
     return (
         <Flex w="100%" mb={2} alignItems="center">
@@ -21,7 +22,7 @@ export function SliderTooltip({Props} : MyProps) {
                     {
                         (dist <= 0.005) ? Number.parseFloat(val.toFixed(4)) :
                             (dist <= 2) ? Number.parseFloat(val.toFixed(2))  :
-                                ((dist <= 10) ? Number.parseFloat(val.toFixed(1)) : Math.round(val))
+                                ((dist <= 50) ? Number.parseFloat(val.toFixed(2)) : Number.parseFloat(val.toFixed(2)))
                     }
                 </Text>
             </Box>

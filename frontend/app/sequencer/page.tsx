@@ -10,19 +10,18 @@ import {
   GridItem, Text,
   Editable, IconButton
 } from "@chakra-ui/react";
-import { writeData } from "./actions";
 
 import { LuPencilLine } from "react-icons/lu"
 import { MdDelete } from "react-icons/md";
 
 
 function getRandomColor() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
+    let colors = ["teal", "green", "blue"].flatMap(color =>
+        [500, 600, 700, 800].map(shade => `${color}.${shade}`)
+    );
+    colors = colors.concat(["purple.500", "purple.700"]);
+
+    return colors[Math.floor(Math.random() * colors.length)];
 }
 
 export default function Page() {
@@ -110,15 +109,17 @@ export default function Page() {
     };
 
     return (
-        <Box minH="100vh" bg="gray.50" p={10}>
+        <Box minH="100vh" bg="gray.300" p={10}>
             <Stack>
+                <Stack direction={"row"} justifyContent={"center"} gap={20}>
                 <Button
+                    w = {300}
                     disabled={isPlaying}
                     bg={(() => {
                         try {
-                            return (sessionStorage.getItem("seq_recording") === "Stop recording") ? "red.400" : "green.400";
+                            return (sessionStorage.getItem("seq_recording") === "Stop recording") ? "red.600" : "green.600";
                         } catch {
-                            return "green.400";
+                            return "green.600";
                         }
                     })()}
 
@@ -139,21 +140,65 @@ export default function Page() {
                         }
                     }}
                 >
-                    {
-                        (() => {
-                            try {
-                                return sessionStorage.getItem("seq_recording") ?? "Record to sequencer";
-                            } catch {
-                                return "Record to sequencer";
+                        <Text fontWeight="bold" fontSize={"lg"}>
+                            {
+                                (() => {
+                                    try {
+                                        return sessionStorage.getItem("seq_recording") ?? "Record to sequencer";
+                                    } catch {
+                                        return "Record to sequencer";
+                                    }
+                                })()
                             }
-                        })()
-                    }
+                        </Text>
                 </Button>
-                <Box h="10"/>
+                <Button
+                    w = {300}
+                    disabled={isRecording||sounds.length==0}
+                    bg={(() => {
+                        try {
+                            return (sessionStorage.getItem("seq_playing") === "Stop") ?  "red.600" : "green.600";
+                        } catch { return "green.600";
+                            }
+                    })()}
+
+                    onClick={async () => {
+                        try {
+                            if (sessionStorage.getItem("seq_playing") === "Stop") {
+                                setIsPlaying(false);
+                                sessionStorage.setItem("seq_playing","Play");
+                                await window.synthAPI.sequencerDeactivate();                                
+                            } else {
+                                setIsPlaying(true);
+                                sessionStorage.setItem("seq_playing","Stop");
+                                await window.synthAPI.sequencerActivate();
+                            }
+                            console.log(sessionStorage.getItem("seq_playing"));
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    }}
+                >
+                        <Text fontWeight="bold" fontSize={"lg"}>
+                            {
+                                (() => {
+                                    try {
+                                        return sessionStorage.getItem("seq_playing") ?? "Play";
+                                    } catch {
+                                        return "Play";
+                                    }
+                                })()
+                            }
+                        </Text>
+                    
+                </Button>
+                </Stack>
+                <Box h="20"/>
                 <Grid
                     w="100%"
                     templateColumns={{lg:"repeat(4, 1fr)", xl:"repeat(8, 1fr)"}}
                     gap={4}
+                    gapY={12}
                 >
                     {
                         sounds.map((item, index) => (
@@ -199,7 +244,7 @@ export default function Page() {
 
                                     <Box position="relative" display="flex" alignItems="center" w="80%" ml="auto">
                                         <Editable.Root
-                                            defaultValue={item}
+                                            defaultValue={item} fontWeight={"semibold"}
                                             fontSize={{lg: "sm", xl: "xl" }}
                                             ml={{ xl: 1, base: 2 }}
                                             flex="1"
@@ -228,46 +273,7 @@ export default function Page() {
                         ))
                     }
                 </Grid>
-                <Box h="10"/>
-                <Button
-                    disabled={isRecording||sounds.length==0}
-                    bg={(() => {
-                        try {
-                            return (sessionStorage.getItem("seq_playing") === "Stop") ?  "red.400" : "green.400";
-                        } catch { return "green.400";
-                            }
-                    })()}
-
-                    onClick={async () => {
-                        try {
-                            if (sessionStorage.getItem("seq_playing") === "Stop") {
-                                setIsPlaying(false);
-                                sessionStorage.setItem("seq_playing","Play");
-                                await window.synthAPI.sequencerDeactivate();                                
-                            } else {
-                                setIsPlaying(true);
-                                sessionStorage.setItem("seq_playing","Stop");
-                                await window.synthAPI.sequencerActivate();
-                            }
-                            console.log(sessionStorage.getItem("seq_playing"));
-                        } catch (err) {
-                            console.error(err);
-                        }
-                    }}
-                >
-                    {
-                        (() => {
-                            try {
-                                return sessionStorage.getItem("seq_playing") ?? "Play";
-                            } catch {
-                                return "Play";
-                            }
-                        })()
-                    }
-                    
-                </Button>
             </Stack>
-            {/* <Button onClick = {() => writeData()}/> */}
         </Box>
     );
 }

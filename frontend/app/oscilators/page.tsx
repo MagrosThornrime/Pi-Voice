@@ -5,6 +5,7 @@ import { useState, useEffect, memo, Fragment } from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { usePreset } from "@/components/ui/presetsProvider";
 import { getComputedOscillator } from "../utils/integration_utils";
+import { Point, get_example_data} from "../utils/maths_utils";
 
 
 type OscillatorItem = {
@@ -13,110 +14,15 @@ type OscillatorItem = {
 };
 
 
-export type Point = {
-  x: number;
-  y: number;
-}
-
-
-function get_example_data(
-  n: number,
-  domain: number[],
-  func: (x: number) => number
-): Point[] {
-  return Array.from({ length: n }, (_, i): Point => {
-    const x = domain[0] + (i * (domain[1] - domain[0])) / n;
-    return {
-      x,
-      y: func(x),
-    };
-  });
-}
-
-
-function square_wave(x: number, interv: number) {
-  let position = x % interv;
-  let eps = 0.01;
-
-  if (position < eps) {
-    return 0;
-  }
-
-  if (Math.abs(position - interv / 2) < eps) {
-    if (position > interv / 2) {
-      return 1;
-    }
-    return 0;
-  }
-
-  if (position < interv / 2) {
-    return 1;
-  }
-
-  return 0;
-}
-
-
-function triangle_wave(x: number, interv: number) {
-  let position = x % interv;
-  console.log("position:", position)
-
-  if (position <= interv / 2) {
-    return position;
-  }
-  return interv / 2 - (position - interv / 2);
-}
-
-
-function sawtooth_func(x: number, interv: number) {
-  let position = x % interv;
-  let eps = 0.01;
-  if (x < eps) {
-    return 0.0;
-  }
-  if (position < eps) {
-    return 1 / 2 * interv;
-  }
-  if (interv - position < eps) {
-    return 0.0;
-  }
-  return 1 / 2 * position;
-
-}
-
-
-async function getOscPlotData(oscName: string) {
-  let data: number[];
-  try {
-      data = await window.synthAPI.getOscillatorPlot(oscName);
-  } catch { data = [] }
-  const dataPoints = data.map((y, x): Point => {
-    return { x, y };
-  })
-  return dataPoints;
-}
-
-
-const oscillatorsFuncMapping: Record<string, (X: number) => number> = {
-  sine: ((x) => Math.sin(3 * x)),
-  square: ((x => square_wave(x, 2.0))),
-  triangle: ((x) => triangle_wave(x, 2.0)),
-  empty: (() => 0.0),
-  sawtooth: ((x) => sawtooth_func(x, 2.0))
-}
-
-
 type FunctionProps = {
   func: (x: number) => number;
   domain: [number, number];
   n: number;
 }
 
-
 type DataProps = {
   points: Point[];
 }
-
 
 type FunctionModeProps = {
   inputType: "function";
@@ -196,9 +102,6 @@ function FunctionChart(props: FunctionChartProps) {
 
 
 const MemoFunctionChart = memo(FunctionChart);
-function getOscillatorFunction(name: string) {
-  return oscillatorsFuncMapping[name] ?? oscillatorsFuncMapping["empty"]
-}
 
 const oscKeys = ["oscilator1", "oscilator2", "oscilator3"] as const;
 
@@ -251,7 +154,6 @@ export default function Page() {
   useEffect(() => {
     const loadPoints = async () => {
       const dataPoints = await getComputedOscillator(presetProperties.oscilator1);
-      // can be replaced with getOscPlotData
       setPoints1(dataPoints);
     }
     loadPoints();
@@ -260,7 +162,6 @@ export default function Page() {
   useEffect(() => {
     const loadPoints = async () => {
       const dataPoints = await getComputedOscillator(presetProperties.oscilator2);
-      // can be replaced with getOscPlotData
       setPoints2(dataPoints);
     }
     loadPoints();
@@ -270,7 +171,6 @@ export default function Page() {
   useEffect(() => {
     const loadPoints = async () => {
       const dataPoints = await getComputedOscillator(presetProperties.oscilator3);
-      // can be replaced with getOscPlotData
       setPoints3(dataPoints);
     }
     loadPoints();
@@ -291,11 +191,8 @@ export default function Page() {
         md: "repeat(2, 1fr)",
         lg: "repeat(2, 1fr)",
         xl: "repeat(3, 1fr)"
-      }}
-        gap={30}
-        mx="auto"
-        alignItems="center"
-        justifyItems="center" >
+      }} gap={30} mx="auto"
+        alignItems="center" justifyItems="center" >
         {
           oscillators.map((o, i) => (
             <Box key={i}>
@@ -337,8 +234,7 @@ export default function Page() {
                           oscillatorTypes.items.map((oscilator) => (
                           <Fragment key={`${oscilator.value}${i}`}>
                               <Select.Item fontSize={"xl"} item={oscilator} key={oscilator.value}
-                              _hover={{ bg: "teal.100" }}
-                              // _selected={{ bg: "blue.200" }}
+                              _hover={{ bg: "teal.100" }} // _selected={{ bg: "blue.200" }}
                               >
                                 <Text color = "teal.700"> {oscilator.label} </Text>
                                 <Checkbox.Root size={"lg"} checked={oscilator.value === oscillators[i]} pointerEvents="none" mr={2} >

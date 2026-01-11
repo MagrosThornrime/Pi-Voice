@@ -12,58 +12,17 @@ import { CheckboxesWithHeading } from "@/components/Checkboxes";
 import { useFilters, useFiltersParams, useFiltersLogic } from "../utils/context_utils";
 import { clearFilters, addFilter, deleteItem, swapItems, moveItem, addEffect } from "../utils/integration_utils";
 import { v4 as uuidv4 } from "uuid";
-import { z } from "zod"
+import { FiltersData, FiltersFormSchema } from "../utils/state_utils";
+import { groupColor } from "../utils/tables";
+import { blockType, listType } from "../utils/state_utils";
+import { getPosFromFiltered, getListFromData  } from "../utils/state_utils";
 
 const FIELDS = 6
 
-const FiltersFormSchema = z.object({
-    filters: z.array(z.string()).max(3, {
-        message: "You cannot select more than 3 filters.",
-    }),
-    effects: z.array(z.string()).max(3, {
-        message: "You cannot select more than 3 effects.",
-    })
-})
 
-export type FiltersData = z.infer<typeof FiltersFormSchema>
+function DraggableList() {
 
-
-type DraggableListProps = {
-    attr: "filters" | "effects";
-}
-
-type blockType = {
-    val: string;
-    id: string;
-    group: "filters" | "effects" | "empty"
-}
-
-
-type listType = {
-    val: string;
-    group: "filters" | "effects";
-}
-
-const groupColor: Record<string, string> = {
-    "filters": "orange.600",
-    "effects": "purple.600",
-    "empty": "blue.300"
-}
-
-function getPosFromFiltered(list1: blockType[], idx: string) {
-    const res: number = list1.filter(item => item.val !== "").findIndex(i => i.id === idx);
-    return res;
-}
-
-function getListFromData(data: FiltersData): listType[] {
-    const dataFilters = data.filters.map((x, _): listType => { return { val: x, group: "filters" } });
-    const dataEffects = data.effects.map((x, _): listType => { return { val: x, group: "effects" } });
-    return dataFilters.concat(dataEffects);
-}
-
-function DraggableList({ attr }: DraggableListProps) {
-
-    const { data, setData } = useFilters();
+    const { data } = useFilters();
     const { paramsData, setParamsData } = useFiltersParams();
     const { deleteItemFromList, addFilterToList, swapItemsFromList, moveItemInList, addEffectToList } = useFiltersLogic();
 
@@ -81,7 +40,7 @@ function DraggableList({ attr }: DraggableListProps) {
     useEffect(
         () => {
             setListData(getListFromData(data) ?? []);
-            if (isFirstRender.current < 2 && presetProperties.filters) {
+            if (isFirstRender.current < 1 && presetProperties.filters) {
                 let newArr = Array.from({ length: presetProperties.filters.length },
                     (_, i): blockType => { return { val: presetProperties.filters[i].params.value, id: uuidv4(), group: presetProperties.filters[i].params.group } });
 
@@ -99,7 +58,7 @@ function DraggableList({ attr }: DraggableListProps) {
 
     useEffect(
         () => {
-            if (isFirstRender.current < 2) {
+            if (isFirstRender.current < 1) {
                 isFirstRender.current = isFirstRender.current + 1;
             } else {
                 setPresetProperties(prev => ({ ...prev, filters: paramsData }));
@@ -177,7 +136,6 @@ function DraggableList({ attr }: DraggableListProps) {
         }
 
         else if (dragBlockInd !== null) {
-            const draggedItem = blocks[dragBlockInd];
 
             const temp = newBlocks[dragBlockInd];
 
@@ -211,7 +169,7 @@ function DraggableList({ attr }: DraggableListProps) {
                     }
                 }
             }
-            //final swap in our blocks array
+            //final swap in blocks array
             newBlocks[dragBlockInd] = newBlocks[index];
             newBlocks[index] = temp;
 
@@ -227,8 +185,7 @@ function DraggableList({ attr }: DraggableListProps) {
 
         const index1 = getPosFromFiltered(newBlocks, newBlocks[index].id); // we search in arr before change
 
-        newBlocks[index].val = "";
-        newBlocks[index].group = "empty";
+        newBlocks[index] = {val:"", group:"empty", id:newBlocks[index].id}
 
         deleteItemFromList(index1);
 
@@ -251,13 +208,13 @@ function DraggableList({ attr }: DraggableListProps) {
                     <LuChevronRight size={24} color="black" />
                 </Collapsible.Indicator>
 
-                <Box maxW="100%">
+                <Box>
                     <Text textStyle="3xl" mb={2} color="teal.600" fontWeight="semibold" > Toggle layers selection </Text>
                 </Box>
 
             </Collapsible.Trigger>
 
-            <Collapsible.Content maxW="100%" minW="100%">
+            <Collapsible.Content minW="100%">
 
                 <Box>
                     <>
@@ -318,23 +275,14 @@ function DraggableList({ attr }: DraggableListProps) {
 
                                                     onDrop={() => handleDrop(index)} >
                                                     {item.group !== "empty" &&
-                                                        <Button 
-                                                            size="lg"
-                                                            p={1}
-                                                            minW={0}
-                                                            bg="transparent"
-                                                            position="absolute"
-                                                            left="8px"
-                                                            _hover={{ bg: "red.700" }}
-                                                            _active={{ bg: "red.800" }}
-
+                                                        <Button size="lg" p={1} minW={0} bg="transparent" position="absolute"
+                                                            left="8px" _hover={{ bg: "red.700" }} _active={{ bg: "red.800" }}
                                                             onClick={(e) => {
                                                                 e.stopPropagation;
                                                                 handleDelete(index);
                                                             }}
                                                         >
                                                             <MdDelete />
-
                                                         </Button>
                                                     }
 
@@ -380,7 +328,7 @@ function Page() {
     const invalid_eff = !!errors.effects
 
     return (
-        <Box minH="100vh" bg="gray.50" p={10} alignItems="center">
+        <Box minH="100vh" bg="gray.200" p={10} alignItems="center">
             <form
                 onSubmit={handleSubmit(async (formData) => {
                     setData(formData);
@@ -391,7 +339,7 @@ function Page() {
                 })}
             >
                 <Box mt={4} p={6} bg="teal.600" rounded="2xl" w="100%">
-                    <Stack direction={{lg:"column", xl:"row"}} gap={{lg:0, xl:20}} > {/*previously for horizontal direction gap was 60 */}
+                    <Stack direction={{lg:"column", xl:"row"}} gap={{lg:0, xl:20}} >
                         <CheckboxesWithHeading field={filtersField.field}
                             formItems={filters}
                             invalid={invalid}
@@ -430,9 +378,9 @@ function Page() {
             <Box h="10" />
 
             <Box minW="80%">
-                <DraggableList attr="filters" />
+                <DraggableList />
                 <Box h="10" />
-                <SlidersItems attr="filters" />
+                <SlidersItems />
                 <Box h="10" />
 
             </Box>

@@ -1,7 +1,7 @@
 import { Box, Text, Collapsible, Grid } from "@chakra-ui/react";
 import { Fragment } from "react";
 import { LuChevronRight } from "react-icons/lu"
-import { Opt, OptKey, OptEffectKey, defaultOpts, defaultEffectOpts, EffectType } from "../app/utils/tables"
+import { Opt, OptKey, OptEffectKey, defaultOpts, defaultEffectOpts, EffectType, FilterType } from "../app/utils/tables"
 import { LogSlider } from "./SliderLinLog";
 import { OrderSwitch } from "./OrderSwitch";
 import { SliderNormal } from "./SliderNormal";
@@ -14,11 +14,8 @@ export type SliderProps = {
   actValue: number;
 }
 
-type SlidersItemsProps = {
-  attr: "filters" | "effects";
-};
 
-export function SlidersItems({ attr }: SlidersItemsProps) {
+export function SlidersItems() {
   const { paramsData, setParamsData } = useFiltersParams();
 
 
@@ -108,7 +105,8 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
                   ) :
                     (
                       <>
-                        <OrderSwitch label={optKey} />
+                        <OrderSwitch label={optKey as OptKey} filterName={obj.params.value as FilterType}
+                         paramsData={paramsData} itemID = {obj.id} />
                         <Box h="5" />
                       </>
                     )
@@ -134,14 +132,14 @@ export function SlidersItems({ attr }: SlidersItemsProps) {
           </Collapsible.Indicator>
 
           <Box maxW="100%">
-            <Text textStyle="3xl" mb={2} color="teal.600" fontWeight="semibold" textAlign="center"> Toggle Sliders </Text>
+            <Text textStyle="3xl" mb={2} color="teal.600" fontWeight="semibold" textAlign="center"> Toggle sliders </Text>
           </Box>
 
         </Collapsible.Trigger>
 
         <Collapsible.Content maxW="100%" minW="100%">
 
-          <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)", }} gap={5} maxW="100%" mx="auto"
+          <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(2, 1fr)", xl: "repeat(3, 1fr)" }} gap={5} maxW="100%" mx="auto"
             alignItems="start" >
             {sliders}
           </Grid>

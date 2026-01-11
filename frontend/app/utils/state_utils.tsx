@@ -1,27 +1,36 @@
-import { SliderProps } from "@/components/SlidersItems";
-import {Opt, OptKey, Filter, defaultOpts } from "../utils/tables"
+import { z } from "zod"
 
-export const buildInitialOptsState = (items:Filter[], initial:number= 0):Record<OptKey, number>[] => {
-    const state: Record<string, number> = {};
+export type blockType = {
+    val: string;
+    id: string;
+    group: "filters" | "effects" | "empty"
+}
 
-    return items.map((item, _) => {
-        const state: Record<OptKey, number> = {} as Record<OptKey, number>;
-        (Object.entries(item.opts) as [OptKey, Opt][]).map(([key, _]) => {
-            state[key] = initial;
-        });
-        return state;
-    });
-};
+export type listType = {
+    val: string;
+    group: "filters" | "effects";
+}
 
 
-export const buildInitialPropsState = (items:Filter[], initial:number= 0):Record<OptKey, SliderProps>[] => {
-    const state: Record<string, number> = {};
+export function getPosFromFiltered(list1: blockType[], idx: string) {
+    const res: number = list1.filter(item => item.val !== "").findIndex(i => i.id === idx);
+    return res;
+}
 
-    return items.map((item, _) => {
-        const state: Record<OptKey, SliderProps> = {} as Record<OptKey, SliderProps>;
-        (Object.entries(item.opts) as [OptKey, Opt][]).map(([key, _]) => {
-            state[key] = {bounds: defaultOpts[key].range, actValue: initial}
-        });
-        return state;
-    });
-};
+export function getListFromData(data: FiltersData): listType[] {
+    const dataFilters = data.filters.map((x, _): listType => { return { val: x, group: "filters" } });
+    const dataEffects = data.effects.map((x, _): listType => { return { val: x, group: "effects" } });
+    return dataFilters.concat(dataEffects);
+}
+
+
+export const FiltersFormSchema = z.object({
+    filters: z.array(z.string()).max(3, {
+        message: "You cannot select more than 3 filters.",
+    }),
+    effects: z.array(z.string()).max(3, {
+        message: "You cannot select more than 3 effects.",
+    })
+})
+
+export type FiltersData = z.infer<typeof FiltersFormSchema>

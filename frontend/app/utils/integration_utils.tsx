@@ -1,5 +1,5 @@
 import { filters, EffectID, EffectType, FilterType } from "./tables";
-import { Point } from "../oscilators/page";
+import { Point } from "./maths_utils";
 
 export async function clearFilters(filtersNumber: number) {
     for (let i = filtersNumber - 1; i >= 0; i--) {
