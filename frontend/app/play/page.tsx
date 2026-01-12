@@ -182,7 +182,7 @@ export default function PlayPage() {
                                                 {
                                                     port && (
 
-                                                        <Text fontSize="lg" textAlign={"center"} fontWeight={"semibold"} color="white">
+                                                        <Text fontSize="md" textAlign={"center"} fontWeight={"semibold"} color="white">
                                                             {port}
                                                         </Text>
 
@@ -190,7 +190,7 @@ export default function PlayPage() {
                                                 }
                                             </Box>
 
-                                            <Button colorScheme="blue" onClick={() => openPort(i)}>
+                                            <Button colorScheme="blue"  onClick={() => openPort(i)}>
                                                 Open Port {i}
                                             </Button>
                                         </ListItem>
