@@ -112,8 +112,8 @@ export default function Page() {
     return (
         <Box minH="100vh" bg="teal.100" p={10}>
             <Stack>
-                <Stack direction={"row"} justifyContent={"center"} gap={20}>
-                <Button
+                <Stack direction={"row"} justifyContent={"center"} gap={10}>
+                <Button 
                     w = {300}
                     disabled={isPlaying}
                     bg={(() => {
@@ -141,7 +141,7 @@ export default function Page() {
                         }
                     }}
                 >
-                        <Text fontWeight="bold" fontSize={"lg"}>
+                        <Text fontWeight="bold" fontSize={"lg"} color = "white">
                             {
                                 (() => {
                                     try {
@@ -180,7 +180,7 @@ export default function Page() {
                         }
                     }}
                 >
-                        <Text fontWeight="bold" fontSize={"lg"}>
+                        <Text fontWeight="bold" fontSize={"lg"} color = "white">
                             {
                                 (() => {
                                     try {
@@ -196,7 +196,7 @@ export default function Page() {
                 </Stack>
                 <Box h="20"/>
                 <Grid
-                    w="100%" bg = "blue.200"
+                    w="100%" bg = "blue.200" p = {5} rounded = "xl"
                     templateColumns={{lg:"repeat(4, 1fr)", xl:"repeat(8, 1fr)"}}
                     gap={4}
                     gapY={4}
@@ -233,6 +233,7 @@ export default function Page() {
                                         bg="transparent"
                                         position="absolute"
                                         left="8px"
+                                        color = "teal.200"
                                         _hover={{ bg: "red.600" }}
                                         _active={{ bg: "red.700" }}
                                         disabled={isPlaying}
@@ -241,7 +242,7 @@ export default function Page() {
                                             window.synthAPI.sequencerRemoveSample(index);
                                         }
                                     }>
-                                        <MdDelete/>
+                                        <MdDelete />
                                     </Button>
 
                                     <Box position="relative" display="flex" alignItems="center" w="80%" ml="auto">
@@ -262,8 +263,9 @@ export default function Page() {
                                                         variant="ghost"
                                                         size="xs"
                                                         aria-label="Edit"
+                                                        color = "teal.200"
                                                     >
-                                                        <LuPencilLine color="white" />
+                                                        <LuPencilLine />
                                                     </IconButton>
                                                 </Editable.EditTrigger>
                                             </Editable.Control>
