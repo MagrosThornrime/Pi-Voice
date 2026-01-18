@@ -17,9 +17,10 @@ import { MdDelete } from "react-icons/md";
 
 function getRandomColor() {
     let colors = ["teal", "green", "blue"].flatMap(color =>
-        [500, 600, 700, 800].map(shade => `${color}.${shade}`)
+        [600, 700, 800, 900].map(shade => `${color}.${shade}`)
     );
-    colors = colors.concat(["purple.500", "purple.700"]);
+    colors = colors.concat(["purple.600", "purple.700"]);
+    colors.filter((item) => item !== "green.500")
 
     return colors[Math.floor(Math.random() * colors.length)];
 }
@@ -64,7 +65,7 @@ export default function Page() {
     }, []);
 
     useEffect(() => {
-        if (isFirstRender.current<2){
+        if (isFirstRender.current<1){
             isFirstRender.current = isFirstRender.current+1;
         }else{
             sessionStorage.setItem("sounds", JSON.stringify(sounds));
@@ -81,7 +82,7 @@ export default function Page() {
     }, [sounds]);
 
     useEffect(() => {
-        if (isFirstRender.current>1){
+        if (isFirstRender.current >= 1){
             sessionStorage.setItem("colorMap", JSON.stringify(colorMap));
         }
     }, [colorMap]);
@@ -109,10 +110,10 @@ export default function Page() {
     };
 
     return (
-        <Box minH="100vh" bg="gray.300" p={10}>
+        <Box minH="100vh" bg="teal.100" p={10}>
             <Stack>
-                <Stack direction={"row"} justifyContent={"center"} gap={20}>
-                <Button
+                <Stack direction={"row"} justifyContent={"center"} gap={10}>
+                <Button 
                     w = {300}
                     disabled={isPlaying}
                     bg={(() => {
@@ -140,7 +141,7 @@ export default function Page() {
                         }
                     }}
                 >
-                        <Text fontWeight="bold" fontSize={"lg"}>
+                        <Text fontWeight="bold" fontSize={"lg"} color = "white">
                             {
                                 (() => {
                                     try {
@@ -179,7 +180,7 @@ export default function Page() {
                         }
                     }}
                 >
-                        <Text fontWeight="bold" fontSize={"lg"}>
+                        <Text fontWeight="bold" fontSize={"lg"} color = "white">
                             {
                                 (() => {
                                     try {
@@ -195,10 +196,10 @@ export default function Page() {
                 </Stack>
                 <Box h="20"/>
                 <Grid
-                    w="100%"
+                    w="100%" bg = "blue.200" p = {5} rounded = "xl"
                     templateColumns={{lg:"repeat(4, 1fr)", xl:"repeat(8, 1fr)"}}
                     gap={4}
-                    gapY={12}
+                    gapY={4}
                 >
                     {
                         sounds.map((item, index) => (
@@ -206,6 +207,7 @@ export default function Page() {
                                 <Box
                                     minHeight="60px" minWidth="13%" shadow="md" p={2}
                                     display="flex" alignItems="center"
+                                    rounded="xl"
                                     justifyContent={{lg:"flex-start", xl:"flex-start"}}
                                     position="relative"
                                     bg={colorMap[item]}
@@ -231,6 +233,7 @@ export default function Page() {
                                         bg="transparent"
                                         position="absolute"
                                         left="8px"
+                                        color = "teal.200"
                                         _hover={{ bg: "red.600" }}
                                         _active={{ bg: "red.700" }}
                                         disabled={isPlaying}
@@ -239,13 +242,13 @@ export default function Page() {
                                             window.synthAPI.sequencerRemoveSample(index);
                                         }
                                     }>
-                                        <MdDelete/>
+                                        <MdDelete />
                                     </Button>
 
                                     <Box position="relative" display="flex" alignItems="center" w="80%" ml="auto">
                                         <Editable.Root
                                             defaultValue={item} fontWeight={"semibold"}
-                                            fontSize={{lg: "sm", xl: "xl" }}
+                                            fontSize={{lg: "sm", xl: "xl" }} 
                                             ml={{ xl: 1, base: 2 }}
                                             flex="1"
                                         >
@@ -260,8 +263,9 @@ export default function Page() {
                                                         variant="ghost"
                                                         size="xs"
                                                         aria-label="Edit"
+                                                        color = "teal.200"
                                                     >
-                                                        <LuPencilLine color="white" />
+                                                        <LuPencilLine />
                                                     </IconButton>
                                                 </Editable.EditTrigger>
                                             </Editable.Control>

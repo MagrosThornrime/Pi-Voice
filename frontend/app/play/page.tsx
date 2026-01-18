@@ -104,23 +104,23 @@ export default function PlayPage() {
     };
 
     return (
-        <Box minH="100vh" bg="gray.200" mx = "auto" w = "70%" rounded = "xl" p={10}>
+        <Box minH="100vh" bg="teal.100" mx = "auto" w = "70%" rounded = "xl" p={10}>
             <Fragment>
 
-                <Heading size="3xl" textAlign="center" mb={10} color="purple.600">
+                <Heading size="4xl" mx = "auto" textAlign="center" mb={10} color="teal.700"> {/* bg = "teal.200" */}
                     Settings
                 </Heading>
 
                 <Flex align="center" justify="center">
-                    <Alert.Root bg = "blue.300" w = "90%">
-                        <Alert.Indicator />
+                    <Alert.Root bg = "blue.500" w = "77%">
+                        <Alert.Indicator color = "white" />
                         <Alert.Content>
-                            <Alert.Title fontSize = "xl" fontWeight = "semibold" textAlign={"center"} >Instruction</Alert.Title>
+                            <Alert.Title fontSize = "xl" fontWeight = "semibold" color = "white" textAlign={"center"} >Instruction</Alert.Title>
                             <Box h = "2"/>
-                            <Alert.Description textAlign={"center"}>
+                            <Alert.Description textAlign={"center"} color = "white" fontSize={"md"} fontWeight = "medium" lineHeight="1.5" >
 
                                 <Highlight query= {["Refresh MIDI Ports", "Clear Ports"]}
-                                    styles={{ bg: "yellow.400", fontWeight: "semibold" }}>
+                                    styles={{ bg: "teal.300", color:"teal.800", fontWeight: "semibold" }}>
 
                                     In order to get list of all available MIDI ports,
                                     click Refresh MIDI Ports first, you can also hide them using Clear Ports
@@ -129,19 +129,19 @@ export default function PlayPage() {
 
                             </Alert.Description>
                         </Alert.Content>
-                        <CloseButton pos="relative" top="-2" insetEnd="-2" />
+                        <CloseButton pos="relative" top="-2" insetEnd="-2" color = "white" />
                     </Alert.Root>
                 </Flex>
 
-                <Box h="10" />
-
+                <Box h="5" />
+                <Box bg = "blue.200" p = {4} rounded = "xl">
                 <Flex align="center" justify="center">
 
-                    <Box rounded="2xl" bg={(status === "idle") ? "gray.500" : "green.600"} textAlign="center" minH={50} w="50%"
+                    <Box rounded="2xl" bg={(status === "idle") ? "gray.500" : "green.600"} textAlign="center" minH={50} w={500}
                         display="flex"alignItems="center" justifyContent="center">
 
                         <Stack direction = "row">
-                        <Text fontSize="lg" fontWeight = "semibold" color="white">Status: {status}</Text>
+                        <Text fontSize="lg" fontWeight = "semibold" color="white" >Status: {status}</Text>
                         </Stack>
                     </Box>
                 </Flex>
@@ -150,9 +150,9 @@ export default function PlayPage() {
 
                 <Box>
                     <Box display="flex" justifyContent="center">
-                        <Stack direction="row" gap={5}>
-                            <Button size={"2xl"} onClick={listPorts}> Refresh MIDI Ports </Button>
-                            <Button bg="red.500" size={"2xl"} onClick={(e) => {
+                        <Stack direction="row" w = "70%">
+                            <Button size={"2xl"} fontSize="lg" fontWeight = "semibold" w = "50%" onClick={listPorts}> Refresh MIDI Ports </Button>
+                            <Button bg="red.500" fontSize="lg" fontWeight = "semibold" w = "47%" size={"2xl"} onClick={(e) => {
                                 setMidiPorts([]);
                                 setStatus("idle");
                             }
@@ -176,13 +176,14 @@ export default function PlayPage() {
                                             borderWidth="1px"
                                             borderRadius="md"
                                             bg={"purple.400"}
+                                            rounded = "2xl"
                                             _hover={{ bg: "blue.600" }}
                                         >
                                             <Box flex="1">
                                                 {
                                                     port && (
 
-                                                        <Text fontSize="lg" textAlign={"center"} fontWeight={"semibold"} color="white">
+                                                        <Text fontSize="md" textAlign={"center"} fontWeight={"semibold"} color="white">
                                                             {port}
                                                         </Text>
 
@@ -190,7 +191,7 @@ export default function PlayPage() {
                                                 }
                                             </Box>
 
-                                            <Button colorScheme="blue" onClick={() => openPort(i)}>
+                                            <Button colorScheme="blue"  onClick={() => openPort(i)}>
                                                 Open Port {i}
                                             </Button>
                                         </ListItem>
@@ -203,6 +204,7 @@ export default function PlayPage() {
                     <Box h="5" />
                     <Box display="flex" justifyContent="center">
                         <Button size={"2xl"}
+                        fontSize="lg" fontWeight = "semibold"
                             bg={(() =>{
                                 try{
                                     return (sessionStorage.getItem("recording") ?? "Start") === "Start" ? "green.600" : "red.600"
@@ -239,6 +241,7 @@ export default function PlayPage() {
                             }
                         </Button>
                     </Box>
+                </Box>
                 </Box>
             </Fragment>
         </Box>
